@@ -1,0 +1,23 @@
+{
+  "name": "@my-portfolio/db",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@my-portfolio/env": "*",
+    "dotenv": "^17.4.2",
+    "mongoose": "^9.7.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@my-portfolio/config": "*",
+    "typescript": "^6.0.3"
+  }
+}

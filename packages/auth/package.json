@@ -1,0 +1,27 @@
+{
+  "name": "@my-portfolio/auth",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@better-auth/mongo-adapter": "^1.6.18",
+    "@my-portfolio/db": "*",
+    "@my-portfolio/env": "*",
+    "better-auth": "^1.6.18",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@my-portfolio/config": "*",
+    "typescript": "^6.0.3"
+  }
+}

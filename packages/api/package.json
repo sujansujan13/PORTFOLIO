@@ -1,0 +1,32 @@
+{
+  "name": "@my-portfolio/api",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@my-portfolio/auth": "*",
+    "@my-portfolio/db": "*",
+    "@my-portfolio/env": "*",
+    "@trpc/client": "^11.17.0",
+    "@trpc/server": "^11.17.0",
+    "better-auth": "^1.6.18",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@my-portfolio/config": "*",
+    "@types/express": "^5.0.6",
+    "@vitest/coverage-v8": "4.1.8",
+    "@vitest/ui": "4.1.8",
+    "jsdom": "^29.1.1",
+    "typescript": "^6.0.3",
+    "vitest": "4.1.8"
+  }
+}
