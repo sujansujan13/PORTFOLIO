@@ -71,3 +71,4 @@ my-portfolio/
 - `npm run check-types`: Check TypeScript types across all apps
 - `npm run db:push`: Push schema changes to database
 - `npm run db:studio`: Open database studio UI
+# PORTFOLIO
