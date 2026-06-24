@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
@@ -40,8 +40,8 @@
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
+  --background: #0b1c30;
+  --foreground: #f8f9ff;
   --card: oklch(0.21 0.006 285.885);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.21 0.006 285.885);
@@ -74,7 +74,9 @@
 }
 
 @theme inline {
-  --font-sans: "Inter Variable", sans-serif;
+  /* --font-sans: "Inter Variable", sans-serif; */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -126,3 +128,7 @@
     @apply font-sans;
   }
 }
+
+/* The Light Preset (:root): This runs by default. It tells Tailwind to use light colors (like white backgrounds and dark text).
+
+The Dark Preset (.dark): When you click the toggle, next-themes applies the .dark class to your HTML. This tells Tailwind to instantly swap those variables out for your custom dark hex codes (#0b1c30 and #f8f9ff). */
