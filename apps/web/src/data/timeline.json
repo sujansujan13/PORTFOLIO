@@ -1,0 +1,48 @@
+{
+  "experience": [
+    {
+      "id": "exp-1",
+      "role": "Full-Stack Web Developer Intern",
+      "company": "Himalayan Ripple Project",
+      "location": "Kathmandu, Nepal",
+      "period": "Mar 2026 - Present",
+      "description": "Architected core features for the 'Himalayan Ripple' initiative, translating complex technical workflows into fluid client platforms.",
+      "bullets": [
+        "Implemented high-performance web solutions using Next.js App Router and Node.js backends.",
+        "Integrated robust data modeling structures and state management tools for reliable user sessions.",
+        "Optimized client response layers and system queries to drop visual rendering delays."
+      ],
+      "tags": ["Next.js", "Express", "tRPC", "MongoDB", "Zustand", "Tailwind CSS"]
+    },
+    {
+      "id": "exp-2",
+      "role": "Frontend Developer",
+      "company": "NepalExplore Platform",
+      "location": "Remote / Kathmandu",
+      "period": "2025 - 2026",
+      "description": "Engineered modular interface features, custom search blocks, and navigation elements for a dynamic regional tourism application.",
+      "bullets": [
+        "Crafted reusable component libraries using React and utility-first Tailwind CSS styling architectures.",
+        "Collaborated closely on visual lookups, emblem layouts, and accessible UI spacing models.",
+        "Integrated dynamic form behaviors alongside schema-validated client responses."
+      ],
+      "tags": ["React", "Tailwind CSS", "Framer Motion", "Zod", "JavaScript"]
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-1",
+      "role": "Bachelor of Science in Computer Science & Information Technology",
+      "company": "Tribhuvan University",
+      "location": "Kathmandu, Nepal",
+      "period": "2022 - Present",
+      "description": "Deepening understanding of advanced core technologies, database operations, and system optimizations.",
+      "bullets": [
+        "Authored comprehensive data layout records, including an in-depth Advanced Database Lab Report.",
+        "Explored spatial processing mechanisms and Geographic Information Systems (GIS) mapping models.",
+        "Maintained performance metrics across personal logic layouts and structural configurations."
+      ],
+      "tags": ["Advanced Database Systems", "GIS & Spatial Analysis", "Data Structures", "OOP"]
+    }
+  ]
+}
