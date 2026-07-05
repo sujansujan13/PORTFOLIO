@@ -1,0 +1,30 @@
+{
+  "email": "hello@portfolio.io",
+  "location": "Kathmandu, Nepal",
+  "coordinates": "27.7172, 85.3240",
+  "socials": [
+    {
+      "platform": "GitHub",
+      "username": "sujanrajpandey",
+      "url": "https://github.com/sujanrajpandey",
+      "icon": "Github"
+    },
+    {
+      "platform": "LinkedIn",
+      "username": "sujan-raj-pandey",
+      "url": "https://linkedin.com/in/sujan-raj-pandey",
+      "icon": "Linkedin"
+    },
+    {
+      "platform": "Twitter",
+      "username": "sujanraj_",
+      "url": "https://twitter.com/sujanraj_",
+      "icon": "Twitter"
+    }
+  ],
+  "subjects": [
+    { "value": "collaboration", "label": "New Collaboration / Project" },
+    { "value": "internship", "label": "Internship / Employment Query" },
+    { "value": "general", "label": "General Architecture Chat" }
+  ]
+}

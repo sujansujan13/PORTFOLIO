@@ -1,0 +1,46 @@
+{
+  "categories": [
+    { "slug": "all", "label": "All Builds" },
+    { "slug": "fullstack", "label": "Full-Stack" },
+    { "slug": "frontend", "label": "Frontend & UI" },
+    { "slug": "gis", "label": "Spatial & GIS" }
+  ],
+  "projects": [
+    {
+      "id": "himalayan-ripple",
+      "title": "Himalayan Ripple",
+      "subtitle": "Full-Stack Water Management Framework",
+      "description": "An environmental tracking ecosystem designed for localized water flow analysis, data synchronization, and interactive watershed reporting.",
+      "category": "fullstack",
+       "image": "/ProjectsImages/projectsImage3.png",
+      "tags": ["Next.js", "Express", "tRPC", "MongoDB", "Zustand", "Tailwind CSS"],
+      "demoUrl": "https://himalayan-ripple.vercel.app",
+      "githubUrl": "https://github.com/sujanrajpandey/himalayan-ripple",
+      "featured": true
+    },
+    {
+      "id": "nepal-explore",
+      "title": "NepalExplore",
+      "subtitle": "Tourism Engine & Travel Discovery Hub",
+      "description": "A high-performance regional exploration platform featuring comprehensive search algorithms, dynamic filtered lookups, and rich media maps.",
+      "category": "frontend",
+      "image": "/ProjectsImages/projectsImage2.png",
+      "tags": ["React", "Framer Motion", "Zod", "Lucide Icons", "Tailwind CSS"],
+      "demoUrl": "#",
+      "githubUrl": "https://github.com/sujanrajpandey/nepal-explore",
+      "featured": true
+    },
+    {
+      "id": "spatial-analyser",
+      "title": "ArcGIS Automation Toolkit",
+      "subtitle": "Spatial Vector Analytics Platform",
+      "description": "A collection of computational utilities optimized for spatial interpolation datasets, coordinate mapping pipelines, and shapefile transformations.",
+      "category": "gis",
+      "image": "/ProjectsImages/projectsImage1.png",
+      "tags": ["Python", "ArcPy", "Data Modeling", "GIS Algorithms"],
+      "demoUrl": "",
+      "githubUrl": "https://github.com/sujanrajpandey/arcgis-toolkit",
+      "featured": false
+    }
+  ]
+}
