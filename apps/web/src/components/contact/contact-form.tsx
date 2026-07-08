@@ -1,24 +1,22 @@
 "use client";
 // installed dependencies: react-hook-form, zod, @hookform/resolvers, framer-motion, lucide-react
 
-import * as z from "zod";
+import { z } from "zod";
 import { motion } from "framer-motion";
 import { Send, Loader2, CheckCircle } from "lucide-react";
 import contactData from "@/data/contact-info.json";
 import { useContactForm } from "@/hooks/useContactForm";
+import { useState } from "react";
 
 export function ContactForm() {
   // const [isSuccess, setIsSuccess] = useState(false);
-  // const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  // we don't need to manage isSubmitting state manually because react-hook-form provides it out of the box.
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    onSubmit,
-    isSuccess,
-    resetSuccess,
-  } = useContactForm();
+  const { register, handleSubmit, errors, onSubmit, isSuccess, resetSuccess } =
+    useContactForm();
+
+  console.log(errors);
 
   return (
     <div className="w-full rounded-lg bg-card border border-border p-6 sm:p-8 space-y-6 shadow-xs">
@@ -39,14 +37,18 @@ export function ContactForm() {
             communication streams. I will review and follow up shortly.
           </p>
           <button
-            onClick={() => resetSuccess}
+            onClick={resetSuccess}
             className="text-xs font-mono font-bold tracking-wider uppercase text-primary hover:underline pt-2 cursor-pointer"
           >
             Send Another Payload
           </button>
         </motion.div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-5"
+        >
           {/* Grid setup for Name and Email Fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
@@ -63,7 +65,7 @@ export function ContactForm() {
                 {...register("name")}
                 className="w-full bg-background/50 border border-border px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-colors duration-200"
               />
-              {errors.name && (
+              {errors.name?.message && (
                 <p className="text-xs font-mono text-destructive mt-1">
                   {errors.name.message}
                 </p>
@@ -84,7 +86,7 @@ export function ContactForm() {
                 {...register("email")}
                 className="w-full bg-background/50 border border-border px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-colors duration-200"
               />
-              {errors.email && (
+              {errors.email?.message && (
                 <p className="text-xs font-mono text-destructive mt-1">
                   {errors.email.message}
                 </p>
@@ -125,7 +127,7 @@ export function ContactForm() {
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground">
                 <svg
-                  className="fill-current h-4 w-4"
+                  className="fill-current h-4 w-4 "
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                 >
@@ -133,7 +135,7 @@ export function ContactForm() {
                 </svg>
               </div>
             </div>
-            {errors.subject && (
+            {errors.subject?.message && (
               <p className="text-xs font-mono text-destructive mt-1">
                 {errors.subject.message}
               </p>
@@ -155,7 +157,7 @@ export function ContactForm() {
               {...register("message")}
               className="w-full bg-background/50 border border-border px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 resize-none transition-colors duration-200"
             />
-            {errors.message && (
+            {errors.message?.message && (
               <p className="text-xs font-mono text-destructive mt-1">
                 {errors.message.message}
               </p>

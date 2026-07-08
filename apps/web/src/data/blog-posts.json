@@ -1,0 +1,56 @@
+[
+  {
+    "id": "post-1",
+    "title": "Advanced State Management Patterns in React 18",
+    "slug": "advanced-state-management-patterns-react-18",
+    "description": "Deep dive into using useSyncExternalStore and transitions API for handling complex application states without sacrificing performance.",
+    "category": "react",
+    "date": "May 12, 2024",
+    "image": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "post-2",
+    "title": "Building Resilient Microservices with Express",
+    "slug": "building-resilient-microservices-express",
+    "description": "Explore patterns for circuit breakers, rate limiting, and centralized error handling to build robust MERN stack backends.",
+    "category": "node.js",
+    "date": "April 28, 2024",
+    "image": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "post-3",
+    "title": "The Architecture of a Real-Time Dashboard",
+    "slug": "architecture-real-time-dashboard",
+    "description": "How we scaled a MERN application to handle 10k concurrent WebSocket connections using Redis and horizontal scaling.",
+    "category": "system-design",
+    "date": "April 15, 2024",
+    "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "post-4",
+    "title": "Dockerizing Your MERN Stack Development",
+    "slug": "dockerizing-mern-stack-development",
+    "description": "A complete guide to multi-stage builds, hot-reloading in containers, and managing development environments with Docker Compose.",
+    "category": "devops",
+    "date": "March 30, 2024",
+    "image": "https://images.unsplash.com/photo-1605745341112-85968b19335b?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "post-5",
+    "title": "MongoDB Aggregation Framework Explained",
+    "slug": "mongodb-aggregation-framework-explained",
+    "description": "Mastering complex data transformations directly inside the database to optimize your application's data fetching layers.",
+    "category": "node.js",
+    "date": "March 12, 2024",
+    "image": "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "post-6",
+    "title": "Type-Safe API Calls with TypeScript & TanStack Query",
+    "slug": "type-safe-api-calls-typescript-tanstack-query",
+    "description": "Eliminate run-time errors by enforcing end-to-end type safety between your Node.js backend and React frontend.",
+    "category": "react",
+    "date": "February 25, 2024",
+    "image": "https://images.unsplash.com/photo-1516116211223-5c359a36298a?auto=format&fit=crop&w=800&q=80"
+  }
+]

@@ -1,15 +1,23 @@
-import * as z from "zod";
+import { z } from "zod";
 
 export const contactSchema = z.object({
-  name: z.string().min(2, "Name record requires at least two characters"),
-  email: z.email("Please provide a valid communication email address"),
-  subject: z.string().min(1, "Please select an architectural target context"),
-  message: z
+  // Use z.string({ error: "..." }) instead of min() for initial checks if preferred,
+  // or pass an object with the error key to min()
+  name: z
     .string()
-    .min(
-      10,
-      "Message block requires at least 10 characters descriptive depth.",
-    ),
+    .min(2, { error: "Name record requires at least two characters" }),
+
+  // ✅ Zod v4 Top-level email function with unified error parameter
+  email: z.email({
+    error: "Please provide a valid communication email address",
+  }),
+
+  subject: z
+    .string()
+    .min(1, { error: "Please select an architectural target context" }),
+  message: z.string().min(10, {
+    error: "Message block requires at least 10 characters descriptive depth.",
+  }),
 });
 
 export type ContactFormValues = z.infer<typeof contactSchema>;
