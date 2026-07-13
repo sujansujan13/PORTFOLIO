@@ -5,6 +5,7 @@ import React from "react";
 import { Search, Plus } from "lucide-react";
 import { useDashboardStore } from "@/stores/use-dashboard-store";
 import { ProjectCard } from "./project-card-dashboard";
+import Link from "next/link";
 
 export function ProjectListingViewPanel({ projects }: { projects: any[] }) {
   const { searchQuery, setSearchQuery, openNewProjectModal } =
@@ -33,12 +34,13 @@ export function ProjectListingViewPanel({ projects }: { projects: any[] }) {
               className="w-full bg-input/40 border border-border pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:border-primary transition-colors rounded-sm"
             />
           </div>
-          <button
-            onClick={openNewProjectModal}
+          <Link
+            href={"/dashboard/projects/new"}
+            // onClick={openNewProjectModal}
             className="flex items-center gap-1.5 bg-primary text-white text-xs font-semibold px-3 py-2 hover:bg-primary/90 transition-colors rounded-sm h-8.5 cursor-pointer"
           >
             <Plus className="h-3.5 w-3.5" /> New
-          </button>
+          </Link>
         </div>
       </div>
 

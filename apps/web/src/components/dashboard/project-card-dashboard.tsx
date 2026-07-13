@@ -37,7 +37,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <h4 className="font-bold text-base tracking-tight truncate">
             {project.title}
           </h4>
-          <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[32px]">
+          <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-8">
             {project.subtitle}
           </p>
           <div className="flex flex-wrap gap-1.5 mt-4">

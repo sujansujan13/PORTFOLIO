@@ -8,6 +8,7 @@ import { ProjectModal } from "@/components/dashboard/lib/project-modal";
 import { useDashboardStore } from "@/stores/use-dashboard-store";
 import mockData from "@/data/dashboard-mock.json";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 
 export default function AdminDashboardPage({ user }: { user: any }) {
   const { openNewProjectModal } = useDashboardStore();
@@ -29,12 +30,13 @@ export default function AdminDashboardPage({ user }: { user: any }) {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={openNewProjectModal}
+            <Link
+              href={"/dashboard/projects/new"}
+              // onClick={openNewProjectModal}
               className="flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2.5 hover:bg-primary/90 transition-all shadow-sm rounded-sm cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" /> New Project
-            </button>
+            </Link>
             <button className="flex items-center gap-1.5 bg-amber-500 text-slate-950 text-xs font-bold px-4 py-2.5 hover:bg-amber-400 transition-all shadow-sm rounded-sm cursor-pointer">
               <Plus className="h-3.5 w-3.5" /> New Blog Post
             </button>
@@ -66,7 +68,7 @@ export default function AdminDashboardPage({ user }: { user: any }) {
         </div>
       </footer>
       {/* Global Form Context Render Trigger Node */}
-      <ProjectModal />
+      {/* <ProjectModal /> */}
     </div>
   );
 }

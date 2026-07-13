@@ -5,7 +5,7 @@ import { useState } from "react";
 export const CodeBlock = ({ code }: { code: string }) => {
   const [copied, setCopied] = useState(false);
 
-  const hanleCopy = async () => {
+  const handleCopy = async () => {
     await navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => {
@@ -15,7 +15,7 @@ export const CodeBlock = ({ code }: { code: string }) => {
   return (
     <div className="relative rounded-lg border border-border bg-neutral-950">
       <button
-        onClick={hanleCopy}
+        onClick={handleCopy}
         className="absolute right-3 top-3 flex items-center gap-1 rounded-full  px-3 py-3 text-xs text-zinc-300 hover:bg-zinc-800 transition cursor-pointer group"
       >
         {copied ? (

@@ -73,7 +73,7 @@ export function StatusHeaderPanel() {
                 className="p-2 text-foreground rounded-md hover:bg-accent transition-colors focus:outline-none"
                 aria-label="Toggle Menu"
               >
-                <Menu className="h-6 w-6" />
+                <Menu className="h-5 w-5" />
               </button>
             </SheetTrigger>
             <SheetContent

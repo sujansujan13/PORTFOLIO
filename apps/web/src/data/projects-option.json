@@ -1,0 +1,9 @@
+{
+  "categories": [
+    { "value": "web-app", "label": "Web App" },
+    { "value": "mobile-ui", "label": "Mobile UI" },
+    { "value": "system", "label": "System" },
+    { "value": "dev-tool", "label": "Dev Tool" }
+  ],
+  "defaultTechSuggestions": ["React", "Node.js", "Express", "MongoDB", "Next.js", "TailwindCSS", "TypeScript"]
+}
