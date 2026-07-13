@@ -47,10 +47,10 @@ export function BlogCard({ post }: { post: BlogPost }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.28, ease: "easeOut" }}
-      className="group flex flex-col w-full bg-card border border-border transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/1"
+      className="group flex flex-col w-full bg-card border border-border transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/1 rounded-lg"
     >
       {/* Structural Aspect Ratio Media Slot Container */}
-      <div className="relative aspect-video w-full overflow-hidden bg-muted border-b border-border">
+      <div className="relative aspect-video w-full overflow-hidden bg-muted border-b border-border rounded-t-lg">
         <Image
           src={post.image}
           alt={post.title}

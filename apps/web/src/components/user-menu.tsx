@@ -36,7 +36,7 @@ export default function UserMenu() {
       <DropdownMenuTrigger render={<Button variant="outline" />}>
         {session.user.name}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-card">
+      <DropdownMenuContent className="bg-card rounded-lg border border-border ">
         <DropdownMenuGroup>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />

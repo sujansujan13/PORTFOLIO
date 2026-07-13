@@ -10,6 +10,7 @@ interface SkillCardProps {
   percentage: number;
   icon: React.ReactNode;
   trackColor: string;
+  category?: "all" | "frontend" | "backend" | "cloud"; // Added to satisfy the type checker
 }
 
 export function SkillCard({
@@ -26,7 +27,7 @@ export function SkillCard({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.4 }}
-      className="p-5 sm:p-6 bg-card border border-border flex flex-col justify-between space-y-6 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300"
+      className="p-5 sm:p-6 bg-card border border-border flex flex-col justify-between space-y-6 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300 rounded-xl"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

@@ -1,0 +1,87 @@
+"use client";
+
+import React from "react";
+import { StatusHeaderPanel } from "@/components/dashboard/status-header-panel";
+import { AnalyticsGridPanel } from "@/components/dashboard/analytics-grid-panel";
+import { ProjectListingViewPanel } from "@/components/dashboard/project-listing-view-panel";
+import { ProjectModal } from "@/components/dashboard/lib/project-modal";
+import { useDashboardStore } from "@/stores/use-dashboard-store";
+import mockData from "@/data/dashboard-mock.json";
+import { Plus } from "lucide-react";
+
+export default function AdminDashboardPage({ user }: { user: any }) {
+  const { openNewProjectModal } = useDashboardStore();
+
+  return (
+    <div className=" lg:pl-64 flex flex-col min-w-0">
+      <main className="p-4 sm:p-6 lg:p-8 space-y-8 flex-1 max-w-7xl w-full mx-auto">
+        {/* Welcome Action Header Block */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
+          <div>
+            <h2 className="text-2xl font-black tracking-tight">
+              Welcome back,{" "}
+              <span className="inline-block uppercase tracking-wide bg-linear-to-r from-primary via-blue-500 to-violet-500 bg-clip-text text-transparent">
+                {user?.name}
+              </span>
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Here is what's happening with your portfolio today.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={openNewProjectModal}
+              className="flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2.5 hover:bg-primary/90 transition-all shadow-sm rounded-sm cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" /> New Project
+            </button>
+            <button className="flex items-center gap-1.5 bg-amber-500 text-slate-950 text-xs font-bold px-4 py-2.5 hover:bg-amber-400 transition-all shadow-sm rounded-sm cursor-pointer">
+              <Plus className="h-3.5 w-3.5" /> New Blog Post
+            </button>
+          </div>
+        </div>
+
+        {/* Analytics Stats Dashboard Layout Section */}
+        <AnalyticsGridPanel statsData={mockData.overviewStats} />
+
+        {/* Core Functional Project View Section */}
+        <ProjectListingViewPanel projects={mockData.mockProjects} />
+      </main>
+
+      {/* Global Footer Layer Segment */}
+      <footer className="border-t border-border bg-card/20 px-4 py-4 mt-auto">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-muted-foreground font-medium">
+          <p>© 2026 Portfolio.IO Admin Dashboard. Built with MERN & Next.js.</p>
+          <div className="flex items-center gap-4">
+            <a href="#" className="hover:text-foreground transition-colors">
+              GitHub Repo
+            </a>
+            <a href="#" className="hover:text-foreground transition-colors">
+              Analytics Guide
+            </a>
+            <a href="#" className="hover:text-foreground transition-colors">
+              Support
+            </a>
+          </div>
+        </div>
+      </footer>
+      {/* Global Form Context Render Trigger Node */}
+      <ProjectModal />
+    </div>
+  );
+}
+
+// "use client";
+// import { useQuery } from "@tanstack/react-query";
+
+// import { trpc } from "@/utils/trpc";
+
+// export default function Dashboard() {
+//   const privateData = useQuery(trpc.privateData.queryOptions());
+
+//   return (
+//     <div>
+//       <p>API: {privateData.data?.message}</p>
+//     </div>
+//   );
+// }

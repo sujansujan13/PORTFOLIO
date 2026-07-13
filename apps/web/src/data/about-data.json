@@ -1,0 +1,83 @@
+{
+  "hero": {
+    "badge": "Full-Stack Architect",
+    "heading": "Designing the digital future with code.",
+    "paragraphs": [
+      "My coding journey began with a simple curiosity about how pixels turned into platforms...",
+      "I specialize in bridging the gap between elegant UI design and robust backend architecture..."
+    ],
+    "image": {
+      "src": "/AboutImages/profileImage2.jpg",
+      "alt": "Sujan Raj Pandey Portfolio Presentation Image"
+    }
+  },
+  "skills": [
+    {
+      "id": "react-next", 
+      "title": "React & Next.js",
+      "subtitle": "Dynamic UI & SSR",
+      "percentage": 95,
+      "category": "frontend"
+    },
+    {
+      "id": "node-express",
+      "title": "Node & Express",
+      "subtitle": "RESTful APIs & Workers",
+      "percentage": 88,
+      "category": "backend"
+    },
+    {
+      "id": "db-mgmt",
+      "title": "NoSQL / SQL",
+      "subtitle": "Data Modeling & Ops",
+      "percentage": 90,
+      "category": "backend"
+    },
+    {
+      "id": "aws-devops",
+      "title": "AWS & CI/CD",
+      "subtitle": "DevOps & Deployment",
+      "percentage": 82,
+      "category": "cloud"
+    }
+  ],
+  "learningItems": [
+    {
+      "title": "Go (Golang) Microservices",
+      "desc": "Chapter 4: Concurrency Patterns",
+      "theme": "blue"
+    },
+    {
+      "title": "Three.js & WebGL",
+      "desc": "Creative coding for immersive experiences",
+      "theme": "amber"
+    },
+    {
+      "title": "System Design Interview",
+      "desc": "Focusing on high-availability architectures",
+      "theme": "rose"
+    }
+  ],
+  "personalCards": [
+    {
+      "type": "Coffee",
+      "title": "Caffeine Engine",
+      "desc": "I've committed 2,400+ lines of code fueled purely by cold brew."
+    },
+    {
+      "type": "Globe",
+      "title": "Global Citizen",
+      "desc": "Lived in 4 countries, bringing a diverse perspective to UI."
+    },
+    {
+      "type": "Dog",
+      "title": "Bug Hunter",
+      "desc": "My golden retriever 'Linter' is my best pair programmer."
+    },
+    {
+      "type": "Dumbbell",
+      "title":  "Mental Fitness",
+      "desc": "Solve daily LeetCode hards before morning gym sessions."
+    }
+  ]
+}

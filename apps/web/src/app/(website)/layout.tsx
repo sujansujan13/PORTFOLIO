@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 
-import "../index.css";
+import "../../index.css";
+import Header from "@/components/header";
 import Providers from "@/components/providers";
+import Footer from "@/components/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +27,7 @@ export const metadata: Metadata = {
   description: "my-portfolio",
 };
 
-export default function layout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -35,7 +37,13 @@ export default function layout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} font-sans antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="py-16 flex-1">{children}</main>
+            <Footer />
+          </div>
+        </Providers>
       </body>
     </html>
   );

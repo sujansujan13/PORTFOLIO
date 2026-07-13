@@ -7,14 +7,14 @@ import { ArrowRight } from "lucide-react";
 interface LearningItemProps {
   title: string;
   desc: string;
-  color: string;
+  theme: string;
   variants: any;
 }
 
 export function LearningItem({
   title,
   desc,
-  color,
+  theme,
   variants,
 }: LearningItemProps) {
   return (
@@ -24,7 +24,7 @@ export function LearningItem({
     >
       <div className="flex items-start gap-3.5 pr-2">
         <span
-          className={`w-2.5 h-2.5 rounded-full ${color} mt-2 shrink-0 animate-pulse`}
+          className={`w-2.5 h-2.5 rounded-full ${theme} mt-2 shrink-0 animate-pulse`}
         />
         <div>
           <h4 className="font-bold text-base  tracking-tight group-hover:text-primary transition-colors duration-200">

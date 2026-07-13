@@ -46,11 +46,12 @@
   },
   {
     "id": "post-6",
-    "title": "Type-Safe API Calls with TypeScript & TanStack Query",
-    "slug": "type-safe-api-calls-typescript-tanstack-query",
-    "description": "Eliminate run-time errors by enforcing end-to-end type safety between your Node.js backend and React frontend.",
-    "category": "react",
-    "date": "February 25, 2024",
-    "image": "https://images.unsplash.com/photo-1516116211223-5c359a36298a?auto=format&fit=crop&w=800&q=80"
+    "title": "Building Scalable MERN Architectures: From Prototype to Production",
+    "slug": "building-scalable-mern-architectures",
+    "description": "The MERN stack (MongoDB, Express, React, Node.js) has become the gold standard for rapid application development.",
+    "category": "Architecture",
+    "date": "May 20, 2024",
+    "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80"
   }
+
 ]

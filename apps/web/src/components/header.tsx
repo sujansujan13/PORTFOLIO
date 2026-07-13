@@ -90,7 +90,7 @@ export default function Header() {
   } as const; // ✅ Add 'as const' to satisfy TypeScript;
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-border bg-(--background)/80 backdrop-blur-md transition-colors duration-300">
+    <header className="fixed top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
       <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 sm:px-6 xl:px-16">
         {/* Logo / Branding */}
         <Link

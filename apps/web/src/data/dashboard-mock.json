@@ -1,0 +1,65 @@
+{
+  "overviewStats": [
+    {
+      "id": "projects",
+      "label": "Total Projects",
+      "value": 24,
+      "changeText": "+2 this month",
+      "iconName": "Code2",
+      "accentColor": "text-primary"
+    },
+    {
+      "id": "experience",
+      "label": "Experience Nodes",
+      "value": 12,
+      "changeText": "Last updated 4d ago",
+      "iconName": "Briefcase",
+      "accentColor": "text-amber-500"
+    },
+    {
+      "id": "blogs",
+      "label": "Published Blogs",
+      "value": 86,
+      "changeText": "1.2k total views",
+      "iconName": "FileText",
+      "accentColor": "text-emerald-500"
+    },
+    {
+      "id": "messages",
+      "label": "Unread Messages",
+      "value": 7,
+      "changeText": "Requires action",
+      "iconName": "MailWarning",
+      "accentColor": "text-destructive"
+    }
+  ],
+  "mockProjects": [
+    {
+      "id": "p1",
+      "title": "Analytics Engine 2.0",
+      "subtitle": "Real-time data processing for enterprise metrics.",
+      "category": "WEB APP",
+      "techStack": ["React", "Node.js", "Redis"],
+      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600",
+      "publiclyListed": true
+    },
+    {
+      "id": "p2",
+      "title": "LuxeCart Mobile",
+      "subtitle": "Premium retail experience with AR integration.",
+      "category": "MOBILE UI",
+      "techStack": ["React Native", "Firebase"],
+      "imageUrl": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600",
+      "publiclyListed": true
+    },
+    {
+      "id": "p3",
+      "title": "LedgerSync Core",
+      "subtitle": "High-throughput blockchain indexing service.",
+      "category": "SYSTEM",
+      "techStack": ["Go", "gRPC", "Postgres"],
+      "imageUrl": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=600",
+      "publiclyListed": false
+    }
+  ]
+}

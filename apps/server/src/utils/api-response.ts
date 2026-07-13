@@ -46,11 +46,17 @@ export class ApiResponse {
     return ApiResponse.failure(409, error, details);
   }
 
-  static unprocessable(error = "Unprocessable Entity", details?: unknown): ApiFailure {
+  static unprocessable(
+    error = "Unprocessable Entity",
+    details?: unknown,
+  ): ApiFailure {
     return ApiResponse.failure(422, error, details);
   }
 
-  static internal(error = "Internal Server Error", details?: unknown): ApiFailure {
+  static internal(
+    error = "Internal Server Error",
+    details?: unknown,
+  ): ApiFailure {
     return ApiResponse.failure(500, error, details);
   }
 

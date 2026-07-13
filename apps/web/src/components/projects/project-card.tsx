@@ -5,6 +5,7 @@ import { motion, type Variants } from "framer-motion";
 import { ExternalLink, Layers } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import Image from "next/image";
+import { THEMES, type ThemeType } from "@/config/color-theme";
 
 export interface Project {
   id: string;
@@ -17,6 +18,7 @@ export interface Project {
   demoUrl?: string;
   githubUrl?: string;
   featured: boolean;
+  theme: string;
 }
 
 interface ProjectCardProps {
@@ -39,6 +41,7 @@ const cardAnimationVariants: Variants = {
 };
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const theme = THEMES[project.theme as ThemeType];
   return (
     <motion.article
       layout // Animates position re-ordering smoothly when filters change
@@ -59,7 +62,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
         />
 
         {/* Category Label Pin */}
-        <span className="absolute bottom-3 left-3 z-30 px-2.5  rounded-sm py-1 text-[10px] font-inter font-bold uppercase tracking-wider bg-[#022578] dark:text-foreground text-white backdrop-blur-xs">
+        <span
+          className={`absolute bottom-3 left-3 z-30 px-2.5  rounded-sm py-1 text-[10px] font-inter font-bold uppercase tracking-wider ${theme}  dark:text-foreground text-white backdrop-blur-xs`}
+        >
           {project.category}
         </span>
       </div>

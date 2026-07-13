@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { authClient } from "@/lib/auth-client";
 
-import Dashboard from "./dashboard";
+import AdminDashboardPage from "./dashboard";
 
 export default async function DashboardPage() {
   const session = await authClient.getSession({
@@ -19,9 +19,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      <p>Welcome {session.user.name}</p>
-      <Dashboard />
+      <AdminDashboardPage user={session.user} />
     </div>
   );
 }

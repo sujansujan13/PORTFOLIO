@@ -1,0 +1,94 @@
+{
+  "slug": "building-scalable-mern-architectures",
+  "title": "Building Scalable MERN Architectures: From Prototype to Production",
+  "category": "Architecture",
+  "readingTime": "12 min read",
+  "publishedAt": "May 24, 2024",
+  "author": {
+    "name": "Sujan",
+    "role": "Mid-Level MERN Full-Stack Developer",
+    "avatar": "/aboutImages/profileImage2.jpg"
+  },
+  "featuredImage": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
+  "toc": [
+    { "id": "backend-anatomy", "label": "1. Production Backend Anatomy" },
+    { "id": "state-management", "label": "2. State Management Strategies" },
+    { "id": "database-optimization", "label": "3. Database Optimization" },
+    { "id": "deployment-pipelines", "label": "4. Deployment Pipelines" }
+  ],
+  "body": [
+    {
+      "type": "paragraph",
+      "text": "The MERN stack (MongoDB, Express, React, Node.js) has become the gold standard for rapid application development. However, bridging the gap between a \"working prototype\" and a \"scalable production system\" requires more than just knowing the syntax. It requires a deep understanding of architectural patterns, database optimization, and performance bottlenecks."
+    },
+    {
+      "type": "heading",
+      "text": "The Anatomy of a Production-Ready Backend",
+      "id": "backend-anatomy"
+    },
+    {
+      "type": "paragraph",
+      "text": "In a production environment, your Express server shouldn't just be a collection of routes. We need to implement a Controller-Service-Repository pattern to separate concerns and ensure testability."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "code": "// Example of a Service Layer in Node.js\nconst UserService = {\n  async createUser(userData) {\n    // 1. Validation Logic\n    validateInput(userData);\n\n    // 2. Business Rules\n    const existing = await UserRepository.findByEmail(userData.email);\n    if (existing) throw new Error('User already exists');\n\n    // 3. Persistence\n    return await UserRepository.save(userData);\n  }\n};"
+    },
+    {
+      "type": "blockquote",
+      "text": "\"Scalability is not just about handling more users; it's about maintaining developer velocity and system reliability as complexity grows.\""
+    },
+    {
+      "type": "heading",
+      "text": "Frontend State Management: Beyond useState",
+      "id": "state-management"
+    },
+    {
+      "type": "paragraph",
+      "text": "As your React application grows, prop drilling becomes a nightmare. While Redux was the go-to for years, modern architectures often leverage Zustand for global state and TanStack Query for server-state synchronization."
+    },
+    {
+      "type": "figure",
+      "url": "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1000&q=80",
+      "caption": "Figure 1: High-level overview of the bi-directional data flow in a MERN ecosystem."
+    },
+    {
+      "type": "heading",
+      "text": "Optimization Strategies for MongoDB",
+      "id": "database-optimization"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the MERN stack, the \"M\" is often the bottleneck. Indexing strategy is critical. Without proper compound indexes, your read queries will eventually time out as your collection reaches millions of documents."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "code": "// Optimize searching by user and status\nUserSchema.index({ email: 1, status: -1 });\n\n// Partial index for active users only\nUserSchema.index({ lastLogin: 1 }, {\n  partialFilterExpression: { active: true }\n});"
+    },
+    {
+      "type": "heading",
+      "text": "Deployment Pipelines",
+      "id": "deployment-pipelines"
+    },
+    {
+      "type": "paragraph",
+      "text": "Lastly, consider the deployment strategy. Using Docker for containerization ensures that your local development environment perfectly matches production, eliminating the \"it works on my machine\" syndrome."
+    }
+  ],
+  "relatedPosts": [
+    {
+      "title": "Mastering Advanced TypeScript Types",
+      "category": "TypeScript",
+      "slug": "mastering-advanced-typescript-types",
+      "image": "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&w=500&q=80"
+    },
+    {
+      "title": "CI/CD Pipelines with GitHub Actions",
+      "category": "DevOps",
+      "slug": "cicd-pipelines-github-actions",
+      "image": "https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?auto=format&fit=crop&w=500&q=80"
+    }
+  ]
+}

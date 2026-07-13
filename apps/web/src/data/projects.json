@@ -16,7 +16,8 @@
       "tags": ["Next.js", "Express", "tRPC", "MongoDB", "Zustand", "Tailwind CSS"],
       "demoUrl": "https://himalayan-ripple.vercel.app",
       "githubUrl": "https://github.com/sujanrajpandey/himalayan-ripple",
-      "featured": true
+      "featured": true,
+      "theme":"blue"
     },
     {
       "id": "nepal-explore",
@@ -28,7 +29,8 @@
       "tags": ["React", "Framer Motion", "Zod", "Lucide Icons", "Tailwind CSS"],
       "demoUrl": "#",
       "githubUrl": "https://github.com/sujanrajpandey/nepal-explore",
-      "featured": true
+      "featured": true,
+       "theme":"rose"
     },
     {
       "id": "spatial-analyser",
@@ -40,7 +42,8 @@
       "tags": ["Python", "ArcPy", "Data Modeling", "GIS Algorithms"],
       "demoUrl": "",
       "githubUrl": "https://github.com/sujanrajpandey/arcgis-toolkit",
-      "featured": false
+      "featured": false,
+       "theme":"amber"
     }
   ]
-}
+} 

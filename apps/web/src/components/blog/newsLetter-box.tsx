@@ -40,8 +40,8 @@ export function NewsletterBox() {
   };
 
   return (
-    <section className="w-full bg-blue-600 dark:bg-blue-900 border border-border p-8 sm:p-12 text-center space-y-6 shadow-md transition-colors duration-300">
-      <div className="space-y-2 max-w-xl mx-auto">
+    <section className="w-full bg-blue-600 dark:bg-blue-900 border border-border p-8 sm:p-12 text-center space-y-6 shadow-md transition-colors duration-300 rounded-xl ">
+      <div className="space-y-2 max-w-xl mx-auto ">
         <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-none">
           Stay Updated with My Latest Writing
         </h2>
