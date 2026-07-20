@@ -11,6 +11,7 @@ import { FileUploader } from "@/components/dashboard/projects/file-uploader";
 import staticOptions from "@/data/projects-option.json";
 import type { Route } from "next";
 import Image from "next/image";
+import DualHeader from "@/components/dashboard/projects/edit-new-page-header";
 
 export default function CreateProjectWorkspacePage() {
   const {
@@ -28,7 +29,7 @@ export default function CreateProjectWorkspacePage() {
       body: "",
       imageUrl: "",
       publicAccess: true,
-      techStack: ["React", "Node.js", "Express", "MongoDB"],
+      techStack: [],
       category: "web-app",
       githubUrl: "",
       liveUrl: "",
@@ -65,47 +66,24 @@ export default function CreateProjectWorkspacePage() {
   };
 
   return (
-    <div className="lg:pl-64 min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
+    <div className=" min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
       {/* SEO/Accessibility semantic header wrapper matching mockup */}
       <form onSubmit={handleSubmit(onSubmitFormAction)} className="w-full">
-        <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link
-              // title="Back to Projects"
-              href={"/dashboard/projects" as Route}
-              className="p-1.5 border border-border bg-card/40 hover:bg-muted transition-colors rounded-md group cursor-pointer"
-            >
-              <ArrowLeft className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
-              <span className="px-4 py-2 hidden lg:flex bg-gray-950 rounded-lg opacity-0 group-hover:opacity-100 absolute mt-5.5 text-xs text-foreground font-semibold">
-                Back to Projects
-              </span>
-            </Link>
-            <div className="text-left">
-              <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground leading-none">
-                Workspace Action
-              </span>
-              <h1 className="text-sm font-bold tracking-wide text-foreground mt-0.5">
-                Create New Project
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="text-xs font-bold text-muted-foreground hover:text-foreground px-3 py-2 transition-colors cursor-pointer"
-            >
-              Save as Draft
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-primary text-white text-xs font-bold px-4 py-2 hover:bg-primary/90 shadow-md transition-colors disabled:opacity-50 cursor-pointer rounded-md"
-            >
-              {isSubmitting ? "Processing..." : "Save Project"}
-            </button>
-          </div>
-        </header>
+        <DualHeader title="Workspace Action" desc="Create New Project">
+          <button
+            type="button"
+            className="text-xs font-bold text-muted-foreground hover:text-foreground px-3 py-2 transition-colors cursor-pointer"
+          >
+            Save as Draft
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-primary text-white text-xs font-bold px-4 py-2 hover:bg-primary/90 shadow-md transition-colors disabled:opacity-50 cursor-pointer rounded-md"
+          >
+            {isSubmitting ? "Processing..." : "Create Project"}
+          </button>
+        </DualHeader>
 
         {/* Core Multi-Column Structural Grid Layout Layout */}
         <main className="max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -239,7 +217,7 @@ export default function CreateProjectWorkspacePage() {
               </h3>
               <select
                 {...register("category")}
-                className="w-full bg-input/40 border border-border p-2.5 text-xs focus:outline-none focus:border-primary transition-colors rounded-sm text-foreground appearance-none cursor-pointer"
+                className="w-full bg-input/40 border border-border p-2.5 text-xs font-medium tracking-wider focus:outline-none focus:border-primary transition-colors rounded-sm text-foreground appearance-none cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>")`,
                   backgroundPosition: "right 10px center",
@@ -251,7 +229,7 @@ export default function CreateProjectWorkspacePage() {
                   <option
                     key={cat.value}
                     value={cat.value}
-                    className="bg-card text-foreground"
+                    className="bg-card text-foreground font-medium"
                   >
                     {cat.label}
                   </option>
