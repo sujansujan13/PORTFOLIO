@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { ProjectCard, type Project } from "./project-card";
+import { ProjectCard } from "./project-card";
+import type { ProjectCard as ProjectCardType } from "@/schemas/project";
 
 interface Category {
   slug: string;
@@ -10,7 +11,7 @@ interface Category {
 }
 
 interface ProjectGridProps {
-  initialProjects: Project[];
+  initialProjects: ProjectCardType[];
   categories: Category[];
 }
 
@@ -60,7 +61,7 @@ export function ProjectGrid({ initialProjects, categories }: ProjectGridProps) {
         {/* mode={popLayout} When items are removed, surrounding items smoothly animate to fill gaps */}
         <AnimatePresence mode="popLayout">
           {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.id} initialProjects={project} />
           ))}
         </AnimatePresence>
       </motion.div>

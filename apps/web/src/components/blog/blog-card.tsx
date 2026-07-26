@@ -7,16 +7,7 @@ import { Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import Image from "next/image";
-
-export interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  category: string;
-  date: string;
-  image: string;
-}
+import type { PublicBlogCard } from "@my-portfolio/api/schemas/blog.schema";
 
 // Config maps category string tokens cleanly to Tailwind CSS v4 variables without database clutter
 const CATEGORY_THEMES: Record<
@@ -33,7 +24,7 @@ const CATEGORY_THEMES: Record<
   devops: { bg: "bg-gray-200", text: "text-red-500", label: "DevOps" },
 };
 
-export function BlogCard({ post }: { post: BlogPost }) {
+export function BlogCard({ post }: { post: PublicBlogCard }) {
   const theme = CATEGORY_THEMES[post.category.toLowerCase()] || {
     bg: "bg-muted",
     text: "text-foreground",
@@ -52,7 +43,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
       {/* Structural Aspect Ratio Media Slot Container */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted border-b border-border rounded-t-lg">
         <Image
-          src={post.image}
+          src={post.featuredImage}
           alt={post.title}
           fill
           loading="lazy"
@@ -71,7 +62,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
       <div className="flex flex-col flex-1 p-5 sm:p-6 space-y-3.5">
         <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
           <Calendar className="h-3.5 w-3.5" />
-          <time dateTime={post.date}>{post.date}</time>
+          <time dateTime={post.publishedAt}>{post.publishedAt}</time>
         </div>
 
         <div className="space-y-2 flex-1">

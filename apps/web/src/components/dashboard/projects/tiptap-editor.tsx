@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import React, { useRef, useState } from "react";
+import { useEditor, EditorContent, type JSONContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import {
@@ -15,20 +15,47 @@ import {
   UnderlineIcon,
 } from "lucide-react";
 import { url } from "better-auth";
+import { option } from "framer-motion/client";
 
 interface TiptapEditorProps {
   value: string;
-  onChange: (content: string) => void;
+  onChange: (content: JSONContent) => void;
 }
+
+const CODE_LANGUAGES = [
+  { value: "ts", label: "TypeScript" },
+  { value: "tsx", label: "TSX" },
+  { value: "js", label: "JavaScript" },
+  { value: "jsx", label: "JSX" },
+  { value: "css", label: "CSS" },
+  { value: "html", label: "HTML" },
+  { value: "bash", label: "Bash" },
+  { value: "json", label: "JSON" },
+];
 
 export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("ts");
 
   const editor = useEditor({
     extensions: [StarterKit, Image],
-    content: value,
+    content: value ?? {
+      type: "doc",
+      content: [{ type: "paragraph" }],
+    },
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      onChange(editor.getJSON());
+      const language = editor.getAttributes("codeBlock").language;
+      if (typeof language === "string") {
+        setSelectedLanguage(language);
+      }
+    },
+    onSelectionUpdate: ({ editor }) => {
+      const language = editor.getAttributes("codeBlock").language;
+
+      if (typeof language === "string") {
+        setSelectedLanguage(language);
+      }
     },
     editorProps: {
       attributes: {
@@ -41,6 +68,22 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
   });
 
   if (!editor) return null;
+
+  // const currentCodeLanguage =
+  //   typeof editor.getAttributes("codeBlock").language === "string"
+  //     ? editor.getAttributes("codeBlock").language
+  //     : "ts";
+
+  const setCodeBlockLanguage = (language: string) => {
+    setSelectedLanguage(language);
+
+    if (editor.isActive("codeBlock")) {
+      editor.chain().focus().updateAttributes("codeBlock", { language }).run();
+      return;
+    }
+
+    editor.chain().focus().toggleCodeBlock({ language }).run();
+  };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -86,11 +129,29 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
           </button>
           <button
             type="button"
-            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+            onClick={() =>
+              editor
+                .chain()
+                .focus()
+                .toggleCodeBlock({ language: selectedLanguage })
+                .run()
+            }
             className={`p-1.5 rounded-xs transition-colors cursor-pointer ${editor.isActive("codeBlock") ? "bg-primary text-white" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
           >
             <Code className="h-4 w-4" />
           </button>
+
+          <select
+            value={selectedLanguage}
+            onChange={(event) => setCodeBlockLanguage(event.target.value)}
+            className="h-8 rounded-xs border border-border bg-background px-2 text-xs font-mono text-foreground cursor-pointer"
+          >
+            {CODE_LANGUAGES.map((language) => (
+              <option key={language.value} value={language.value}>
+                {language.label}
+              </option>
+            ))}
+          </select>
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleLink().run()}

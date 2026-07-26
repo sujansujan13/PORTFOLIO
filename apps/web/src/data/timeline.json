@@ -1,5 +1,5 @@
 {
-  "experience": [
+  "experience": [ 
     {
       "id": "exp-1",
       "role": "Full-Stack Web Developer Intern",
@@ -45,4 +45,4 @@
       "tags": ["Advanced Database Systems", "GIS & Spatial Analysis", "Data Structures", "OOP"]
     }
   ]
-}
+} 

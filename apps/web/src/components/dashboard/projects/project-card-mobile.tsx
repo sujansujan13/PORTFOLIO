@@ -70,7 +70,7 @@ export function ProjectCardMobileView({ filteredProjects }: MobileViewProps) {
               <div className="flex items-center gap-1.5 bg-black/10 px-2 py-1 border border-border">
                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
                 <span className="text-xs font-semibold text-foreground font-sans">
-                  {project.status}
+                  {project.publicAccess ? "public" : "private"}
                 </span>
               </div>
             </div>

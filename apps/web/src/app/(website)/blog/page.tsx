@@ -1,8 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { BlogFeed } from "@/components/blog/blog-feed";
-import { NewsletterBox } from "@/components/blog/newsLetter-box";
-import postsData from "@/data/blog-posts.json";
+import Blogclient from "@/components/blog/blog-client";
 
 // --- STRUCTURED SEARCH LOGISTIC ENGINE INGESTION METADATA ---
 export const metadata: Metadata = {
@@ -33,13 +31,7 @@ export default function BlogPage() {
           </p>
         </header>
 
-        {/* Dynamic Client Feeding Interactivity Stream Node Allocation */}
-        <section aria-label="Active Articles Feed Grid">
-          <BlogFeed posts={postsData} />
-        </section>
-
-        {/* Capturing Context Form Segment Wrapper Node Block */}
-        <NewsletterBox />
+        <Blogclient />
       </div>
     </main>
   );

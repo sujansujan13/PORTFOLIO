@@ -3,7 +3,9 @@ import { type Metadata } from "next";
 import { ProjectGrid } from "@/components/projects/project-grid";
 
 // Direct file structure imports for optimal build optimization
-import projectData from "@/data/projects.json";
+import projectData, { projects } from "@/data/projects.json";
+import { ProjectsClient } from "@/components/projects/project-client";
+import Link from "next/link";
 
 // --- RIGOROUS PRODUCTION SEO ROUTING METADATA ---
 export const metadata: Metadata = {
@@ -37,10 +39,8 @@ export default function ProjectsPage() {
         </header>
 
         {/* Interactive Dynamic Filtering Engine Section */}
-        <ProjectGrid
-          initialProjects={projectData.projects}
-          categories={projectData.categories}
-        />
+
+        <ProjectsClient />
       </div>
     </main>
   );
