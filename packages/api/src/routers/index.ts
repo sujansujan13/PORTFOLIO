@@ -1,6 +1,7 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
 import { blogRouter } from "./blog.router";
 import { projectRouter } from "./projects.router";
+import { timelineRouter } from "./timeline.router";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -15,5 +16,6 @@ export const appRouter = router({
 
   projects: projectRouter,
   blogs: blogRouter,
+  timeline: timelineRouter,
 });
 export type AppRouter = typeof appRouter;

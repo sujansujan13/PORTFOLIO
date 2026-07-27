@@ -1,9 +1,7 @@
 import React from "react";
 import { type Metadata } from "next";
-import { TimelineSection } from "@/components/experience/timeline-section";
 
-// Import your decoupled data architecture layer
-import timelineData from "@/data/timeline.json";
+import TimelineClient from "@/components/experience/timeline-client";
 
 // --- STRUCTURED SEO DEFINITIONS ---
 export const metadata: Metadata = {
@@ -36,22 +34,7 @@ export default function ExperienceEducationPage() {
             internships and formal academic tracks.
           </p>
         </header>
-
-        {/* SECTION 1: PROFESSIONAL TRACKS */}
-        <TimelineSection
-          title="Professional Journey"
-          subtitle="Software history, technical internships, and architectural roles."
-          items={timelineData.experience}
-          type="experience"
-        />
-
-        {/* SECTION 2: ACADEMIC MILESTONES */}
-        <TimelineSection
-          title="Academic Milestones"
-          subtitle="Formal computing foundations, core database labs, and specialized modules."
-          items={timelineData.education}
-          type="education"
-        />
+        <TimelineClient />
       </div>
     </main>
   );

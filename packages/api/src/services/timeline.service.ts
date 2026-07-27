@@ -1,4 +1,3 @@
-import { unknown } from "better-auth";
 import type {
   PublicTimelineItem,
   PublicTimelineResponse,

@@ -11,7 +11,8 @@
   },
   "scripts": {
       "seed:projects": "DOTENV_CONFIG_PATH=../../apps/server/.env tsx src/seeds/projects.seed.ts",
-       "seed:blogs": "DOTENV_CONFIG_PATH=../../apps/server/.env tsx src/seeds/blogs.seed.ts"
+       "seed:blogs": "DOTENV_CONFIG_PATH=../../apps/server/.env tsx src/seeds/blogs.seed.ts",
+       "seed:timeline": "DOTENV_CONFIG_PATH=../../apps/server/.env tsx src/seeds/timeline.seed.ts"
   },
   "dependencies": {
     "@my-portfolio/env": "*",
