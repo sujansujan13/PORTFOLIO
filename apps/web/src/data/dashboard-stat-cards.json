@@ -1,0 +1,26 @@
+[
+  {
+    "id": "projects",
+    "label": "Total Projects",
+    "iconName": "FolderKanban",
+    "accentColor": "text-blue-500"
+  },
+  {
+    "id": "experience",
+    "label": "Experience Nodes",
+    "iconName": "BriefcaseBusiness",
+    "accentColor": "text-amber-500"
+  },
+  {
+    "id": "blogs",
+    "label": "Blogs",
+    "iconName": "Newspaper",
+    "accentColor": "text-emerald-500"
+  },
+  {
+    "id": "messages",
+    "label": "Unread Messages",
+    "iconName": "MailPlus",
+    "accentColor": "text-violet-500"
+  }
+]

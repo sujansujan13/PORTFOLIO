@@ -1,3 +1,4 @@
+import DynamicProjectClient from "@/components/projects/dynamic-project-client";
 import React from "react";
 
 interface paramProps {
@@ -7,5 +8,5 @@ interface paramProps {
 export default async function page({ params }: paramProps) {
   const { slug } = await params;
 
-  return <div>{slug}</div>;
+  return <DynamicProjectClient slug={slug} />;
 }

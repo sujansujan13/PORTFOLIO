@@ -27,7 +27,7 @@ export function ProjectsClient() {
         title: project.title,
         subtitle: project.subtitle,
         customSlug: project.customSlug,
-        description: project.body,
+        description: project.description,
         category: project.category,
         heroImageUrl: project.heroImageUrl,
         thumbImageUrl: project.thumbImageUrl,
@@ -47,5 +47,5 @@ export function ProjectsClient() {
     return <p>Could not load projects.</p>;
   }
 
-  return <ProjectGrid initialProjects={projects} categories={categories} />;
+  return <ProjectGrid projects={projects} categories={categories} />;
 }

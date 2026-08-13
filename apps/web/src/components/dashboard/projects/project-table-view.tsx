@@ -1,24 +1,42 @@
 "use client";
 
-import { Edit3, Trash2 } from "lucide-react";
-import { useProjectStore } from "@/stores/useProjectStore";
-import type { ProjectFormValues } from "@/schemas/project";
+import { Edit3, Star, Trash2 } from "lucide-react";
+import type { DashboardRow } from "@my-portfolio/api/schemas/project.schema";
 import Image from "next/image";
+import { useDeleteProject } from "@/hooks/useDashboardProjects";
+import { toast } from "sonner";
 
-interface TableViewProps {
-  filteredProjects: ProjectFormValues[];
+export interface TableViewProps {
+  projects: DashboardRow[];
+  selectedIds: string[];
+  onToggleRow: (id: string) => void;
+  onToggleAll: () => void;
+  isAllSelected: boolean;
 }
 
-export function ProjectTableView({ filteredProjects }: TableViewProps) {
-  const { selectedIds, toggleSelectRow, toggleSelectAll, deleteSingleProject } =
-    useProjectStore();
+export function ProjectTableView({
+  projects,
+  selectedIds,
+  isAllSelected,
+  onToggleRow,
+  onToggleAll,
+}: TableViewProps) {
+  const deleteSingle = useDeleteProject();
 
-  const currentViewIds = filteredProjects.map((p) => p.id);
-  console.log(currentViewIds);
-  const isAllChecked =
-    currentViewIds.length > 0 &&
-    currentViewIds.every((id) => selectedIds.includes(id));
-  console.log(isAllChecked);
+  function deleteSingleProject(id: string) {
+    deleteSingle.mutate(
+      { id },
+      {
+        onSuccess: () => {
+          toast.success("Project Deleted SuccessFully");
+          // router.push("/dashboard/projects");
+        },
+        onError: (error) => {
+          toast.error(error.message || "Error updating project");
+        },
+      },
+    );
+  }
 
   return (
     <div className="hidden md:block w-full border border-border bg-card/20 rounded-lg overflow-hidden">
@@ -28,8 +46,8 @@ export function ProjectTableView({ filteredProjects }: TableViewProps) {
             <th className="p-4 w-12 text-center">
               <input
                 type="checkbox"
-                checked={isAllChecked}
-                onChange={() => toggleSelectAll()}
+                checked={isAllSelected}
+                onChange={onToggleAll}
                 className="w-4 h-4 accent-primary rounded-none cursor-pointer"
               />
             </th>
@@ -40,7 +58,7 @@ export function ProjectTableView({ filteredProjects }: TableViewProps) {
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
-          {filteredProjects.map((project) => {
+          {projects.map((project) => {
             const isRowSelected = selectedIds.includes(project.id);
             return (
               <tr
@@ -53,7 +71,7 @@ export function ProjectTableView({ filteredProjects }: TableViewProps) {
                   <input
                     type="checkbox"
                     checked={isRowSelected}
-                    onChange={() => toggleSelectRow(project.id)}
+                    onChange={() => onToggleRow(project.id)}
                     className="w-4 h-4 accent-primary rounded-none cursor-pointer"
                   />
                 </td>
@@ -66,6 +84,7 @@ export function ProjectTableView({ filteredProjects }: TableViewProps) {
                       height={12}
                       aria-hidden="true"
                       className="w-10 h-10 object-cover border border-border rounded-sm bg-black/20"
+                      unoptimized
                     />
                     <div>
                       <h2 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors font-sans">
@@ -78,16 +97,26 @@ export function ProjectTableView({ filteredProjects }: TableViewProps) {
                   </div>
                 </td>
                 <td className="p-4">
-                  <span className="text-[10px] font-mono font-bold tracking-wider bg-[#1d3557] text-blue-400 px-2 py-1 rounded-sm border border-gray-700 uppercase">
+                  <span className="text-[10px] font-mono font-bold tracking-wider dark:bg-[#1d3557] dark:text-blue-400 px-2 py-1 rounded-sm border border-gray-700 uppercase">
                     {project.category}
                   </span>
                 </td>
                 <td className="p-4">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                    <span className="text-sm font-medium text-foreground font-sans">
-                      {project.publicAccess === true ? "public" : "private"}
-                    </span>
+                    <div className="flex items-center gap-2 border py-1 px-2 rounded-md ">
+                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                      <span className="text-xs text-olive-300 font-medium  font-mono">
+                        {project.publicAccess === true ? "public" : "private"}
+                      </span>
+                    </div>
+                    {project.featured && (
+                      <div className="flex items-center gap-1 border py-1 px-2 rounded-md">
+                        <Star className="w-2.5 h-2.5 fill-amber-400 stroke-amber-400" />
+                        <span className="text-xs font-medium text-amber-400 font-sans">
+                          {project.featured === true ? "featured" : ""}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </td>
                 <td className="p-4 text-right">

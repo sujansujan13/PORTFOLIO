@@ -1,17 +1,71 @@
+// non-null assertion operator:
+//
+// (statsData.experience.lastUpdated!),
 "use client";
 
 import React from "react";
 import { StatusHeaderPanel } from "@/components/dashboard/status-header-panel";
 import { AnalyticsGridPanel } from "@/components/dashboard/analytics-grid-panel";
 import { ProjectListingViewPanel } from "@/components/dashboard/project-listing-view-panel";
-import { ProjectModal } from "@/components/dashboard/lib/project-modal";
-import { useDashboardStore } from "@/stores/use-dashboard-store";
 import mockData from "@/data/dashboard-mock.json";
+import statCardConfig from "@/data/dashboard-stat-cards.json";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { formatDistanceToNow } from "date-fns";
 
 export default function AdminDashboardPage({ user }: { user: any }) {
   // const { openNewProjectModal } = useDashboardStore();
+  const dashboardStatQuery = useDashboardStats();
+
+  const { isPending, isError } = dashboardStatQuery;
+
+  if (isPending) {
+    return <p>Loading dashboard stats...</p>;
+  }
+
+  if (isError) {
+    return <p>Could not load dashboard stats.</p>;
+  }
+
+  const statsData = dashboardStatQuery.data;
+
+  const overviewStats = statCardConfig.map((card) => {
+    if (card.id === "projects") {
+      return {
+        ...card,
+        value: statsData.projects.total,
+        changeText: `${statsData.projects.addedThisMonth} added this month`,
+      };
+    }
+    if (card.id === "blogs") {
+      return {
+        ...card,
+        value: statsData.blogs.total,
+        changeText: `${statsData.blogs.totalViews} total views`,
+      };
+    }
+    if (card.id === "experience") {
+      return {
+        ...card,
+        value: statsData.experience.total,
+        changeText: `Last Updated ${formatDistanceToNow(new Date(statsData.experience.lastUpdated!), { addSuffix: true })} `,
+      };
+    }
+    if (card.id === "messages") {
+      const unreadMessages = 7;
+      return {
+        ...card,
+        value: unreadMessages,
+        changeText: unreadMessages > 2 ? "Reuires Action" : "All Caught Up",
+      };
+    }
+    return {
+      ...card,
+      value: 0,
+      changeText: "",
+    };
+  });
 
   return (
     <div className="  flex flex-col min-w-0">
@@ -44,7 +98,7 @@ export default function AdminDashboardPage({ user }: { user: any }) {
         </div>
 
         {/* Analytics Stats Dashboard Layout Section */}
-        <AnalyticsGridPanel statsData={mockData.overviewStats} />
+        <AnalyticsGridPanel statsData={overviewStats} />
 
         {/* Core Functional Project View Section */}
         <ProjectListingViewPanel projects={mockData.mockProjects} />

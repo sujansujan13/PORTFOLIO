@@ -20,10 +20,19 @@ const timelineSchema = new Schema(
       required: true,
       trim: true,
     },
-    period: {
+    startDate: {
       type: String,
       required: true,
       trim: true,
+    },
+    endDate: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    isPresent: {
+      type: Boolean,
+      default: false,
     },
     description: {
       type: String,
@@ -50,12 +59,20 @@ const timelineSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    // Used to detect stale updates from concurrent users.
+    version: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     collection: "timeline",
     timestamps: true,
   },
 );
+
+// Prevents duplicate ordering within the same timeline type.
+timelineSchema.index({ type: 1, order: 1 }, { unique: true });
 
 type TimelineDocument = InferSchemaType<typeof timelineSchema>;
 

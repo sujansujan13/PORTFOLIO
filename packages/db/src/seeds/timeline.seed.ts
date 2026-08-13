@@ -6,7 +6,9 @@ const timeline = [
     role: "Full-Stack Web Developer Intern",
     company: "Himalayan Ripple Project",
     location: "Kathmandu, Nepal",
-    period: "Mar 2026 - Present",
+    startDate: "Mar 2026",
+    endDate: "Present",
+    isPresent: true,
     description:
       "Architected core features for the Himalayan Ripple initiative, translating complex technical workflows into fluid client platforms.",
     bullets: [
@@ -23,7 +25,9 @@ const timeline = [
     role: "Frontend Developer",
     company: "NepalExplore Platform",
     location: "Remote / Kathmandu",
-    period: "2025 - 2026",
+    startDate: "Mar 2025",
+    endDate: "Mar 2026",
+    isPresent: false,
     description:
       "Engineered modular interface features, custom search blocks, and navigation elements for a dynamic regional tourism application.",
     bullets: [
@@ -40,7 +44,9 @@ const timeline = [
     role: "Bachelor of Science in Computer Science & Information Technology",
     company: "Tribhuvan University",
     location: "Kathmandu, Nepal",
-    period: "2022 - Present",
+    startDate: "Mar 2022",
+    endDate: "Present",
+    isPresent: true,
     description:
       "Deepening understanding of advanced core technologies, database operations, and system optimizations.",
     bullets: [
@@ -60,6 +66,12 @@ const timeline = [
   },
 ];
 
+await Timeline.updateMany(
+  {
+    version: { $exists: false },
+  },
+  { $set: { version: 0 } },
+);
 await Timeline.deleteMany({});
 await Timeline.insertMany(timeline);
 

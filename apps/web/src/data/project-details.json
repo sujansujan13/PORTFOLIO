@@ -1,0 +1,129 @@
+[
+  {
+    "title": "Himalayan Ripple",
+    "subtitle": "Full-Stack Water Management Framework",
+    "customSlug": "himalayan-ripple",
+    "description": "An environmental tracking ecosystem designed for localized water flow analysis, data synchronization, and interactive watershed reporting.",
+    "body": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "heading",
+          "attrs": { "level": 2 },
+          "content": [{ "type": "text", "text": "The Challenge" }]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Most developer portfolios fall into two categories: overly simplistic resumes or chaotic experiments that sacrifice usability for flash. The core challenge for Himalayan Ripple was to create a data-driven system that could present complex environmental metrics in a digestible, corporate-grade aesthetic without losing personality."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "We needed to solve for massive content loads (case studies, watershed logs, project grids) while maintaining sub-second performance scores and pixel-perfect alignment across every responsive breakpoint."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "attrs": { "level": 2 },
+          "content": [{ "type": "text", "text": "The Solution" }]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Utilizing Next.js App Router for server-side optimization and a custom Tailwind configuration, we developed a system-first approach. By defining tokens for every atomic element, we ensured consistency while allowing for complex layouts like Bento Grids and depth layers."
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    { "type": "text", "text": "Atomic Design System for UI consistency." }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    { "type": "text", "text": "Advanced Framer Motion orchestrations for page transitions." }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    { "type": "text", "text": "Optimized Asset Pipeline for high-fidelity imagery." }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "heroImageUrl": "/ProjectsImages/projectsImage3.png",
+    "thumbImageUrl": "/ProjectsImages/projectsImage3.png",
+    "galleryImages": [
+      "/ProjectsImages/projectsImage3.png",
+      "/ProjectsImages/projectsImage1.png"
+    ],
+    "publicAccess": true,
+    "techStack": ["Next.js", "Express", "tRPC", "MongoDB", "Tailwind CSS"],
+    "category": "fullstack",
+    "githubUrl": "https://github.com/sujanrajpandey/himalayan-ripple",
+    "liveUrl": "https://himalayan-ripple.vercel.app",
+    "caseStudyPdfUrl": "/case-studies/himalayan-ripple.pdf",
+    "role": "Lead Full-Stack Developer",
+    "timeline": "Q3 2025 — Q1 2026",
+    "toolsUsed": ["VS Code + Cursor", "Figma", "MongoDB Compass", "Vercel Analytics"],
+    "metrics": [
+      { "value": "98", "label": "Lighthouse Score" },
+      { "value": "0.4s", "label": "FCP Loading" },
+      { "value": "A+", "label": "Accessibility" },
+      { "value": "120+", "label": "Components" }
+    ],
+    "features": [
+      {
+        "title": "Performance Driven",
+        "description": "Zero-layout shift and optimized bundle sizes ensuring the site feels instantaneous on any device.",
+        "icon": "zap"
+      },
+      {
+        "title": "Scalable Architecture",
+        "description": "Built on a modular component library that allows for rapid page expansion and theme switching.",
+        "icon": "layers"
+      }
+    ],
+    "nextProject": {
+      "title": "Nexus Trading Terminal",
+      "subtitle": "Fintech Solution",
+      "slug": "nepal-explore",
+      "imageUrl": "/ProjectsImages/projectsImage1.png"
+    },
+    "seoTitle": "Himalayan Ripple Case Study",
+    "seoDescription": "A detailed case study of Himalayan Ripple, a full-stack water management and watershed reporting application."
+  }
+]

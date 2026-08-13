@@ -1,18 +1,16 @@
 "use client";
 
 import { Edit3, Trash2 } from "lucide-react";
-import { useProjectStore } from "@/stores/useProjectStore";
-import type { ProjectRecord } from "@/data/mockprojects-dashboard";
 
-interface MobileViewProps {
-  filteredProjects: ProjectRecord[];
-}
+import type { TableViewProps } from "@/components/dashboard/projects/project-table-view";
 
-export function ProjectCardMobileView({ filteredProjects }: MobileViewProps) {
-  const { selectedIds, toggleSelectRow, toggleSelectAll, deleteSingleProject } =
-    useProjectStore();
-
-  const currentViewIds = filteredProjects.map((p) => p.id);
+export function ProjectCardMobileView({
+  projects,
+  onToggleRow,
+  onToggleAll,
+  selectedIds,
+}: TableViewProps) {
+  const currentViewIds = projects.map((p) => p.id);
   const isAllChecked =
     currentViewIds.length > 0 &&
     currentViewIds.every((id) => selectedIds.includes(id));
@@ -20,13 +18,13 @@ export function ProjectCardMobileView({ filteredProjects }: MobileViewProps) {
   return (
     <div className="block md:hidden space-y-4">
       {/* Dynamic Mobile Master Toggle Bar */}
-      {filteredProjects.length > 0 && (
+      {projects.length > 0 && (
         <div className="bg-card/20 border border-border p-3 flex items-center justify-between ">
           <label className="flex items-center gap-3 select-none cursor-pointer">
             <input
               type="checkbox"
               checked={isAllChecked}
-              onChange={toggleSelectAll}
+              onChange={onToggleAll}
               className="w-4 h-4 accent-primary rounded-none"
             />
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
@@ -38,7 +36,7 @@ export function ProjectCardMobileView({ filteredProjects }: MobileViewProps) {
           </span>
         </div>
       )}
-      {filteredProjects.map((project) => {
+      {projects.map((project) => {
         const isCardSelected = selectedIds.includes(project.id);
         return (
           <article
@@ -55,7 +53,7 @@ export function ProjectCardMobileView({ filteredProjects }: MobileViewProps) {
                 <img
                   src={project.imageUrl}
                   alt="project-imagge"
-                  className="w-11 h-11 object-cover border border-border bg -black/20"
+                  className="w-11 h-11 object-cover border border-border bg -black/20 rounded-md"
                 />
                 <div>
                   <h2 className="font-bold text-base text-foreground font-sans">
@@ -86,7 +84,7 @@ export function ProjectCardMobileView({ filteredProjects }: MobileViewProps) {
                 <input
                   type="checkbox"
                   checked={isCardSelected}
-                  onChange={() => toggleSelectRow(project.id)}
+                  onChange={() => onToggleRow(project.id)}
                   className="w-4 h-4 accent-primary rounded-none"
                 />
                 <span className="text-xs text-muted-foreground font-mono">
@@ -103,7 +101,7 @@ export function ProjectCardMobileView({ filteredProjects }: MobileViewProps) {
                   Edit
                 </a>
                 <button
-                  onClick={() => deleteSingleProject(project.id)}
+                  // onClick={() => deleteSingleProject(project.id)}
                   className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors py-1 px-2 cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />

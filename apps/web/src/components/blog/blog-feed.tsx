@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BlogCard } from "./blog-card";
-import type { PublicBlogCard } from "@my-portfolio/api/schemas/blog.schema";
+import type { PublicBlogCard } from "@my-portfolio/api/schemas/Blogs/blog.schema";
 import { p } from "framer-motion/client";
 
 interface categoryType {

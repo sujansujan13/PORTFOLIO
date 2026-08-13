@@ -9,7 +9,9 @@ interface TimelineData {
   role: string;
   company: string;
   location: string;
-  period: string;
+  startDate: string;
+  endDate: string | null;
+  isPresent: boolean;
   description: string;
   bullets: string[];
   tags: string[];

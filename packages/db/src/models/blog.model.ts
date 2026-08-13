@@ -26,7 +26,7 @@ const blogSchema = new Schema(
     category: { type: String, required: true },
     featuredImage: { type: String, required: true },
     publicAccess: { type: Boolean, default: true },
-    publishedAt: { type: String, required: true },
+    publishedAt: { type: Date, required: true },
     author: {
       name: { type: String, required: true },
       role: { type: String, required: true },
@@ -34,6 +34,14 @@ const blogSchema = new Schema(
     },
     // #WHAT# ->
     body: { type: Schema.Types.Mixed, required: true },
+    seoTitle: {
+      type: String,
+      required: true,
+    },
+    seoDescription: {
+      type: String,
+      required: true,
+    },
   },
   {
     collection: "blogs",

@@ -1,5 +1,6 @@
+import TimelineDashboardPage from "@/components/dashboard/timeline/timeline-dashboard-page";
 import React from "react";
 
 export default function page() {
-  return <div>timeline page</div>;
+  return <TimelineDashboardPage />;
 }

@@ -1,7 +1,43 @@
+// Why is _id made false in metricSchema
+// ANS: Because metricSchema is a subdocument schema inside the project document.
 import mongoose from "mongoose";
 import type { InferSchemaType, Model } from "mongoose";
 
 const { Schema, model, models } = mongoose;
+
+const allowedFeatureIcons = ["gauge", "blocks", "compass", "layers"] as const;
+
+const metricSchema = new Schema(
+  {
+    value: { type: String, required: true },
+    label: { type: String, required: true },
+  },
+  {
+    _id: false,
+  },
+);
+
+const featureSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    icon: {
+      type: String,
+      enum: allowedFeatureIcons,
+      default: "gauge",
+    },
+  },
+  {
+    _id: false,
+  },
+);
 
 const projectSchema = new Schema(
   {
@@ -24,7 +60,7 @@ const projectSchema = new Schema(
     },
     description: { type: String, required: true },
     body: {
-      type: String,
+      type: Schema.Types.Mixed,
       required: true,
     },
     heroImageUrl: {
@@ -36,6 +72,10 @@ const projectSchema = new Schema(
     publicAccess: {
       type: Boolean,
       default: true,
+    },
+    featured: {
+      type: Boolean,
+      default: false,
     },
     techStack: [
       {
@@ -53,11 +93,17 @@ const projectSchema = new Schema(
     liveUrl: {
       type: String,
     },
-    seotitle: {
+    caseStudyPdfUrl: { type: String },
+    role: { type: String, required: true },
+    timeline: { type: String },
+    toolsUsed: { type: [String], default: [] },
+    metrics: { type: [metricSchema], default: [] },
+    features: { type: [featureSchema], default: [] },
+    seoTitle: {
       type: String,
       required: true,
     },
-    seodescription: {
+    seoDescription: {
       type: String,
       required: true,
     },

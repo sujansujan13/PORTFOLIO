@@ -13,3 +13,8 @@ export function useBlogBySlug(slug: string) {
     ),
   );
 }
+
+//  enabled: Boolean(slug),
+//
+// If slug is an empty string (""), don't make the request.
+// If slug has a value, fetch the project.

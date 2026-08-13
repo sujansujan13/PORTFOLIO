@@ -7,7 +7,7 @@ import { Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import Image from "next/image";
-import type { PublicBlogCard } from "@my-portfolio/api/schemas/blog.schema";
+import type { PublicBlogCard } from "@my-portfolio/api/schemas/Blogs/blog.schema";
 
 // Config maps category string tokens cleanly to Tailwind CSS v4 variables without database clutter
 const CATEGORY_THEMES: Record<
@@ -31,6 +31,8 @@ export function BlogCard({ post }: { post: PublicBlogCard }) {
     label: post.category,
   };
 
+  const publishedAt = new Date(post.publishedAt);
+  console.log(typeof post.publishedAt);
   return (
     <motion.article
       layout
@@ -41,12 +43,13 @@ export function BlogCard({ post }: { post: PublicBlogCard }) {
       className="group flex flex-col w-full bg-card border border-border transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/1 rounded-lg"
     >
       {/* Structural Aspect Ratio Media Slot Container */}
-      <div className="relative aspect-video w-full overflow-hidden bg-muted border-b border-border rounded-t-lg">
+      <figure className="relative aspect-video w-full overflow-hidden bg-muted border-b border-border rounded-t-lg">
         <Image
           src={post.featuredImage}
           alt={post.title}
           fill
           loading="lazy"
+          unoptimized
           className="w-full h-full object-cover transform scale-100 transition-transform duration-700 ease-out group-hover:scale-103"
         />
 
@@ -56,13 +59,19 @@ export function BlogCard({ post }: { post: PublicBlogCard }) {
         >
           {theme.label}
         </span>
-      </div>
+      </figure>
 
       {/* Meta Structural Information Area Element */}
       <div className="flex flex-col flex-1 p-5 sm:p-6 space-y-3.5">
         <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
           <Calendar className="h-3.5 w-3.5" />
-          <time dateTime={post.publishedAt}>{post.publishedAt}</time>
+          <time dateTime={publishedAt.toISOString()}>
+            {publishedAt.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </time>
         </div>
 
         <div className="space-y-2 flex-1">

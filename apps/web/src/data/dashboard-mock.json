@@ -1,38 +1,4 @@
 {
-  "overviewStats": [
-    {
-      "id": "projects",
-      "label": "Total Projects",
-      "value": 24,
-      "changeText": "+2 this month",
-      "iconName": "Code2",
-      "accentColor": "text-primary"
-    },
-    {
-      "id": "experience",
-      "label": "Experience Nodes",
-      "value": 12,
-      "changeText": "Last updated 4d ago",
-      "iconName": "Briefcase",
-      "accentColor": "text-amber-500"
-    },
-    {
-      "id": "blogs",
-      "label": "Published Blogs",
-      "value": 86,
-      "changeText": "1.2k total views",
-      "iconName": "FileText",
-      "accentColor": "text-emerald-500"
-    },
-    {
-      "id": "messages",
-      "label": "Unread Messages",
-      "value": 7,
-      "changeText": "Requires action",
-      "iconName": "MailWarning",
-      "accentColor": "text-destructive"
-    }
-  ],
   "mockProjects": [
     {
       "id": "p1",

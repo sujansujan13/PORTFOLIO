@@ -4,36 +4,15 @@ import React, { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ProjectCard } from "../home/utils/project-card";
-
-const PROJECTS_DATA = [
-  {
-    id: "fintrack",
-    title: "FinTrack Pro",
-    description:
-      "A real-time financial monitoring system with automated expense categorization...",
-    tags: ["MERN", "SOCKET.IO"],
-    img: "/HomeImages/homeImage1.png",
-  },
-  {
-    id: "electrohub",
-    title: "ElectroHub",
-    description:
-      "Full-stack e-commerce solution with serverless functions, secure checkout, a...",
-    tags: ["NEXT.JS", "STRIPE"],
-    img: "/HomeImages/homeImage2.png",
-  },
-  {
-    id: "agileflow",
-    title: "AgileFlow",
-    description:
-      "Collaborative project management tool featuring drag-and-drop boards and real...",
-    tags: ["NODE.JS", "REDIS"],
-    img: "/HomeImages/homeImage3.png",
-  },
-];
+import { usePublicProjects } from "@/hooks/usePublicProjects";
 
 export default function ProjectsSection() {
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const {
+    data: featuredProjects = [],
+    isLoading,
+    isError,
+  } = usePublicProjects({ featured: true, limit: 3 });
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -75,17 +54,48 @@ export default function ProjectsSection() {
           </Link>
         </div>
 
-        {/* Responsive Flex/Grid Cards Distribution */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 md:gap-4.5">
-          {PROJECTS_DATA.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              isActive={activeProjectId === project.id}
-              onCardClick={(e) => handleCardClick(project.id, e)}
-              index={index}
-            />
-          ))}
+          {isLoading &&
+            Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="h-96 rounded-lg border border-border bg-muted/40 animate-pulse"
+              />
+            ))}
+
+          {!isLoading && isError && (
+            <p className="col-span-full text-sm font-medium text-muted-foreground">
+              Featured projects could not be loaded right now.
+            </p>
+          )}
+
+          {!isLoading && !isError && featuredProjects.length === 0 && (
+            <p className="col-span-full text-sm font-medium text-muted-foreground">
+              No featured projects yet.
+            </p>
+          )}
+
+          {!isLoading &&
+            !isError &&
+            featuredProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={{
+                  id: project.id,
+                  title: project.title,
+                  customSlug: project.customSlug,
+                  description: project.description,
+                  tags: project.techStack,
+                  img:
+                    project.thumbImageUrl ||
+                    project.heroImageUrl ||
+                    "/HomeImages/homeImage1.png",
+                }}
+                isActive={activeProjectId === project.id}
+                onCardClick={(e) => handleCardClick(project.id, e)}
+                index={index}
+              />
+            ))}
         </div>
       </div>
     </section>

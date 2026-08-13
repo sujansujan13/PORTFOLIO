@@ -1,6 +1,6 @@
 "use client";
 import { usePublicBlogs } from "@/hooks/usePublicBlogs";
-import type { PublicBlogCard } from "@my-portfolio/api/schemas/blog.schema";
+import type { PublicBlogCard } from "@my-portfolio/api/schemas/Blogs/blog.schema";
 import React, { useMemo, useState } from "react";
 import { BlogFeed } from "./blog-feed";
 import { div } from "framer-motion/client";

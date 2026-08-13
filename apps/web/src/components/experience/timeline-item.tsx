@@ -3,12 +3,15 @@
 import React from "react";
 import { motion, type Variants } from "framer-motion";
 import { Briefcase, GraduationCap, Calendar, MapPin } from "lucide-react";
+import { div } from "framer-motion/client";
 
 interface TimelineCardProps {
   role: string;
   company: string;
   location: string;
-  period: string;
+  startDate: string;
+  endDate: string | null;
+  isPresent: boolean;
   description: string;
   bullets: string[];
   tags: string[];
@@ -31,7 +34,9 @@ export function TimelineItem({
   role,
   company,
   location,
-  period,
+  startDate,
+  endDate,
+  isPresent,
   description,
   bullets,
   tags,
@@ -61,23 +66,29 @@ export function TimelineItem({
       {/* 2. Content Card Block Area */}
       <div
         className={`w-full md:w-[calc(50%-24px)] pl-12 md:pl-0 ${
-          isEven ? "md:text-left md:pl-6" : "md:text-right md:pr-6"
+          isEven ? " md:pl-6" : " md:pr-6"
         }`}
       >
         <div className="p-6 bg-card border border-border space-y-4 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/30 transition-all duration-300 group">
           {/* Header Metadata Container */}
           <div className="space-y-1">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-primary">
-              {period}
-            </span>
+            <div className="flex flex-row gap-2  ">
+              <span className="text-xs  font-mono font-bold uppercase tracking-wider text-primary">
+                {startDate}
+              </span>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-primary">
+                -
+              </span>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-primary">
+                {isPresent ? "PRESENT" : endDate}
+              </span>
+            </div>
             <h3 className="text-lg sm:text-xl font-extrabold tracking-tight text-foreground">
               {role}
             </h3>
 
             <div
-              className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground font-medium ${
-                isEven ? "md:justify-start" : "md:justify-end"
-              } justify-start`}
+              className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground font-medium justify-start`}
             >
               <span className="font-bold text-foreground/80">{company}</span>
               <span className="flex items-center gap-1">
@@ -93,23 +104,18 @@ export function TimelineItem({
 
           {/* Highlight Details Section */}
           <ul
-            className={`space-y-1.5 text-xs text-muted-foreground/90 ${
-              isEven ? "text-left" : "md:text-right text-left"
-            } list-none`}
+            className={`space-y-1.5 text-xs text-muted-foreground/90 list-none`}
           >
             {bullets.map((bullet, idx) => (
-              <li key={idx} className="leading-relaxed">
-                • {bullet}
-              </li>
+              <div key={idx} className="flex flex-row gap-1.5">
+                <span className=" text-xl leading-none">•</span>
+                <li className="leading-relaxed"> {bullet}</li>
+              </div>
             ))}
           </ul>
 
           {/* Dynamic Technical Pill Badge Layout */}
-          <div
-            className={`flex flex-wrap gap-1.5 pt-2 ${
-              isEven ? "md:justify-start" : "md:justify-end"
-            } justify-start`}
-          >
+          <div className={`flex flex-wrap gap-1.5 pt-2 justify-start`}>
             {tags.map((tag) => (
               <span
                 key={tag}

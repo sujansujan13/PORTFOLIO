@@ -49,7 +49,7 @@ export default function Sidebar() {
     {
       label: "Blog CMS",
       icon: Library,
-      href: "/dashboard/blog",
+      href: "/dashboard/blogs",
     },
     {
       label: "Contact Inbox",

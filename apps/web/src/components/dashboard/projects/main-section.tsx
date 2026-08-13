@@ -1,14 +1,19 @@
 import React from "react";
 import type { UseFormReturn } from "react-hook-form";
-import { Controller } from "react-hook-form";
+import { Controller, useWatch } from "react-hook-form";
 import { TiptapEditor } from "./tiptap-editor";
-import { FileUploader } from "./file-uploader";
+import { FileUploader } from "../lib/file-uploader";
 import staticOptions from "@/data/projects-option.json";
 import { Globe, Link2, Plus, Rocket, X } from "lucide-react";
 import Image from "next/image";
 
 import { type ProjectFormValues } from "@/schemas/project";
-import { AdvancedSettingsCard } from "./edit/advanced-settings-card";
+import BriefDescription from "../lib/brief-description";
+import ProjectSpecificField from "../lib/project-specific-field";
+import ProjectVisibility from "./project-visibilty-card";
+import TagInputField from "../forms/tag-input-field";
+import { MetricsFieldArray } from "./metrics-field-array";
+import { FeaturesFieldArray } from "./features-field-array";
 interface formProps {
   form: UseFormReturn<ProjectFormValues>;
 }
@@ -23,26 +28,61 @@ export default function MainSection({ form }: formProps) {
     formState: { errors, isSubmitting },
   } = form;
 
-  const currentStack = watch("techStack") || [];
-  const currentTitle = watch("title") || "Project Title";
-  const currentSubtitle = watch("subtitle") || "Sub-platform node definition";
+  const currentStack = useWatch({ control, name: "techStack" }) || [];
+  const toolsUsed = useWatch({ control, name: "toolsUsed" }) || [];
+  const currentTitle = useWatch({ control, name: "title" }) || "Project Title";
+  const currentSubtitle =
+    useWatch({ control, name: "subtitle" }) || "Sub-platform node definition";
+
+  const heroUrl = useWatch({ control, name: "heroImageUrl" });
+  const thumbUrl = useWatch({ control, name: "thumbImageUrl" });
 
   const handleRemoveTechTag = (tag: string) => {
     setValue(
       "techStack",
       currentStack.filter((t) => t !== tag),
+      {
+        shouldValidate: true,
+        shouldDirty: true,
+      },
     );
   };
 
-  const handleAddTechTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const value = e.currentTarget.value.trim();
-      if (value && !currentStack.includes(value)) {
-        setValue("techStack", [...currentStack, value]);
-        e.currentTarget.value = "";
-      }
+  // ADD these — the actual "commit" logic, now triggered by TagInputField's onAdd
+  const handleAddTechTag = (value: string) => {
+    console.log(
+      "handleAddTechTag fired with:",
+      value,
+      "currentStack:",
+      currentStack,
+    );
+    if (!currentStack.includes(value)) {
+      setValue("techStack", [...currentStack, value], {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      console.log("after setValue, watch says:", watch("techStack"));
     }
+  };
+
+  const handleAddToolTag = (value: string) => {
+    if (!toolsUsed.includes(value)) {
+      setValue("toolsUsed", [...toolsUsed, value], {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  };
+
+  const handleRemoveToolTag = (tool: string) => {
+    setValue(
+      "toolsUsed",
+      toolsUsed.filter((t) => t !== tool),
+      {
+        shouldValidate: true,
+        shouldDirty: true,
+      },
+    );
   };
 
   return (
@@ -50,40 +90,13 @@ export default function MainSection({ form }: formProps) {
       {/* LEFT PRIMARY CONFIGURATION COLUMN (Wider Component Layer) */}
       <section className="lg:col-span-2 space-y-6">
         {/* Title Metadata Block */}
-        <div className="bg-card border border-border p-5 rounded-md space-y-4 text-left">
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
-              Project Title
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Portfolio v2.0"
-              {...register("title")}
-              className="w-full bg-input/40 border border-border p-2.5 text-sm font-sans focus:outline-none focus:border-primary transition-all rounded-sm placeholder:text-muted-foreground/60"
-            />
-            {errors.title && (
-              <span className="text-destructive text-xs mt-1.5 block font-medium">
-                {errors.title.message}
-              </span>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
-              Platform Subtitle
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Web Development Portfolio"
-              {...register("subtitle")}
-              className="w-full bg-input/40 border border-border p-2.5 text-sm font-sans focus:outline-none focus:border-primary transition-all rounded-sm placeholder:text-muted-foreground/60"
-            />
-            {errors.subtitle && (
-              <span className="text-destructive text-xs mt-1.5 block font-medium">
-                {errors.subtitle.message}
-              </span>
-            )}
-          </div>
+        <div className="w-full bg-card border border-border p-5 rounded-md space-y-4 text-left">
+          <BriefDescription
+            register={register}
+            errors={errors}
+            setValue={setValue}
+          />
+          <ProjectSpecificField register={register} errors={errors} />
         </div>
 
         {/* Content Field Layer Component */}
@@ -106,67 +119,57 @@ export default function MainSection({ form }: formProps) {
         </div>
 
         {/* Drag & Drop Module */}
-        <FileUploader />
+        <FileUploader
+          heroUrl={heroUrl}
+          thumbnailUrl={thumbUrl}
+          onHeroChange={(url) =>
+            setValue("heroImageUrl", url, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
+          }
+          onThumbnailChange={(url) =>
+            setValue("thumbImageUrl", url, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
+          }
+        />
+        <MetricsFieldArray
+          control={control}
+          register={register}
+          errors={errors}
+        />
+
+        <FeaturesFieldArray
+          control={control}
+          register={register}
+          errors={errors}
+        />
       </section>
 
       {/* RIGHT METADATA CONTROL COLUMN (Sidebar Component Layer) */}
       <section className="space-y-6">
         {/* Visibility Settings Panel Card */}
-        <div className="bg-card border border-border p-5 rounded-md text-left space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Project Visibility
-          </h3>
-          <div className="flex items-center justify-between p-3 bg-background/40 border border-border rounded-md">
-            <div className="flex items-center gap-3">
-              <Globe className="h-4 w-4 text-primary" />
-              <div>
-                <p className="text-xs font-bold">Public Access</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  Visible on live portfolio index
-                </p>
-              </div>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer select-none">
-              <input
-                type="checkbox"
-                {...register("publicAccess")}
-                className="sr-only peer"
-              />
-              <div className="w-9 h-5 bg-input peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-          </div>
-        </div>
+        <ProjectVisibility register={register} />
 
         {/* Dynamic Tech Tag Manager Card Block */}
-        <div className="bg-card border border-border p-5 rounded-md text-left space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Tech Stack
-            </h3>
-            <Plus className="h-3.5 w-3.5 text-muted-foreground" />
-          </div>
-          <div className="flex flex-wrap gap-1.5 p-2 bg-background/20 border border-border/80 rounded-md min-h-10.5">
-            {currentStack.map((tag) => (
-              <span
-                key={tag}
-                className="flex items-center gap-1 bg-primary/10 border border-primary/20 text-foreground text-[10px] font-bold px-2 py-0.5 rounded-md"
-              >
-                {tag}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveTechTag(tag)}
-                  className="hover:text-destructive transition-colors cursor-pointer"
-                >
-                  <X className="h-2.5 w-2.5" />
-                </button>
-              </span>
-            ))}
-          </div>
-          <input
-            type="text"
-            placeholder="Add more technologies..."
-            onKeyDown={handleAddTechTag}
-            className="w-full bg-input/40 border border-border p-2 text-xs focus:outline-none focus:border-primary transition-colors rounded-sm"
+        <div className="flex flex-col bg-card border border-border p-5 rounded-md text-left space-y-5">
+          <TagInputField
+            title="Tech Stack"
+            placeholder="Add Technologies..."
+            values={currentStack}
+            onRemove={handleRemoveTechTag}
+            onAdd={handleAddTechTag}
+            error={errors.techStack?.message}
+          />
+          <TagInputField
+            title="Tools Used"
+            placeholder="Add Tools..."
+            values={toolsUsed}
+            onRemove={handleRemoveToolTag}
+            onAdd={handleAddToolTag}
+            error={errors.toolsUsed?.message}
           />
         </div>
 

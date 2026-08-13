@@ -109,6 +109,7 @@ export function ArticleSidebar({ toc, relatedPosts }: SidebarProps) {
                   src={post.image}
                   alt={post.title}
                   fill
+                  unoptimized
                   className="w-full h-full object-cover transform scale-100 transition-transform duration-500 group-hover:scale-102"
                   loading="lazy"
                 />

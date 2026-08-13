@@ -1,9 +1,16 @@
-import type {
-  BlogDetail,
-  PublicBlogCard,
-  TiptapJson,
-} from "../schemas/blog.schema";
+import { TRPCError } from "@trpc/server";
+import {
+  BlogDashboardResponseSchema,
+  type BlogDashboard,
+  type BlogDashboardResponse,
+  type BlogDetail,
+  type BlogInput,
+  type PublicBlogCard,
+  type TiptapJson,
+  type UpdateBlog,
+} from "../schemas/Blogs/blog.schema";
 import { Blog } from "@my-portfolio/db";
+import type { DashboardBlogDetail } from "../schemas/Blogs/blogDashboardDetail.schema";
 
 function serializeBlogsCard(blog: any): PublicBlogCard {
   return {
@@ -17,6 +24,16 @@ function serializeBlogsCard(blog: any): PublicBlogCard {
   };
 }
 
+function serializeDashboardBlog(blog: any): BlogDashboard {
+  return {
+    id: String(blog._id),
+    title: blog.title,
+    featuredImage: blog.featuredImage,
+    category: blog.category,
+    publicAccess: blog.publicAccess,
+    authorName: blog.author?.name ?? "",
+  };
+}
 // #WHAT# ->
 function createSlugFromHeading(text: string) {
   return text
@@ -75,6 +92,21 @@ function buildTocFromJson(node: TiptapJson) {
   walk(node);
 
   return toc;
+}
+
+// Purpose: Prevents duplicate slugs for website project pages.
+async function assertUniqueSlug(slug: string, ignoreId?: string) {
+  const existingProject = await Blog.findOne({
+    slug,
+    ...(ignoreId ? { _id: { $ne: ignoreId } } : {}),
+  }).lean();
+
+  if (existingProject) {
+    throw new TRPCError({
+      code: "CONFLICT",
+      message: "A project with this slug already exists",
+    });
+  }
 }
 
 export const getPublicBlogs = async (input?: {
@@ -165,6 +197,140 @@ export async function getBlogBySlug(slug: string): Promise<BlogDetail | null> {
       _id: blog._id,
       category: blog.category,
     }),
+  };
+}
+
+export async function getDashboardBlogs(input?: {
+  search?: string;
+  page?: number;
+  limit?: number;
+  category?: string;
+}): Promise<BlogDashboardResponse> {
+  const page = input?.page ?? 1;
+  const limit = input?.limit ?? 10;
+  const skip = (page - 1) * limit;
+
+  const filter: Record<string, unknown> = {};
+
+  if (input?.category && input.category !== "all") {
+    filter.category = input.category;
+  }
+
+  if (input?.search?.trim()) {
+    const searchRegex = new RegExp(input.search.trim(), "i");
+
+    filter.$or = [
+      { title: searchRegex },
+      { subtitle: searchRegex },
+      { category: searchRegex },
+    ];
+  }
+
+  const [blogs, totalblogs] = await Promise.all([
+    Blog.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit ?? 10)
+      .lean(),
+    Blog.countDocuments(filter),
+  ]);
+
+  const totalPages = Math.ceil(totalblogs / limit);
+
+  return BlogDashboardResponseSchema.parse({
+    blogs: blogs.map(serializeDashboardBlog),
+    pagination: {
+      page,
+      limit,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  });
+}
+
+export async function createBlog(input: BlogInput) {
+  await assertUniqueSlug(input.slug);
+  const blog = await Blog.create(input);
+
+  return blog;
+}
+
+function serializeDashboardBlogDetail(blog: any): DashboardBlogDetail {
+  return {
+    id: String(blog._id),
+    title: blog.title,
+    slug: blog.slug,
+    description: blog.description,
+    body: blog.body,
+    featuredImage: blog.featuredImage,
+    publicAccess: blog.publicAccess,
+    category: blog.category,
+    seoTitle: blog.seoTitle,
+    seoDescription: blog.seoDescription,
+    publishedAt: blog.publishedAt,
+    author: {
+      name: blog.author.name,
+      role: blog.author.role,
+      avatar: blog.author.avatar,
+    },
+  };
+}
+
+export async function getDashboardBlogById(id: string) {
+  const blog = await Blog.findById(id).lean();
+
+  if (!blog) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Blog Not Found",
+    });
+  }
+
+  return serializeDashboardBlogDetail(blog);
+}
+
+export async function updateBlog(id: string, input: UpdateBlog) {
+  const blog = await Blog.findByIdAndUpdate(id, input, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!blog) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Blog Not Found",
+    });
+  }
+
+  return {
+    success: true,
+  };
+}
+
+export async function deleteBlog(id: string) {
+  const blog = await Blog.findByIdAndDelete(id);
+
+  if (!blog) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Blog Not Found",
+    });
+  }
+
+  return {
+    id: String(blog._id),
+    deleted: true,
+  };
+}
+
+export async function deleteMultipleBlogs(ids: string[]) {
+  const result = await Blog.deleteMany({
+    _id: { $in: ids },
+  });
+
+  return {
+    deletedCount: result.deletedCount,
   };
 }
 

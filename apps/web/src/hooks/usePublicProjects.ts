@@ -8,6 +8,7 @@ import { trpc } from "@/utils/trpc";
 interface UsePublicProjectsOptions {
   category?: string;
   limit?: number;
+  featured?: boolean;
 }
 
 export function usePublicProjects(options?: UsePublicProjectsOptions) {
@@ -15,6 +16,7 @@ export function usePublicProjects(options?: UsePublicProjectsOptions) {
     trpc.projects.getPublicProjects.queryOptions({
       category: options?.category,
       limit: options?.limit ?? 50,
+      featured: options?.featured,
     }),
   );
 }

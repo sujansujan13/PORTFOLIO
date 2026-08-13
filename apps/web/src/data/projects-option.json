@@ -1,9 +1,10 @@
 {
   "categories": [
-    { "value": "web-app", "label": "Web App" },
-    { "value": "mobile-ui", "label": "Mobile UI" },
-    { "value": "system", "label": "System" },
-    { "value": "dev-tool", "label": "Dev Tool" }
+    { "value": "react", "label": "React" },
+    { "value": "nodejs", "label": "Node.js" },
+    { "value": "system-design", "label": "System Design" },
+    { "value": "dev-ops", "label": "Dev Ops" },
+    { "value": "others", "label": "Tech-Related" }
   ],
   "defaultTechSuggestions": ["React", "Node.js", "Express", "MongoDB", "Next.js", "TailwindCSS", "TypeScript"]
 }

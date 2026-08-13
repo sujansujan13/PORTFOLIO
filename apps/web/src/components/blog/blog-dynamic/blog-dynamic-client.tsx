@@ -10,7 +10,6 @@ import { TiptapRenderer } from "./tiptap-renderer";
 
 export default function BlogDynamicClient({ slug }: { slug: string }) {
   const blogQuery = useBlogBySlug(slug);
-  const readingTime = calculateReadingTime(blogArticle.body);
 
   if (blogQuery.isPending) {
     return <p>Loading Article...</p>;
@@ -21,6 +20,7 @@ export default function BlogDynamicClient({ slug }: { slug: string }) {
   }
 
   const blog = blogQuery.data;
+  const readingTime = calculateReadingTime(blog.body);
 
   return (
     <main className="w-full min-h-screen bg-background text-foreground selection:bg-primary/20 py-12 px-4 sm:px-8 md:px-12 lg:px-24 xl:px-30">
@@ -49,6 +49,7 @@ export default function BlogDynamicClient({ slug }: { slug: string }) {
                 alt={blog.author?.name}
                 className="h-full w-full object-cover rounded-full"
                 width={90}
+                unoptimized
                 height={100}
               />
               <div className="absolute inset-0 bg-linear-to-tr from-black/20 via-transparent to-white/10" />
@@ -71,6 +72,7 @@ export default function BlogDynamicClient({ slug }: { slug: string }) {
             src={blog.featuredImage}
             alt={`${blog.title} presentation dashboard frame`}
             fill
+            unoptimized
             className="w-full h-full object-cover "
             priority={true}
           />

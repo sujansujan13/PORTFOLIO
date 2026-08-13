@@ -1,17 +1,24 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Plus, X, Globe, Link2, Rocket } from "lucide-react";
+import { Link2, Rocket } from "lucide-react";
 import { projectFormSchema, type ProjectFormValues } from "@/schemas/project";
 import { TiptapEditor } from "@/components/dashboard/projects/tiptap-editor";
-import { FileUploader } from "@/components/dashboard/projects/file-uploader";
+import { FileUploader } from "@/components/dashboard/lib/file-uploader";
 import staticOptions from "@/data/projects-option.json";
-import type { Route } from "next";
 import Image from "next/image";
 import DualHeader from "@/components/dashboard/projects/edit-new-page-header";
+import BriefDescription from "@/components/dashboard/lib/brief-description";
+import ProjectSpecificField from "@/components/dashboard/lib/project-specific-field";
+import ProjectVisibility from "@/components/dashboard/projects/project-visibilty-card";
+import TagInputField from "@/components/dashboard/forms/tag-input-field";
+import { MetricsFieldArray } from "@/components/dashboard/projects/metrics-field-array";
+import { FeaturesFieldArray } from "@/components/dashboard/projects/features-field-array";
+import { MetaCard } from "@/components/dashboard/projects/meta-card";
+import { useCreateProject } from "@/hooks/useDashboardProjects";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CreateProjectWorkspacePage() {
   const {
@@ -26,13 +33,27 @@ export default function CreateProjectWorkspacePage() {
     defaultValues: {
       title: "",
       subtitle: "",
-      body: "",
-      imageUrl: "",
+      description: "",
+      body: {
+        type: "doc",
+        content: [],
+      },
       publicAccess: true,
       techStack: [],
       category: "web-app",
       githubUrl: "",
       liveUrl: "",
+      heroImageUrl: "",
+      thumbImageUrl: "",
+      role: "",
+      timeline: "",
+      customSlug: "",
+      toolsUsed: [],
+      featured: false,
+      metrics: [],
+      features: [],
+      seoTitle: "",
+      seoDescription: "",
     },
   });
 
@@ -40,14 +61,24 @@ export default function CreateProjectWorkspacePage() {
   const currentTitle = watch("title") || "Project Title";
   const currentSubtitle = watch("subtitle") || "Sub-platform node definition";
 
-  const handleAddTechTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const value = e.currentTarget.value.trim();
-      if (value && !currentStack.includes(value)) {
-        setValue("techStack", [...currentStack, value]);
-        e.currentTarget.value = "";
-      }
+  const toolsUsed = watch("toolsUsed") || [];
+
+  // REPLACE these two handlers
+  const handleAddTechTag = (value: string) => {
+    if (!currentStack.includes(value)) {
+      setValue("techStack", [...currentStack, value], {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  };
+
+  const handleAddToolTag = (value: string) => {
+    if (!toolsUsed.includes(value)) {
+      setValue("toolsUsed", [...toolsUsed, value], {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     }
   };
 
@@ -55,33 +86,90 @@ export default function CreateProjectWorkspacePage() {
     setValue(
       "techStack",
       currentStack.filter((t) => t !== tag),
+      {
+        shouldValidate: true,
+        shouldDirty: true,
+      },
     );
   };
 
-  const onSubmitFormAction = async (data: ProjectFormValues) => {
-    console.log(
-      "Routing entity package payloads to server engine via tRPC...",
-      data,
+  const handleRemoveToolTag = (tool: string) => {
+    setValue(
+      "toolsUsed",
+      toolsUsed.filter((t) => t !== tool),
+      {
+        shouldValidate: true,
+        shouldDirty: true,
+      },
     );
   };
+
+  const router = useRouter();
+  const createProject = useCreateProject();
+
+  const onSubmitFormAction = async (data: ProjectFormValues) => {
+    console.log("Submitting...", data);
+    createProject.mutate(data, {
+      onSuccess: () => {
+        toast.success("Project created successfully");
+        router.push("/dashboard/projects");
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to create project");
+      },
+    });
+  };
+
+  const handleSaveDraft = handleSubmit((data) => {
+    createProject.mutate(
+      {
+        ...data,
+        publicAccess: false,
+        featured: false,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Project saved as draft");
+          router.push("/dashboard/projects");
+        },
+        onError: (error) => {
+          toast.error(error.message || "Failed to save draft");
+        },
+      },
+    );
+  });
 
   return (
     <div className=" min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
       {/* SEO/Accessibility semantic header wrapper matching mockup */}
-      <form onSubmit={handleSubmit(onSubmitFormAction)} className="w-full">
-        <DualHeader title="Workspace Action" desc="Create New Project">
+      <form
+        onSubmit={handleSubmit(onSubmitFormAction, (errors) => {
+          console.log(errors);
+          console.dir(errors, { depth: null });
+        })}
+        className="w-full"
+      >
+        <DualHeader
+          backLabel="Go to Projects"
+          backHref="/dashboard/projects"
+          title="Workspace Action"
+          desc="Create New Project"
+        >
           <button
             type="button"
+            onClick={handleSaveDraft}
             className="text-xs font-bold text-muted-foreground hover:text-foreground px-3 py-2 transition-colors cursor-pointer"
           >
             Save as Draft
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || createProject.isPending}
             className="bg-primary text-white text-xs font-bold px-4 py-2 hover:bg-primary/90 shadow-md transition-colors disabled:opacity-50 cursor-pointer rounded-md"
           >
-            {isSubmitting ? "Processing..." : "Create Project"}
+            {isSubmitting || createProject.isPending
+              ? "Processing..."
+              : "Create Project"}
           </button>
         </DualHeader>
 
@@ -90,40 +178,13 @@ export default function CreateProjectWorkspacePage() {
           {/* LEFT PRIMARY CONFIGURATION COLUMN (Wider Component Layer) */}
           <section className="lg:col-span-2 space-y-6">
             {/* Title Metadata Block */}
-            <div className="bg-card border border-border p-5 rounded-md space-y-4 text-left">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
-                  Project Title
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Portfolio v2.0"
-                  {...register("title")}
-                  className="w-full bg-input/40 border border-border p-2.5 text-sm font-sans focus:outline-none focus:border-primary transition-all rounded-sm placeholder:text-muted-foreground/60"
-                />
-                {errors.title && (
-                  <span className="text-destructive text-xs mt-1.5 block font-medium">
-                    {errors.title.message}
-                  </span>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
-                  Platform Subtitle
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Web Development Portfolio"
-                  {...register("subtitle")}
-                  className="w-full bg-input/40 border border-border p-2.5 text-sm font-sans focus:outline-none focus:border-primary transition-all rounded-sm placeholder:text-muted-foreground/60"
-                />
-                {errors.subtitle && (
-                  <span className="text-destructive text-xs mt-1.5 block font-medium">
-                    {errors.subtitle.message}
-                  </span>
-                )}
-              </div>
+            <div className="w-full bg-card border border-border p-5 rounded-md space-y-4 text-left">
+              <BriefDescription
+                register={register}
+                errors={errors}
+                setValue={setValue}
+              />
+              <ProjectSpecificField register={register} errors={errors} />
             </div>
 
             {/* Content Field Layer Component */}
@@ -145,68 +206,57 @@ export default function CreateProjectWorkspacePage() {
               )}
             </div>
 
+            <MetricsFieldArray
+              control={control}
+              register={register}
+              errors={errors}
+            />
+
+            <FeaturesFieldArray
+              control={control}
+              register={register}
+              errors={errors}
+            />
+
             {/* Drag & Drop Module */}
-            <FileUploader />
+            <FileUploader
+              onHeroChange={(url) =>
+                setValue("heroImageUrl", url, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+              onThumbnailChange={(url) =>
+                setValue("thumbImageUrl", url, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+            />
           </section>
 
           {/* RIGHT METADATA CONTROL COLUMN (Sidebar Component Layer) */}
           <section className="space-y-6">
             {/* Visibility Settings Panel Card */}
-            <div className="bg-card border border-border p-5 rounded-md text-left space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Project Visibility
-              </h3>
-              <div className="flex items-center justify-between p-3 bg-background/40 border border-border rounded-md">
-                <div className="flex items-center gap-3">
-                  <Globe className="h-4 w-4 text-primary" />
-                  <div>
-                    <p className="text-xs font-bold">Public Access</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      Visible on live portfolio index
-                    </p>
-                  </div>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    {...register("publicAccess")}
-                    className="sr-only peer"
-                  />
-                  <div className="w-9 h-5 bg-input peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-            </div>
+            <ProjectVisibility register={register} />
 
             {/* Dynamic Tech Tag Manager Card Block */}
-            <div className="bg-card border border-border p-5 rounded-md text-left space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Tech Stack
-                </h3>
-                <Plus className="h-3.5 w-3.5 text-muted-foreground" />
-              </div>
-              <div className="flex flex-wrap gap-1.5 p-2 bg-background/20 border border-border/80 rounded-md min-h-10.5">
-                {currentStack.map((tag) => (
-                  <span
-                    key={tag}
-                    className="flex items-center gap-1 bg-primary/10 border border-primary/20 text-foreground text-[10px] font-bold px-2 py-0.5 rounded-md"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTechTag(tag)}
-                      className="hover:text-destructive transition-colors cursor-pointer"
-                    >
-                      <X className="h-2.5 w-2.5" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <input
-                type="text"
-                placeholder="Add more technologies..."
-                onKeyDown={handleAddTechTag}
-                className="w-full bg-input/40 border border-border p-2 text-xs focus:outline-none focus:border-primary transition-colors rounded-sm"
+            <div className="flex flex-col bg-card border border-border p-5 rounded-md text-left space-y-5">
+              <TagInputField
+                title="Tech Stack"
+                placeholder="Add Technologies..."
+                values={currentStack}
+                onRemove={handleRemoveTechTag}
+                onAdd={handleAddTechTag}
+                error={errors.techStack?.message}
+              />
+              <TagInputField
+                title="Tools Used"
+                placeholder="Add Tools..."
+                values={toolsUsed}
+                onRemove={handleRemoveToolTag}
+                onAdd={handleAddToolTag}
+                error={errors.toolsUsed?.message}
               />
             </div>
 
@@ -261,6 +311,8 @@ export default function CreateProjectWorkspacePage() {
                 />
               </div>
             </div>
+
+            <MetaCard register={register} errors={errors} />
 
             {/* Real-time Dynamic Portfolio Preview Subcard Box */}
             <div className="bg-card border border-border p-4 rounded-md text-left space-y-3 overflow-hidden">

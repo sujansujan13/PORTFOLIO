@@ -9,18 +9,33 @@ export const getPublicTimelineSchema = z
   })
   .optional();
 
-export const publicTimelineItemSchema = z.object({
-  id: z.string(),
-  role: z.string(),
-  company: z.string(),
-  location: z.string(),
-  period: z.string(),
-  description: z.string(),
-  bullets: z.array(z.string()),
-  tags: z.array(z.string()),
-  type: timelineTypeSchema,
-  order: z.number(),
-});
+export const publicTimelineItemSchema = z
+  .object({
+    id: z.string(),
+    role: z.string(),
+    company: z.string(),
+    location: z.string(),
+
+    startDate: z.string(),
+    endDate: z.string(),
+
+    isPresent: z.boolean(),
+
+    description: z.string(),
+    bullets: z.array(z.string()),
+    tags: z.array(z.string()),
+
+    type: timelineTypeSchema,
+    order: z.number(),
+  })
+  .refine(
+    (data) =>
+      data.isPresent ? data.endDate === "present" : data.endDate !== "present",
+    {
+      path: ["endDate"],
+      message: 'End date must be "present" when isPresent is true',
+    },
+  );
 
 export const publicTimelineResponseSchema = z.object({
   experience: z.array(publicTimelineItemSchema),

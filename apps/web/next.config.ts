@@ -7,11 +7,14 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000",
+        pathname: "/uploads/**",
+      },
+      {
         protocol: "https",
         hostname: "images.unsplash.com",
-        // port:"" -> This means "only allow the default ports for this protocol."
-        port: "",
-        //pathname: "/**", -> This is a wildcard match that means "allow any folder, sub-folder, and file path on this domain."
         pathname: "/**",
       },
     ],

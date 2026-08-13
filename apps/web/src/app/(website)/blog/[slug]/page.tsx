@@ -1,7 +1,6 @@
 import React from "react";
 // import type { Metadata } from "next";
 
-import { calculateReadingTime } from "@/utils/calculateReadingTime";
 import BlogDynamicClient from "@/components/blog/blog-dynamic/blog-dynamic-client";
 
 interface PageParams {

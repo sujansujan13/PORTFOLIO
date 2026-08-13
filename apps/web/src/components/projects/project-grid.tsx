@@ -11,7 +11,7 @@ interface Category {
 }
 
 interface ProjectGridProps {
-  initialProjects: ProjectCardType[];
+  projects: ProjectCardType[];
   categories: Category[];
 }
 
@@ -23,10 +23,10 @@ const gridContainerVariants: Variants = {
   },
 };
 
-export function ProjectGrid({ initialProjects, categories }: ProjectGridProps) {
+export function ProjectGrid({ projects, categories }: ProjectGridProps) {
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
-  const filteredProjects = initialProjects.filter(
+  const filteredProjects = projects.filter(
     (project) =>
       activeCategory === "all" || project.category === activeCategory,
   );
@@ -61,7 +61,7 @@ export function ProjectGrid({ initialProjects, categories }: ProjectGridProps) {
         {/* mode={popLayout} When items are removed, surrounding items smoothly animate to fill gaps */}
         <AnimatePresence mode="popLayout">
           {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} initialProjects={project} />
+            <ProjectCard key={project.id} projects={project} />
           ))}
         </AnimatePresence>
       </motion.div>

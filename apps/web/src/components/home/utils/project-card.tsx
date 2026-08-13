@@ -3,11 +3,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface Project {
   id: string;
   title: string;
+  customSlug: string;
   description: string;
   tags: string[];
   img: string;
@@ -53,8 +55,10 @@ export function ProjectCard({
           fill
           sizes="(max-width: 640px) 100vw,(max-width: 1024px) 50vw,33vw"
           className="overflow-hidden object-cover group-hover:scale-105 duration-300 transition-all ease-in-out "
+          unoptimized
         />
-        <div
+        <Link
+          href={`/projects/${project.customSlug}`}
           className={cn(
             "absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer z-10",
             isActive && "opacity-100",
@@ -63,7 +67,7 @@ export function ProjectCard({
           <span className="bg-white text-blue-900  px-4 py-2 rounded-full font-semibold  text-sm shadow-lg ">
             View Case Study
           </span>
-        </div>
+        </Link>
       </div>
 
       {/* Card Meta Content */}
@@ -81,7 +85,9 @@ export function ProjectCard({
 
         <div className="space-y-4 md:space-y-3 flex-1">
           <h3 className="text-2xl  font-bold tracking-tight text-foreground group-hover:text-primary transition-colors leading-relaxed">
-            {project.title}
+            <Link href={`/projects/${project.customSlug}`}>
+              {project.title}
+            </Link>
           </h3>
           <p className="text-base dark:text-gray-200 font-medium leading-relaxed md:line-clamp-2">
             {project.description}

@@ -6,6 +6,8 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express from "express";
+import { UPLOAD_DIR } from "./middlewares/upload.middleware";
+import { uploadRouter } from "./routes/upload.router";
 
 const app = express();
 
@@ -19,6 +21,10 @@ app.use(
 );
 
 app.all("/api/auth{/*path}", toNodeHandler(auth));
+
+//# express.static() -> Serves static files.
+app.use("/uploads", express.static(UPLOAD_DIR));
+app.use("/api/uploads", uploadRouter);
 
 app.use(
   "/trpc",

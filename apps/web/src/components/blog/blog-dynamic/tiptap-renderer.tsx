@@ -1,6 +1,5 @@
 // #REVISION#
-import type { TiptapJson } from "@my-portfolio/api/schemas/blog.schema";
-import { div, p } from "framer-motion/client";
+import type { TiptapJson } from "@my-portfolio/api/schemas/Blogs/blog.schema";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import type React from "react";
@@ -119,13 +118,15 @@ function renderNode(node: TiptapJson, index: number): ReactNode {
       return (
         <div
           key={index}
-          className="relative aspect-video w-full overflow-hidden rounded-lg border border-border"
+          className="relative aspect-square w-full overflow-hidden rounded-lg border border-border"
         >
           <Image
             src={String(node.attrs?.src ?? "")}
             alt={String(node.attrs?.alt ?? "Article image")}
             fill
             className="object-cover"
+            sizes="(max-width: 768px) 100vw, 768px"
+            unoptimized
           />
         </div>
       );
@@ -174,3 +175,92 @@ export function TiptapRenderer({ content }: { content: TiptapJson }) {
 // - HTML element for preformatted text.
 // - Preserves spaces, tabs, and line breaks exactly as written.
 // - Commonly used for code blocks.
+
+// by google gemini
+// ("use client");
+
+// import React from "react";
+// import { CheckCircle2 } from "lucide-react";
+
+// export interface TiptapNode {
+//   type: string;
+//   attrs?: Record<string, unknown>;
+//   content?: TiptapNode[];
+//   text?: string;
+// }
+
+// function renderInline(node: TiptapNode, index: number): React.ReactNode {
+//   if (node.type === "text") {
+//     return <span key={index}>{node.text}</span>;
+//   }
+//   return node.content?.map((child, i) => renderInline(child, i)) ?? null;
+// }
+
+// function renderNode(node: TiptapNode, index: number | string): React.ReactNode {
+//   const children = node.content?.map((child, i) => renderInline(child, i));
+
+//   switch (node.type) {
+//     case "paragraph":
+//       return (
+//         <p
+//           key={index}
+//           className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-4"
+//         >
+//           {children}
+//         </p>
+//       );
+
+//     case "heading": {
+//       const level = Number(node.attrs?.level ?? 2);
+//       if (level === 2) {
+//         return (
+//           <div key={index} className="flex items-center gap-3 pt-6 pb-2">
+//             {/* Accent Indicator Bar */}
+//             <span className="w-4 h-1 bg-primary rounded-full inline-block" />
+//             <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+//               {children}
+//             </h2>
+//           </div>
+//         );
+//       }
+//       return (
+//         <h3 key={index} className="text-lg font-bold text-foreground pt-4 pb-1">
+//           {children}
+//         </h3>
+//       );
+//     }
+
+//     case "bulletList":
+//       return (
+//         <ul key={index} className="space-y-3 my-4">
+//           {node.content?.map((child, i) => (
+//             <li
+//               key={i}
+//               className="flex items-start gap-3 text-sm sm:text-base text-muted-foreground"
+//             >
+//               <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+//               <div>
+//                 {child.content?.map((pNode, pIdx) =>
+//                   renderNode(pNode, `${i}-${pIdx}`),
+//                 )}
+//               </div>
+//             </li>
+//           ))}
+//         </ul>
+//       );
+
+//     default:
+//       return (
+//         node.content?.map((child, i) => renderNode(child, `${index}-${i}`)) ??
+//         null
+//       );
+//   }
+// }
+
+// export function TiptapBodyRenderer({ content }: { content: TiptapNode }) {
+//   return (
+//     <div className="space-y-2">
+//       {content.content?.map((node, index) => renderNode(node, index))}
+//     </div>
+//   );
+// }

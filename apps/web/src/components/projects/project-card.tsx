@@ -1,3 +1,14 @@
+// ⚠️ CAUTION:
+// Do not wrap the entire image in a <Link>. Instead, use an absolutely positioned
+// overlay link (`absolute inset-0 z-10`). This keeps the image presentation
+// separate from the clickable area and allows future interactive elements
+// (e.g., bookmark, share, action buttons) to be layered above it without
+// conflicting click targets.
+// <Link
+//   href={`/projects/${projects.customSlug}`}
+//   className="absolute inset-0 z-10"
+//   aria-label={`View ${projects.title}`}
+// />
 "use client";
 
 import React from "react";
@@ -7,9 +18,10 @@ import { FaGithub } from "react-icons/fa6";
 import Image from "next/image";
 import { THEMES, type ThemeType } from "@/config/color-theme";
 import { type ProjectCard } from "@/schemas/project";
+import Link from "next/link";
 
 interface ProjectCardProps {
-  initialProjects: ProjectCard;
+  projects: ProjectCard;
 }
 
 // Clean fade-and-slide up variants tailored for mid-level developers
@@ -27,8 +39,8 @@ const cardAnimationVariants: Variants = {
   },
 };
 
-export function ProjectCard({ initialProjects }: ProjectCardProps) {
-  const theme = THEMES[initialProjects.theme as ThemeType];
+export function ProjectCard({ projects }: ProjectCardProps) {
+  const theme = THEMES[projects.theme as ThemeType] || "bg-purple-500";
   return (
     <motion.article
       layout // Animates position re-ordering smoothly when filters change
@@ -43,20 +55,27 @@ export function ProjectCard({ initialProjects }: ProjectCardProps) {
 
         <Image
           src={
-            initialProjects.thumbImageUrl ||
-            initialProjects.heroImageUrl ||
+            projects.thumbImageUrl ||
+            projects.heroImageUrl ||
             "/ProjectsImages/projectsImage1.png"
           }
-          alt={`${initialProjects.title} - ${initialProjects.subtitle}`}
+          alt={`${projects.title} - ${projects.subtitle}`}
           fill
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          unoptimized
+        />
+
+        <Link
+          href={`/projects/${projects.customSlug}`}
+          className="absolute inset-0 z-10"
+          aria-label={`View ${projects.title}`}
         />
 
         {/* Category Label Pin */}
         <span
           className={`absolute bottom-3 left-3 z-30 px-2.5  rounded-sm py-1 text-[10px] font-inter font-bold uppercase tracking-wider ${theme}  dark:text-foreground text-white backdrop-blur-xs`}
         >
-          {initialProjects.category}
+          {projects.category}
         </span>
       </div>
 
@@ -64,20 +83,23 @@ export function ProjectCard({ initialProjects }: ProjectCardProps) {
       <div className="flex flex-col flex-1 p-5 sm:p-6 space-y-4">
         <div className="space-y-1">
           <h3 className="text-xl font-black tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary">
-            {initialProjects.title}
+            <Link href={`/projects/${projects.customSlug}`}>
+              {" "}
+              {projects.title}
+            </Link>
           </h3>
           <p className="text-xs font-medium text-primary/90 tracking-wide font-mono">
-            {initialProjects.subtitle}
+            {projects.subtitle}
           </p>
         </div>
 
         <p className="text-sm text-foreground font-medium leading-relaxed flex-1">
-          {initialProjects.description}
+          {projects.description}
         </p>
 
         {/* Structural Tech Tags Cluster */}
         <div className="flex flex-wrap gap-1.5 pt-2">
-          {initialProjects.techStack.map((tag) => (
+          {projects.techStack.map((tag) => (
             <span
               key={tag}
               className="px-2.5 py-0.5 text-[11px] font-mono font-bold text-muted-foreground bg-muted/60 border border-border/80 hover:border-primary/20 hover:text-foreground transition-colors duration-150"
@@ -89,25 +111,25 @@ export function ProjectCard({ initialProjects }: ProjectCardProps) {
 
         {/* Action Link Row */}
         <div className="flex items-center gap-4 pt-3 border-t dark:border-border/40 text-sm font-bold font-sans">
-          {initialProjects.liveUrl && (
+          {projects.liveUrl && (
             <a
-              href={initialProjects.liveUrl}
+              href={projects.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors duration-200"
-              title={`Launch ${initialProjects.title} live preview`}
+              title={`Launch ${projects.title} live preview`}
             >
               <ExternalLink className="h-4 w-4" />
               <span>Live Demo</span>
             </a>
           )}
-          {initialProjects.githubUrl && (
+          {projects.githubUrl && (
             <a
-              href={initialProjects.githubUrl}
+              href={projects.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors duration-200 ml-auto"
-              title={`Explore ${initialProjects.title} codebase`}
+              title={`Explore ${projects.title} codebase`}
             >
               <FaGithub className="h-4 w-4" />
               <span>Source Code</span>

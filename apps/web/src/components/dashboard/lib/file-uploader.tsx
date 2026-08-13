@@ -1,16 +1,28 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadCloud, FileImage, X, Eye } from "lucide-react";
+import { uploadImage } from "@/utils/image-upload";
 
 interface AssetState {
   filename: string | null;
   progress: number;
   previewUrl: string | null; // 1. Added field to store the local image preview URL
 }
+interface FileUploaderProps {
+  onHeroChange: (url: string) => void;
+  onThumbnailChange: (url: string) => void;
+  heroUrl?: string; // Optional prop to set the initial hero image URL
+  thumbnailUrl?: string; // Optional prop to set the initial thumbnail image URL
+}
 
-export function FileUploader() {
+export function FileUploader({
+  onHeroChange,
+  onThumbnailChange,
+  heroUrl,
+  thumbnailUrl,
+}: FileUploaderProps) {
   const [hero, setHero] = useState<AssetState>({
     filename: null,
     progress: 0,
@@ -29,27 +41,68 @@ export function FileUploader() {
   const heroInputRef = useRef<HTMLInputElement>(null);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
-  const startUploadSimulation = (file: File, type: "hero" | "thumbnail") => {
+  const handleImageUpload = async (file: File, type: "hero" | "thumbnail") => {
     const updater = type === "hero" ? setHero : setThumbnail;
 
+    // Remove previous preview URL to avoid memory leaks
+    if (type === "hero" && hero.previewUrl) {
+      URL.revokeObjectURL(hero.previewUrl);
+    }
+
+    if (type === "thumbnail" && thumbnail.previewUrl) {
+      URL.revokeObjectURL(thumbnail.previewUrl);
+    }
+
     // 2. Generate a local browser URL for the image preview
-    const localUrl = URL.createObjectURL(file);
+    const previewUrl = URL.createObjectURL(file);
 
-    updater({ filename: file.name, progress: 0, previewUrl: localUrl });
+    updater({ filename: file.name, progress: 0, previewUrl: previewUrl });
 
-    let currentProgress = 0;
-    const interval = setInterval(() => {
-      currentProgress += 20; // Accelerated for snappy testing
-      updater({
-        filename: file.name,
-        progress: currentProgress,
-        previewUrl: localUrl,
+    try {
+      const uploadedUrl = await uploadImage(file, (progress) => {
+        updater({
+          filename: file.name,
+          progress,
+          previewUrl,
+        });
       });
 
-      if (currentProgress === 100) {
-        clearInterval(interval);
+      if (type === "hero") {
+        onHeroChange(uploadedUrl);
+      } else {
+        onThumbnailChange(uploadedUrl);
       }
-    }, 60);
+
+      updater({
+        filename: file.name,
+        progress: 100,
+        previewUrl,
+      });
+    } catch (error) {
+      URL.revokeObjectURL(previewUrl);
+
+      updater({
+        filename: null,
+        progress: 0,
+        previewUrl: null,
+      });
+
+      console.error(error);
+    }
+
+    // let currentProgress = 0;
+    // const interval = setInterval(() => {
+    //   currentProgress += 20; // Accelerated for snappy testing
+    //   updater({
+    //     filename: file.name,
+    //     progress: currentProgress,
+    //     previewUrl: previewUrl,
+    //   });
+
+    //   if (currentProgress === 100) {
+    //     clearInterval(interval);
+    //   }
+    // }, 60);
   };
 
   const onDragOverZone = (e: React.DragEvent, type: "hero" | "thumbnail") => {
@@ -61,7 +114,7 @@ export function FileUploader() {
     e.preventDefault();
     setActiveDrag(null);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      startUploadSimulation(e.dataTransfer.files[0], type);
+      handleImageUpload(e.dataTransfer.files[0], type);
     }
   };
 
@@ -70,13 +123,35 @@ export function FileUploader() {
     if (type === "hero") {
       if (hero.previewUrl) URL.revokeObjectURL(hero.previewUrl); // Free up browser memory
       setHero({ filename: null, progress: 0, previewUrl: null });
+      onHeroChange("");
       if (heroInputRef.current) heroInputRef.current.value = "";
     } else {
       if (thumbnail.previewUrl) URL.revokeObjectURL(thumbnail.previewUrl);
       setThumbnail({ filename: null, progress: 0, previewUrl: null });
+      onThumbnailChange("");
       if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
     }
   };
+
+  useEffect(() => {
+    if (heroUrl) {
+      setHero({
+        filename: null,
+        progress: 100,
+        previewUrl: heroUrl,
+      });
+    }
+  }, [heroUrl]);
+
+  useEffect(() => {
+    if (thumbnailUrl) {
+      setThumbnail({
+        filename: null,
+        progress: 100,
+        previewUrl: thumbnailUrl,
+      });
+    }
+  }, [heroUrl]);
 
   return (
     <div className="w-full bg-card border border-border p-5 rounded-md space-y-6 text-left">
@@ -95,7 +170,7 @@ export function FileUploader() {
             ref={heroInputRef}
             onChange={(e) =>
               e.target.files?.[0] &&
-              startUploadSimulation(e.target.files[0], "hero")
+              handleImageUpload(e.target.files[0], "hero")
             }
             accept="image/png, image/jpeg, image/webp"
             className="hidden"
@@ -190,7 +265,7 @@ export function FileUploader() {
             ref={thumbnailInputRef}
             onChange={(e) =>
               e.target.files?.[0] &&
-              startUploadSimulation(e.target.files[0], "thumbnail")
+              handleImageUpload(e.target.files[0], "thumbnail")
             }
             accept="image/png, image/jpeg, image/webp"
             className="hidden"

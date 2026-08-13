@@ -1,24 +1,25 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent, type JSONContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
+import Underline from "@tiptap/extension-underline";
+import LinkExtension from "@tiptap/extension-link";
 import {
   Bold,
   Italic,
   Code,
   Link,
   List,
-  GalleryHorizontal,
   ImageDown,
   UnderlineIcon,
 } from "lucide-react";
-import { url } from "better-auth";
-import { option } from "framer-motion/client";
+import { uploadImage } from "@/utils/image-upload";
+import { toast } from "sonner";
 
 interface TiptapEditorProps {
-  value: string;
+  value: string | unknown;
   onChange: (content: JSONContent) => void;
 }
 
@@ -36,9 +37,17 @@ const CODE_LANGUAGES = [
 export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedLanguage, setSelectedLanguage] = useState("ts");
+  const [isUploading, setIsUploading] = useState(false);
 
   const editor = useEditor({
-    extensions: [StarterKit, Image],
+    extensions: [
+      StarterKit,
+      Underline,
+      LinkExtension.configure({
+        openOnClick: false,
+      }),
+      Image,
+    ],
     content: value ?? {
       type: "doc",
       content: [{ type: "paragraph" }],
@@ -59,13 +68,26 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
     },
     editorProps: {
       attributes: {
+        // class:
+        //   "prose prose-invert max-w-none focus:outline-none min-h-[250px] p-4 text-sm font-sans leading-relaxed text-foreground bg-transparent",
         class:
-          "prose prose-invert max-w-none focus:outline-none min-h-[250px] p-4 text-sm font-sans leading-relaxed text-foreground bg-transparent",
+          "tiptap-editor prose prose-invert max-w-none focus:outline-none min-h-[250px] p-4 font-sans text-foreground bg-transparent",
       },
     },
     // Don't render immediately on the server to avoid SSR issues
     immediatelyRender: false,
   });
+
+  // 👇 PLACE IT HERE (Before any early return!)
+  useEffect(() => {
+    if (editor && value !== undefined) {
+      const currentContent = JSON.stringify(editor.getJSON());
+      const newContent = JSON.stringify(value);
+      if (currentContent !== newContent) {
+        editor.commands.setContent(value ?? "");
+      }
+    }
+  }, [value, editor]);
 
   if (!editor) return null;
 
@@ -89,23 +111,100 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
     fileInputRef.current?.click();
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+
+  //   if (!file || !editor) return;
+
+  //   const previewUrl = URL.createObjectURL(file);
+
+  //   editor.chain().focus().setImage({ src: previewUrl }).run();
+
+  //   try {
+  //     const uploadedUrl = await uploadImage(file, () => {});
+
+  //     const doc = editor.getJSON();
+
+  //     const replaceImageUrl = (node: any) => {
+  //       if (node.type === "image" && node.attrs?.src === previewUrl) {
+  //         node.attrs.src = uploadedUrl;
+  //       }
+  //       if (node.content) {
+  //         node.content.forEach(replaceImageUrl);
+  //       }
+  //     };
+
+  //     replaceImageUrl(doc);
+
+  //     editor.commands.setContent(doc);
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     URL.revokeObjectURL(previewUrl);
+  //     e.target.value = "";
+  //   }
+  // };
+
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file || !editor) return;
 
-    const previewUrl = URL.createObjectURL(file);
+    setIsUploading(true);
 
-    editor.chain().focus().setImage({ src: previewUrl }).run();
+    try {
+      const uploadedUrl = await uploadImage(file, () => { });
 
-    e.target.value = "";
+      editor.chain().focus().setImage({ src: uploadedUrl }).run();
+    } catch (error) {
+      toast.error("Image upload failed");
+      console.error(error);
+    } finally {
+      e.target.value = "";
+      setIsUploading(false);
+    }
   };
+  const currentBlockType = editor.isActive("heading", { level: 1 })
+    ? "h1"
+    : editor.isActive("heading", { level: 2 })
+      ? "h2"
+      : editor.isActive("heading", { level: 3 })
+        ? "h3"
+        : "paragraph";
 
   return (
     <div className="w-full border border-border rounded-xs bg-card/20 overflow-hidden focus-within:border-primary transition-all duration-200">
       {/* Action Toolbar Header */}
       <div className="flex items-center justify-between border-b border-border bg-card/60 px-3 py-2">
         <div className="flex items-center gap-1">
+          <select
+            value={currentBlockType}
+            onChange={(event) => {
+              const value = event.target.value;
+
+              if (value === "paragraph") {
+                editor.chain().focus().setParagraph().run();
+              }
+
+              if (value === "h1") {
+                editor.chain().focus().setHeading({ level: 1 }).run();
+              }
+
+              if (value === "h2") {
+                editor.chain().focus().setHeading({ level: 2 }).run();
+              }
+
+              if (value === "h3") {
+                editor.chain().focus().setHeading({ level: 3 }).run();
+              }
+            }}
+            className="h-8 rounded-xs border border-border bg-background px-2 text-xs font-mono text-foreground cursor-pointer"
+          >
+            <option value="paragraph">Paragraph</option>
+            <option value="h1">Heading 1</option>
+            <option value="h2">Heading 2</option>
+            <option value="h3">Heading 3</option>
+          </select>
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -161,12 +260,14 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
           </button>
           <input
             type="file"
+            accept="image/png, image/jpeg, image/webp"
             hidden
             ref={fileInputRef}
             onChange={handleInputChange}
           />
           <button
             type="button"
+            disabled={isUploading}
             onClick={handleUploadClick}
             // onClick={() => {
             //   const url = prompt("Image URL");

@@ -9,7 +9,7 @@ interface StatItem {
   label: string;
   iconName: string;
   accentColor: string;
-  value: string | number;
+  value: number;
   changeText: string;
 }
 

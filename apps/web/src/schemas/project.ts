@@ -1,13 +1,32 @@
+import { tiptapNodeSchema } from "@my-portfolio/api/schemas/tiptap.schema";
 import * as z from "zod";
 
+export const projectMetricsSchema = z.object({
+  value: z.string().min(1, "Metric Value is required"),
+  label: z.string().min(1, "Metric label is required"),
+});
+
+export const projectFeatureIconSchema = z.enum([
+  "gauge",
+  "blocks",
+  "compass",
+  "layers",
+]);
+
+export const projectFeatureSchema = z.object({
+  title: z.string().min(1, "Feature title is required"),
+  description: z.string().min(1, "Feature description is required"),
+  icon: projectFeatureIconSchema.default("gauge"),
+});
+
 export const projectFormSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   title: z.string().min(3, "Project title must be at least 3 characters long"),
   subtitle: z
     .string()
     .min(5, "Platform subtitle must be at least 5 characters long"),
-  customSlug: z.string().min(3, "URL Slug must be at least 3 characters."),
-  body: z.string().min(10, "Project description must contain detailed content"),
+  customSlug: z.string().min(2, "URL Slug must be at least 2 characters."),
+  body: tiptapNodeSchema,
   description: z
     .string()
     .min(10, "Description must be at least 10 characters long"),
@@ -38,6 +57,12 @@ export const projectFormSchema = z.object({
     .or(z.string().length(0)),
   seoTitle: z.string().min(5, "Please provide a valid seoTitle"),
   seoDescription: z.string().min(10, "Please provide a valid seoTitle"),
+  role: z.string().min(2, "Role is required"),
+  timeline: z.string().trim().min(1, "Timeline is required"),
+  toolsUsed: z.array(z.string()).min(1, "ToolsUsed is required"),
+  featured: z.boolean().default(false),
+  metrics: z.array(projectMetricsSchema).default([]),
+  features: z.array(projectFeatureSchema).default([]),
 });
 
 export const projectCardSchema = projectFormSchema
