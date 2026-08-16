@@ -19,7 +19,7 @@ export const publicTimelineItemSchema = z
     startDate: z.string(),
     endDate: z.string(),
 
-    isPresent: z.boolean(),
+    isPresent: z.boolean().default(false),
 
     description: z.string(),
     bullets: z.array(z.string()),

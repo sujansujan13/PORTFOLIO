@@ -6,51 +6,29 @@ import { TimelineList } from "./timeline-list";
 import { TimelineFooter } from "./timeline-footer";
 import type { TimelineItem } from "@/schemas/timeline.schema";
 import TimelineSearchFilter from "./timeline-search-filter";
-
-// Default mockup data matching your project domain
-const INITIAL_DATA: TimelineItem[] = [
-  {
-    id: "1",
-    role: "Lead Full-Stack Developer",
-    company: "Himalayan Ripple Project",
-    location: "Kathmandu, Nepal (Hybrid)",
-    period: "Mar 2026 - Present",
-    type: "experience",
-    isPublic: true,
-  },
-  {
-    id: "2",
-    role: "Software Engineer",
-    company: "NepalExplore Platform",
-    location: "Remote",
-    period: "Jan 2024 - Feb 2026",
-    type: "experience",
-    isPublic: true,
-  },
-  {
-    id: "3",
-    role: "B.Sc. Computer Science & IT",
-    company: "Tribhuvan University",
-    location: "Kathmandu, Nepal",
-    period: "Nov 2019 - Dec 2023",
-    type: "education",
-    isPublic: true,
-  },
-];
+import { useDashboardTimeline } from "@/hooks/useTimeline";
 
 export default function TimelineDashboardPage() {
-  const [items, setItems] = useState<TimelineItem[]>(INITIAL_DATA);
   const [searchQuery, setSearchQuery] = useState("");
   const [type, setType] = useState<"all" | "education" | "experience">("all");
-  const [isloading, setIsloading] = useState(false);
+
+  const dashboardTimelineQuery = useDashboardTimeline({
+    search: searchQuery,
+    type,
+  });
+
+  const { isPending, isError } = dashboardTimelineQuery;
+
+  const timeline = dashboardTimelineQuery.data?.items || [];
+  const counts = dashboardTimelineQuery.data?.counts;
+
+  const items = timeline;
 
   const handleEdit = (id: string) => {
     console.log("Edit entry:", id);
   };
 
-  const handleDelete = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
-  };
+  const handleDelete = (id: string) => {};
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
@@ -61,9 +39,9 @@ export default function TimelineDashboardPage() {
   };
 
   const nodeCounts = {
-    all: items.length,
-    experience: items.filter((item) => item.type === "experience").length,
-    education: items.filter((item) => item.type === "education").length,
+    all: counts?.all,
+    experience: counts?.experience,
+    education: counts?.education,
   };
 
   return (
@@ -78,11 +56,16 @@ export default function TimelineDashboardPage() {
         type={type}
         onTypeChange={handleTypeChange}
         counts={nodeCounts}
-        isLoading={isloading}
       />
 
       {/* Main Timeline Content */}
-      <TimelineList items={items} onEdit={handleEdit} onDelete={handleDelete} />
+      <TimelineList
+        items={items}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        isPending={isPending}
+        isError={isError}
+      />
 
       {/* Page Footer */}
       <TimelineFooter />

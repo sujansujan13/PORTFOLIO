@@ -1,8 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import type { inferRouterOutputs } from "@trpc/server";
-
 import { trpc } from "@/utils/trpc";
 
 interface UsePublicProjectsOptions {

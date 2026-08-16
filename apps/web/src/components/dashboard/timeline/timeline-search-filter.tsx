@@ -5,9 +5,9 @@ import { Search, X } from "lucide-react";
 export type TimelineFilterType = "all" | "experience" | "education";
 
 interface TimelineCounts {
-  all: number;
-  experience: number;
-  education: number;
+  all?: number;
+  experience?: number;
+  education?: number;
 }
 
 interface TimelineSearchFilterProps {
@@ -33,7 +33,7 @@ export default function TimelineSearchFilter({
   const filters: {
     value: TimelineFilterType;
     label: string;
-    count: number;
+    count?: number;
   }[] = [
     {
       value: "all",
@@ -129,11 +129,11 @@ export default function TimelineSearchFilter({
           {isLoading ? (
             <span>Loading...</span>
           ) : (
-            <span className="text-md font-medium">
-              <span className="font-semibold text-foreground">
-                {counts.all}
+            <span className="border border-primary shadow-2xl py-2 px-3 rounded-md text-md text-foreground font-medium">
+              <span className="font-semibold text-muted-foreground tracking-wide">
+                Total entries:
               </span>{" "}
-              {counts.all === 1 ? "entry" : "entries"} total
+              <span className="font-bold text-lg">{counts.all}</span>
             </span>
           )}
         </div>

@@ -1,4 +1,5 @@
 "use client";
+
 import { trpc } from "@/utils/trpc";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -26,6 +27,7 @@ export function useCreateBlog() {
   return useMutation(
     trpc.blogs.createBlog.mutationOptions({
       onSuccess: () => {
+        // Refresh dashboard blog lists.
         queryClient.invalidateQueries({
           queryKey: trpc.blogs.getDashboardBlogs.queryKey(),
         });
@@ -34,9 +36,11 @@ export function useCreateBlog() {
   );
 }
 
-export function useDashboardBlogById(id: string) {
+export function useDashboardBlogById(id?: string) {
   return useQuery({
-    ...trpc.blogs.getDashboardBlogById.queryOptions({ id }),
+    ...trpc.blogs.getDashboardBlogById.queryOptions({
+      id: id ?? "",
+    }),
     enabled: Boolean(id),
   });
 }
@@ -46,9 +50,17 @@ export function useUpdateBlog() {
 
   return useMutation(
     trpc.blogs.updateBlog.mutationOptions({
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
+        // Refresh dashboard blog lists.
         queryClient.invalidateQueries({
           queryKey: trpc.blogs.getDashboardBlogs.queryKey(),
+        });
+
+        // Refresh the specific blog that was updated.
+        queryClient.invalidateQueries({
+          queryKey: trpc.blogs.getDashboardBlogById.queryKey({
+            id: variables.id,
+          }),
         });
       },
     }),
@@ -60,9 +72,17 @@ export function useDeleteBlog() {
 
   return useMutation(
     trpc.blogs.deleteBlog.mutationOptions({
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
+        // Refresh dashboard blog lists.
         queryClient.invalidateQueries({
           queryKey: trpc.blogs.getDashboardBlogs.queryKey(),
+        });
+
+        // Remove the deleted blog from the individual cache.
+        queryClient.removeQueries({
+          queryKey: trpc.blogs.getDashboardBlogById.queryKey({
+            id: variables.id,
+          }),
         });
       },
     }),
@@ -75,8 +95,14 @@ export function useDeleteMultipleBlogs() {
   return useMutation(
     trpc.blogs.deleteMultiplBlogs.mutationOptions({
       onSuccess: () => {
+        // Refresh all dashboard blog lists.
         queryClient.invalidateQueries({
           queryKey: trpc.blogs.getDashboardBlogs.queryKey(),
+        });
+
+        // Individual blog caches may also contain deleted blogs.
+        queryClient.invalidateQueries({
+          queryKey: trpc.blogs.getDashboardBlogById.queryKey(),
         });
       },
     }),

@@ -23,7 +23,8 @@ app.use(
 app.all("/api/auth{/*path}", toNodeHandler(auth));
 
 //# express.static() -> Serves static files.
-app.use("/uploads", express.static(UPLOAD_DIR));
+// This tells clients that static resources can be cached for approximately one day.
+app.use("/uploads", express.static(UPLOAD_DIR, { maxAge: "1d" }));
 app.use("/api/uploads", uploadRouter);
 
 app.use(

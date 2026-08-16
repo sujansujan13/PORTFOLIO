@@ -56,7 +56,7 @@ export function TimelineCard({ item, onEdit, onDelete }: TimelineCardProps) {
           {/* Visibility Badge */}
           <span className="inline-flex items-center rounded-md gap-1.5 px-2.5 py-1 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
             <Globe className="h-3.5 w-3.5" />
-            <span>{item.isPublic ? "Public" : "Private"}</span>
+            <span>{item.publicAccess ? "Public" : "Private"}</span>
           </span>
         </div>
 
@@ -72,7 +72,9 @@ export function TimelineCard({ item, onEdit, onDelete }: TimelineCardProps) {
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-6 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5 shrink-0" />
-            <span>{item.period}</span>
+            <span>
+              {item.startDate} - {item.endDate ? item.endDate : "Present"}
+            </span>
           </div>
           {item.location && (
             <div className="flex items-center gap-1.5">
