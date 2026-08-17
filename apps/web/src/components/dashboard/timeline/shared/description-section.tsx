@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { FileText, List, CornerDownLeft } from "lucide-react";
-import type { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn, FieldErrors } from "react-hook-form";
 import type {
   TimelineFormInput,
   TimelineFormValues,
@@ -11,19 +11,16 @@ import TextareaField from "./../../forms/textarea-field";
 
 interface DescriptionSectionProps {
   form: UseFormReturn<TimelineFormInput>;
+  errors: FieldErrors<TimelineFormInput>;
   maxLength?: number;
 }
 
 export function DescriptionSection({
   form,
+  errors,
   maxLength = 1000,
 }: DescriptionSectionProps) {
-  const {
-    register,
-    watch,
-    setValue,
-    formState: { errors },
-  } = form;
+  const { register, watch, setValue } = form;
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const descriptionValue = watch("description") || "";

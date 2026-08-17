@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Briefcase, GraduationCap } from "lucide-react";
-import { useWatch, type UseFormReturn } from "react-hook-form";
+import { useWatch, type UseFormReturn, type FieldErrors } from "react-hook-form";
 import type {
   TimelineFormInput,
   TimelineFormValues,
@@ -11,15 +11,11 @@ import TagInputField from "./../../forms/tag-input-field"; // Your existing comp
 
 interface MetadataSectionProps {
   form: UseFormReturn<TimelineFormInput>;
+  errors: FieldErrors<TimelineFormInput>;
 }
 
-export function MetadataSection({ form }: MetadataSectionProps) {
-  const {
-    register,
-    watch,
-    setValue,
-    formState: { errors },
-  } = form;
+export function MetadataSection({ form, errors }: MetadataSectionProps) {
+  const { register, watch, setValue } = form;
 
   const currentType = useWatch({
     control: form.control,

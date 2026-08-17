@@ -1,24 +1,18 @@
 "use client";
 
 import React from "react";
-import { Briefcase, Calendar, MapPin } from "lucide-react";
-import { useWatch, type UseFormReturn } from "react-hook-form";
-import type {
-  TimelineFormInput,
-  TimelineFormValues,
-} from "./../../../../schemas/timeline-form.schema";
+import { Briefcase } from "lucide-react";
+import { useWatch, type UseFormReturn, type FieldErrors } from "react-hook-form";
+import type { TimelineFormInput } from "./../../../../schemas/timeline-form.schema";
 import TextField from "./../../forms/text-field"; // Your existing component
 
 interface CoreDetailsSectionProps {
   form: UseFormReturn<TimelineFormInput>;
+  errors: FieldErrors<TimelineFormInput>;
 }
 
-export function CoreDetailsSection({ form }: CoreDetailsSectionProps) {
-  const {
-    register,
-    watch,
-    formState: { errors },
-  } = form;
+export function CoreDetailsSection({ form, errors }: CoreDetailsSectionProps) {
+  const { register, setValue } = form;
 
   const isPresent = useWatch({
     control: form.control,
@@ -69,7 +63,11 @@ export function CoreDetailsSection({ form }: CoreDetailsSectionProps) {
               <input
                 type="month"
                 {...register("startDate")}
-                className="w-full bg-input/40 border border-border p-2.5  text-xs font-sans focus:outline-none focus:border-primary transition-colors rounded-sm text-foreground"
+                className={`w-full bg-input/40 border ${
+                  errors.startDate
+                    ? "border-destructive focus:border-destructive"
+                    : "border-border focus:border-primary"
+                } p-2.5 text-xs font-sans focus:outline-none transition-colors rounded-sm text-foreground`}
               />
             </div>
             {errors.startDate && (
@@ -87,19 +85,37 @@ export function CoreDetailsSection({ form }: CoreDetailsSectionProps) {
               <label className="inline-flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none">
                 <input
                   type="checkbox"
-                  {...register("isPresent")}
+                  {...register("isPresent", {
+                    onChange: (event) => {
+                      if (event.target.checked) {
+                        setValue("endDate", "present", {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                      } else {
+                        setValue("endDate", "", {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                      }
+                    },
+                  })}
                   className="rounded border-border text-primary focus:ring-primary h-3.5 w-3.5"
                 />
                 <span className="font-semibold">Present</span>
               </label>
             </div>
 
-            <div className="flex-items-center justify-between">
+            <div className="flex items-center justify-between">
               <input
                 type="month"
                 disabled={isPresent}
                 {...register("endDate")}
-                className="w-full bg-input/40 border border-border p-2.5  text-xs font-sans focus:outline-none focus:border-primary transition-colors rounded-sm text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                className={`w-full bg-input/40 border ${
+                  !isPresent && errors.endDate
+                    ? "border-destructive focus:border-destructive"
+                    : "border-border focus:border-primary"
+                } p-2.5 text-xs font-sans focus:outline-none transition-colors rounded-sm text-foreground disabled:opacity-40 disabled:cursor-not-allowed`}
               />
             </div>
             {!isPresent && errors.endDate && (

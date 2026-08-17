@@ -29,15 +29,27 @@ export default function ProjectEditForm({
   const router = useRouter();
 
   async function onSubmitFormAction(data: ProjectFormValues) {
-    updateProject.mutate(data, {
-      onSuccess: () => {
-        toast.success("Project Updated SuccessFully");
-        router.push("/dashboard/projects");
+    const projectId = data.id || project.id;
+    if (!projectId) {
+      toast.error("Project ID is missing");
+      return;
+    }
+
+    updateProject.mutate(
+      {
+        ...data,
+        id: projectId,
       },
-      onError: (error) => {
-        toast.error(error.message || "Error updating project");
+      {
+        onSuccess: () => {
+          toast.success("Project Updated SuccessFully");
+          router.push("/dashboard/projects");
+        },
+        onError: (error) => {
+          toast.error(error.message || "Error updating project");
+        },
       },
-    });
+    );
   }
 
   // 👈 3. Define handleDiscard function

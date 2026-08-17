@@ -24,11 +24,14 @@ export default function TextareaField({
         {label}
       </label>
       <textarea
-        type="text"
         id={label}
         {...registration}
         {...props}
-        className={`w-full bg-input/40 border border-border p-2.5 text-sm font-sans focus:outline-none focus:border-primary transition-all rounded-sm placeholder:text-muted-foreground/60 ${className}`}
+        className={`w-full bg-input/40 border ${
+          error
+            ? "border-destructive focus:border-destructive"
+            : "border-border focus:border-primary"
+        } p-2.5 text-sm font-sans focus:outline-none transition-all rounded-sm placeholder:text-muted-foreground/60 ${className}`}
       />
 
       {error && (
