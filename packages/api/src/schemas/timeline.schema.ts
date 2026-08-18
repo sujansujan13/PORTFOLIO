@@ -35,6 +35,22 @@ export const publicTimelineItemSchema = z
       path: ["endDate"],
       message: 'End date must be "present" when isPresent is true',
     },
+  )
+  .refine(
+    (data) => {
+      if (data.isPresent) {
+        return true;
+      }
+      if (!data.startDate || !data.endDate) {
+        return true;
+      }
+
+      return data.endDate > data.startDate;
+    },
+    {
+      path: ["endDate"],
+      message: "End date must be after the start date.",
+    },
   );
 
 export const publicTimelineResponseSchema = z.object({

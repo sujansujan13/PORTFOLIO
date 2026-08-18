@@ -2,7 +2,11 @@
 
 import React, { useRef } from "react";
 import { FileText, List, CornerDownLeft } from "lucide-react";
-import type { UseFormReturn, FieldErrors } from "react-hook-form";
+import {
+  type UseFormReturn,
+  type FieldErrors,
+  useWatch,
+} from "react-hook-form";
 import type {
   TimelineFormInput,
   TimelineFormValues,
@@ -23,8 +27,15 @@ export function DescriptionSection({
   const { register, watch, setValue } = form;
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const descriptionValue = watch("description") || "";
-  const charCount = descriptionValue.length;
+  const rawBullets = useWatch({
+    name: "bullets",
+    control: form.control,
+  });
+  const descriptionValue = Array.isArray(rawBullets)
+    ? rawBullets.map((b) => (b.startsWith("•") ? b : `• ${b}`)).join("\n")
+    : (rawBullets ?? "");
+  const charCount =
+    typeof descriptionValue === "string" ? descriptionValue.length : 0;
 
   /**
    * Directly inserts bullet point at cursor location
@@ -43,7 +54,7 @@ export function DescriptionSection({
     const updatedText =
       currentText.substring(0, start) + bulletText + currentText.substring(end);
 
-    setValue("description", updatedText, {
+    setValue("bullets", updatedText, {
       shouldValidate: true,
       shouldDirty: true,
     });
@@ -81,7 +92,7 @@ export function DescriptionSection({
           currentText.substring(0, lastNewLineIndex + 1) +
           currentText.substring(start);
 
-        setValue("description", updatedText, {
+        setValue("bullets", updatedText, {
           shouldValidate: true,
           shouldDirty: true,
         });
@@ -95,7 +106,7 @@ export function DescriptionSection({
         bulletInsert +
         currentText.substring(start);
 
-      setValue("description", updatedText, {
+      setValue("bullets", updatedText, {
         shouldValidate: true,
         shouldDirty: true,
       });
@@ -110,8 +121,7 @@ export function DescriptionSection({
     }
   };
 
-  const { ref: registerRef, ...descriptionRegistration } =
-    register("description");
+  const { ref: registerRef, ...descriptionRegistration } = register("bullets");
 
   return (
     <section className="group bg-card border border-border/80 rounded-lg p-4 sm:p-5 space-y-4 shadow-sm transition-all duration-200 hover:border-border">
@@ -123,7 +133,7 @@ export function DescriptionSection({
           </div>
           <div>
             <h2 className="text-sm sm:text-base font-bold text-foreground leading-none">
-              Description
+              Detailed Description
             </h2>
             <p className="text-[11px] text-muted-foreground mt-1">
               Add key achievements and details using line breaks or bullet
@@ -161,8 +171,8 @@ export function DescriptionSection({
             },
           }}
           onKeyDown={handleKeyDown}
-          error={errors.description?.message}
-          className="font-mono text-xs leading-relaxed resize-y min-h-[140px] focus:ring-1 focus:ring-primary/40"
+          error={errors.bullets?.message}
+          className="font-mono text-xs leading-relaxed resize-y min-h-35 focus:ring-1 focus:ring-primary/40"
         />
 
         {/* Footer Bar */}

@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { TimelineItem } from "@/schemas/timeline.schema";
+import Link from "next/link";
+import type { Route } from "next";
 
 interface TimelineCardProps {
   item: TimelineItem;
@@ -87,13 +89,13 @@ export function TimelineCard({ item, onEdit, onDelete }: TimelineCardProps) {
 
       {/* Action Buttons */}
       <div className="mt-5 flex items-center gap-2 pt-2 border-t border-border/30 lg:border-t-0 lg:pt-0 lg:absolute lg:top-5 lg:right-5">
-        <button
-          onClick={() => onEdit?.(item.id)}
+        <Link
+          href={`/dashboard/timeline/${item.id}/edit` as Route}
           className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent border border-border/50 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer rounded-sm"
           aria-label={`Edit ${item.role}`}
         >
           <Pencil className="h-4 w-4" />
-        </button>
+        </Link>
         <button
           onClick={() => onDelete?.(item.id)}
           className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 border border-border/50 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer rounded-sm"

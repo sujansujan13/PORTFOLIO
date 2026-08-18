@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-export const timelineTypeSchema = z.enum([
-  "experience",
-  "education",
-]);
+export const timelineTypeSchema = z.enum(["experience", "education"]);
 
 export const timelineFormSchema = z
   .object({
@@ -19,33 +16,59 @@ export const timelineFormSchema = z
 
     description: z.string().min(1, "Description is required"),
 
+    bullets: z
+      .preprocess((val) => {
+        if (typeof val === "string") {
+          return val
+            .split("\n")
+            .map((line) => line.replace(/^[•\-\*]\s*/, "").trim())
+            .filter((line) => line.length > 0);
+        }
+        return val;
+      }, z.array(z.string()))
+      .default([]),
+
     type: timelineTypeSchema,
 
     publicAccess: z.boolean().default(true),
 
     tags: z.array(z.string()).default([]),
   })
+  // Validate Present / End Date
   .refine(
     (data) => {
       if (data.isPresent) {
         return data.endDate === "present";
       }
 
-      return (
-        data.endDate.trim() !== "" &&
-        data.endDate !== "present"
-      );
+      return data.endDate.trim() !== "" && data.endDate !== "present";
     },
     {
       path: ["endDate"],
       message: 'End date is required, or select "Present".',
     },
+  )
+  // Validate End Date > Start Date
+  .refine(
+    (data) => {
+      // Don't compare dates when the person is still present.
+      if (data.isPresent) {
+        return true;
+      }
+
+      // Let the first validation handle an empty end date.
+      if (!data.startDate || !data.endDate) {
+        return true;
+      }
+
+      return data.endDate > data.startDate;
+    },
+    {
+      path: ["endDate"],
+      message: "End date must be after the start date.",
+    },
   );
 
-// What RHF receives as input
-export type TimelineFormInput =
-  z.input<typeof timelineFormSchema>;
+export type TimelineFormInput = z.input<typeof timelineFormSchema>;
 
-// What comes OUT of Zod after parsing/defaults
-export type TimelineFormValues =
-  z.output<typeof timelineFormSchema>;
+export type TimelineFormValues = z.output<typeof timelineFormSchema>;

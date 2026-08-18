@@ -2,9 +2,14 @@
 
 import React from "react";
 import { Briefcase } from "lucide-react";
-import { useWatch, type UseFormReturn, type FieldErrors } from "react-hook-form";
+import {
+  useWatch,
+  type UseFormReturn,
+  type FieldErrors,
+} from "react-hook-form";
 import type { TimelineFormInput } from "./../../../../schemas/timeline-form.schema";
 import TextField from "./../../forms/text-field"; // Your existing component
+import TextareaField from "../../forms/textarea-field";
 
 interface CoreDetailsSectionProps {
   form: UseFormReturn<TimelineFormInput>;
@@ -17,6 +22,11 @@ export function CoreDetailsSection({ form, errors }: CoreDetailsSectionProps) {
   const isPresent = useWatch({
     control: form.control,
     name: "isPresent",
+  });
+
+  const startDate = useWatch({
+    control: form.control,
+    name: "startDate",
   });
 
   return (
@@ -35,6 +45,14 @@ export function CoreDetailsSection({ form, errors }: CoreDetailsSectionProps) {
           placeholder="e.g. Senior Frontend Engineer"
           registration={register("role")}
           error={errors.role?.message}
+        />
+
+        {/* Role / Title */}
+        <TextareaField
+          rows={3}
+          label="Short Description"
+          registration={register("description")}
+          error={errors.description?.message}
         />
 
         {/* Company & Location (Responsive 2-column on tablet/laptop) */}

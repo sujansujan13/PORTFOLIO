@@ -63,10 +63,9 @@ export function useUpdateTimeline() {
 
         // Refresh the currently edited timeline item.
         queryClient.invalidateQueries({
-          queryKey:
-            trpc.timeline.getDashboardTimelineById.queryKey({
-              id: variables.id,
-            }),
+          queryKey: trpc.timeline.getDashboardTimelineById.queryKey({
+            id: variables.id,
+          }),
         });
       },
     }),

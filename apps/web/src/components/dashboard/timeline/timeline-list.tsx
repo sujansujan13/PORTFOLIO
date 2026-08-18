@@ -7,7 +7,6 @@ import type { TimelineItem } from "@/schemas/timeline.schema";
 
 interface TimelineListProps {
   items: TimelineItem[];
-  onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   isPending: boolean;
   isError: boolean;
@@ -15,7 +14,7 @@ interface TimelineListProps {
 
 export function TimelineList({
   items,
-  onEdit,
+
   onDelete,
   isPending: isLoading = false,
   isError,
@@ -73,7 +72,7 @@ export function TimelineList({
                   aria-hidden="true"
                 />
 
-                <TimelineCard item={item} onEdit={onEdit} onDelete={onDelete} />
+                <TimelineCard item={item} onDelete={onDelete} />
               </div>
             );
           })}

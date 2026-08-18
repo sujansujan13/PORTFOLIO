@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -16,6 +16,9 @@ import { CoreDetailsSection } from "./core-details-section";
 import { DescriptionSection } from "./description-section";
 import { MetadataSection } from "./metadata-section";
 import TimlineVisibility from "./timeline-visibilty";
+
+import { formatToMonthInput, formatToDisplayDate } from "@/utils/date-formatter";
+import { toast } from "sonner";
 
 interface TimelineFormClientProps {
   defaultValues?: Partial<TimelineFormInput>;
@@ -46,10 +49,27 @@ export default function TimelineFormClient({
   onSubmit,
   onSaveDraft,
 }: TimelineFormClientProps) {
+  const [resetkey, setResetkey] = useState<number>(0);
+  const normalizedDefaultValues = React.useMemo(() => {
+    if (!defaultValues) return undefined;
+    return {
+      ...defaultValues,
+      startDate: formatToMonthInput(defaultValues.startDate),
+      endDate: defaultValues.isPresent
+        ? "present"
+        : formatToMonthInput(defaultValues.endDate),
+      bullets: Array.isArray(defaultValues.bullets)
+        ? defaultValues.bullets
+          .map((b) => (b.startsWith("•") ? b : `• ${b}`))
+          .join("\n")
+        : (defaultValues.bullets ?? ""),
+    };
+  }, [defaultValues]);
+
   const form = useForm<TimelineFormInput, unknown, TimelineFormValues>({
     resolver: zodResolver(timelineFormSchema),
 
-    defaultValues,
+    defaultValues: normalizedDefaultValues,
   });
 
   const {
@@ -71,7 +91,14 @@ export default function TimelineFormClient({
    *   handleInvalid()
    */
   const handleFormSubmit = async (values: TimelineFormValues) => {
-    await onSubmit(values);
+    const formattedValues = {
+      ...values,
+      startDate: formatToDisplayDate(values.startDate),
+      endDate: values.isPresent
+        ? "present"
+        : formatToDisplayDate(values.endDate),
+    };
+    await onSubmit(formattedValues);
   };
 
   /**
@@ -92,18 +119,34 @@ export default function TimelineFormClient({
     }
 
     await handleSubmit(async (values) => {
-      await onSaveDraft(values);
+      const formattedValues = {
+        ...values,
+        startDate: formatToDisplayDate(values.startDate),
+        endDate: values.isPresent
+          ? "present"
+          : formatToDisplayDate(values.endDate),
+      };
+      await onSaveDraft(formattedValues);
     }, handleInvalid)();
   };
 
   /**
    * Discard changes.
    *
-   * reset() with no argument resets to the original
-   * defaultValues supplied when useForm() was created.
+   * WHY THE BUG OCCURRED:
+   * 1. Calling reset(defaultValues) reset the form to raw unformatted values
+   *    (e.g. raw dates like "Mar 2026" instead of "2026-03", and raw array bullets instead of textarea string).
+   *    HTML <input type="month"> rejects "Mar 2026", resulting in empty/blank fields on screen.
+   * 2. Incrementing state resetkey had no effect because key={resetkey} was missing from the wrapper element.
+   *
+   * HOW TO FIX:
+   * 1. Pass normalizedDefaultValues to reset() so dates stay in "YYYY-MM" format and bullets stay formatted for textarea.
+   * 2. Attach key={resetkey} to <motion.main> to force React to unmount and remount input DOM elements with fresh reset values.
    */
   const handleDiscard = () => {
-    reset();
+    reset(normalizedDefaultValues);
+    setResetkey((prev) => prev + 1);
+    toast.success("Changes Discarded");
   };
 
   /**
@@ -117,6 +160,7 @@ export default function TimelineFormClient({
 
   return (
     <motion.main
+      key={resetkey}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}

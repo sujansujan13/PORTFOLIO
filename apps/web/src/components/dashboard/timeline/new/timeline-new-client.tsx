@@ -20,6 +20,7 @@ export default function TimelineNewClient() {
     type: "experience",
     publicAccess: true,
     tags: [],
+    bullets: []
   };
 
   const handleCreate = async (data: TimelineFormValues) => {

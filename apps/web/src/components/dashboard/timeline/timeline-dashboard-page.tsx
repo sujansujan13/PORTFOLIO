@@ -6,7 +6,8 @@ import { TimelineList } from "./timeline-list";
 import { TimelineFooter } from "./timeline-footer";
 import type { TimelineItem } from "@/schemas/timeline.schema";
 import TimelineSearchFilter from "./timeline-search-filter";
-import { useDashboardTimeline } from "@/hooks/useTimeline";
+import { useDashboardTimeline, useDeleteTimeline } from "@/hooks/useTimeline";
+import { toast } from "sonner";
 
 export default function TimelineDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,6 +20,8 @@ export default function TimelineDashboardPage() {
 
   const { isPending, isError } = dashboardTimelineQuery;
 
+  const deleteTimline = useDeleteTimeline();
+
   const timeline = dashboardTimelineQuery.data?.items || [];
   const counts = dashboardTimelineQuery.data?.counts;
 
@@ -28,7 +31,24 @@ export default function TimelineDashboardPage() {
     console.log("Edit entry:", id);
   };
 
-  const handleDelete = (id: string) => {};
+  interface deleteProps {
+    id: string;
+  }
+
+  const handleDelete = (id: string) => {
+    deleteTimline.mutate(
+      { id },
+      {
+        onSuccess: () => {
+          toast.success("Timeline deleted successfully");
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error("Couldn't delete the errors");
+        },
+      },
+    );
+  };
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
@@ -61,7 +81,6 @@ export default function TimelineDashboardPage() {
       {/* Main Timeline Content */}
       <TimelineList
         items={items}
-        onEdit={handleEdit}
         onDelete={handleDelete}
         isPending={isPending}
         isError={isError}
