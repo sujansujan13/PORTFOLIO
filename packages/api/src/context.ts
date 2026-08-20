@@ -2,7 +2,9 @@ import type { CreateExpressContextOptions } from "@trpc/server/adapters/express"
 
 import { auth } from "@my-portfolio/auth";
 
-function nodeHeadersToHeaders(headers: CreateExpressContextOptions["req"]["headers"]) {
+function nodeHeadersToHeaders(
+  headers: CreateExpressContextOptions["req"]["headers"],
+) {
   const webHeaders = new Headers();
   for (const [key, value] of Object.entries(headers)) {
     if (Array.isArray(value)) {
@@ -20,6 +22,13 @@ export async function createContext(opts: CreateExpressContextOptions) {
   });
   return {
     session,
+    req: {
+      ip:
+        opts.req.headers["x-forwarded-for"]?.toString().split(",")[0] ??
+        opts.req.socket.remoteAddress ??
+        "",
+      userAgent: opts.req.headers["user-agent"] ?? "",
+    },
   };
 }
 

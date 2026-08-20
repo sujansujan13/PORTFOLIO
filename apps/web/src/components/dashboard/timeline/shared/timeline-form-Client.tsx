@@ -17,7 +17,10 @@ import { DescriptionSection } from "./description-section";
 import { MetadataSection } from "./metadata-section";
 import TimlineVisibility from "./timeline-visibilty";
 
-import { formatToMonthInput, formatToDisplayDate } from "@/utils/date-formatter";
+import {
+  formatToMonthInput,
+  formatToDisplayDate,
+} from "@/utils/date-formatter";
 import { toast } from "sonner";
 
 interface TimelineFormClientProps {
@@ -60,8 +63,8 @@ export default function TimelineFormClient({
         : formatToMonthInput(defaultValues.endDate),
       bullets: Array.isArray(defaultValues.bullets)
         ? defaultValues.bullets
-          .map((b) => (b.startsWith("•") ? b : `• ${b}`))
-          .join("\n")
+            .map((b) => (b.startsWith("•") ? b : `• ${b}`))
+            .join("\n")
         : (defaultValues.bullets ?? ""),
     };
   }, [defaultValues]);

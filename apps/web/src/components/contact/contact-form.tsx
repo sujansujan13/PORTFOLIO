@@ -6,17 +6,18 @@ import { motion } from "framer-motion";
 import { Send, Loader2, CheckCircle } from "lucide-react";
 import contactData from "@/data/contact-info.json";
 import { useContactForm } from "@/hooks/useContactForm";
-import { useState } from "react";
+import { useWatch } from "react-hook-form";
 
 export function ContactForm() {
-  // const [isSuccess, setIsSuccess] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  // we don't need to manage isSubmitting state manually because react-hook-form provides it out of the box.
-
-  const { register, handleSubmit, errors, onSubmit, isSuccess, resetSuccess } =
-    useContactForm();
-
-  console.log(errors);
+  const {
+    register,
+    handleSubmit,
+    errors,
+    onSubmit,
+    isSuccess,
+    resetSuccess,
+    isSubmiting,
+  } = useContactForm();
 
   return (
     <div className="w-full rounded-lg bg-card border border-border p-6 sm:p-8 space-y-6 shadow-xs">
@@ -167,10 +168,10 @@ export function ContactForm() {
           {/* Action Trigger Button Segment */}
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmiting}
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-sans font-bold text-sm uppercase tracking-wider py-3 px-4 flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 cursor-pointer group"
           >
-            {isSubmitting ? (
+            {isSubmiting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span>Processing Sync...</span>

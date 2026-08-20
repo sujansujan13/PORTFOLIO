@@ -19,3 +19,5 @@ export { Project } from "./models/project.model";
 export { Blog } from "./models/blog.model";
 
 export { Timeline } from "./models/timeline.model";
+
+export { Contact } from "./models/contact.model";

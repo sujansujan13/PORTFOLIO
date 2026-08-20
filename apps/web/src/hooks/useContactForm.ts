@@ -3,19 +3,20 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  contactSchema,
-  type ContactFormValues,
-} from "@/schemas/contact.schema";
+  contactInputFormSchema,
+  type ContactInputValues,
+} from "@/schemas/contact-form.schema";
+import { useSubmitContact } from "./useSubmitContact";
 
 export function useContactForm() {
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const form = useForm<ContactFormValues>({
-    resolver: zodResolver(contactSchema),
+  const form = useForm<ContactInputValues>({
+    resolver: zodResolver(contactInputFormSchema),
     defaultValues: {
       name: "",
       email: "",
-      subject: "",
+      subject: "collaboration",
       message: "",
     },
     // ✅ ADD THESE OPTIONS
@@ -24,12 +25,11 @@ export function useContactForm() {
     shouldFocusError: true, // Focus first error field
   });
 
-  const onSubmit = async (data: ContactFormValues) => {
-    try {
-      // Fake API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Form Data:", data);
+  const submitContact = useSubmitContact();
 
+  const onSubmit = async (data: ContactInputValues) => {
+    try {
+      await submitContact.mutateAsync(data);
       setIsSuccess(true);
       form.reset();
     } catch (error) {
@@ -49,5 +49,6 @@ export function useContactForm() {
     onSubmit,
     isSuccess,
     resetSuccess,
+    isSubmiting: form.formState.isSubmitting || submitContact.isPending,
   };
 }
