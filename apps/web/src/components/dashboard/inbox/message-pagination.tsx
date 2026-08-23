@@ -7,21 +7,25 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }
 
 export function MessagePagination({
   currentPage,
   totalPages,
   onPageChange,
+  hasPreviousPage,
+  hasNextPage,
 }: PaginationProps) {
   return (
     <div className="flex items-center justify-center gap-1.5 pt-4">
       {/* Previous Button */}
       <button
         type="button"
-        disabled={currentPage === 1}
+        disabled={!hasPreviousPage}
         onClick={() => onPageChange(currentPage - 1)}
-        className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground transition-colors cursor-pointer"
+        className={`p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground transition-colors cursor-pointer disabled:cursor-not-allowed`}
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
@@ -45,9 +49,9 @@ export function MessagePagination({
       {/* Next Button */}
       <button
         type="button"
-        disabled={currentPage === totalPages}
+        disabled={!hasNextPage}
         onClick={() => onPageChange(currentPage + 1)}
-        className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground transition-colors cursor-pointer"
+        className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground transition-colors cursor-pointer disabled:cursor-not-allowed"
       >
         <ChevronRight className="w-4 h-4" />
       </button>

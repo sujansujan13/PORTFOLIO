@@ -83,14 +83,19 @@ export default function InboxClientPage() {
       setIsRefreshing(false);
     }, 600);
   };
-  const limit = 10;
-  const totalPages = Math.ceil(messages.length / limit);
 
   const handlePageChange = (page: number) => {
     setPage(page);
   };
+
+  const pagination = contact?.pagination;
+  const totalPages = pagination?.totalPages ?? 1;
+  const hasNextPage = pagination?.hasPreviousPage ?? false;
+  const hasPreviousPage = pagination?.hasPreviousPage ?? false;
+  const currentPage = pagination?.page ?? 1;
+
   return (
-    <div className="max-w-7xl mx-auto space-y-6 p-4 sm:p-6 lg:p-8 ">
+    <main className="max-w-7xl mx-auto space-y-6 p-4 sm:p-6 lg:p-8 ">
       <InboxHeader onRefresh={handleRefresh} isRefreshing={isRefreshing} />
       <InboxFilters
         activeStatus={activeTab}
@@ -103,7 +108,7 @@ export default function InboxClientPage() {
         emailStatusFilter={emailStatusFilter}
         onEmailStatusChange={handleEmailStatusChange}
       />
-      <div className="space-y-2.5 min-h-75">
+      <div className="space-y-3 min-h-75">
         {isPending ? (
           // Loading
           <div className="flex flex-col items-center justify-center py-12 text-center bg-card border border-border/80">
@@ -141,10 +146,12 @@ export default function InboxClientPage() {
         )}
       </div>
       <MessagePagination
-        currentPage={page}
+        currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
+        hasPreviousPage={hasPreviousPage}
+        hasNextPage={hasNextPage}
       />
-    </div>
+    </main>
   );
 }
