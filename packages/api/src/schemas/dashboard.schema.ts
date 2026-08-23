@@ -14,6 +14,9 @@ export const dashboardStatSchema = z.object({
     total: z.number(),
     totalViews: z.number(),
   }),
+  contacts: z.object({
+    total: z.number().int().positive(),
+  }),
 });
 
 export type DashboardStats = z.infer<typeof dashboardStatSchema>;

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import type { InferSchemaType, Model } from "mongoose";
+import type { HydratedDocument, InferSchemaType, Model } from "mongoose";
 
 const { Schema, model, models } = mongoose;
 
@@ -78,8 +78,10 @@ contactMessageSchema.index({
   message: "text",
 });
 
-type MessageDocument = InferSchemaType<typeof contactMessageSchema>;
+export type Message = InferSchemaType<typeof contactMessageSchema>;
+
+export type MessageDocument = HydratedDocument<Message>;
 
 export const Contact =
-  (models.Contact as Model<MessageDocument> | undefined) ||
-  model<MessageDocument>("Contact", contactMessageSchema);
+  (models.Contact as Model<Message> | undefined) ||
+  model<Message>("Contact", contactMessageSchema);

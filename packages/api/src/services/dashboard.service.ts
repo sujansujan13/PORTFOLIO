@@ -18,7 +18,7 @@
 //  lastUpdated: latestTimeline?.updatedAt,
 //
 // Promise.all
-import { Project, Blog, Timeline } from "@my-portfolio/db";
+import { Project, Blog, Timeline, Contact } from "@my-portfolio/db";
 import { dashboardStatSchema } from "../schemas/dashboard.schema";
 
 export async function getDashboardStats() {
@@ -30,6 +30,7 @@ export async function getDashboardStats() {
     latestTimeline,
     totalBlogs,
     totalBlogViews,
+    totalContactMessages,
   ] = await Promise.all([
     Project.countDocuments(),
     Project.countDocuments({
@@ -47,6 +48,9 @@ export async function getDashboardStats() {
         },
       },
     ]),
+    Contact.countDocuments({
+      status: "unread",
+    }),
   ]);
   return dashboardStatSchema.parse({
     projects: {
@@ -60,6 +64,9 @@ export async function getDashboardStats() {
     blogs: {
       total: totalBlogs,
       totalViews: totalBlogViews[0]?.views ?? 0,
+    },
+    contacts: {
+      total: totalContactMessages,
     },
   });
 }

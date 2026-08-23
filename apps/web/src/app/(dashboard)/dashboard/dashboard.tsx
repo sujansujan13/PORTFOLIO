@@ -3,8 +3,6 @@
 // (statsData.experience.lastUpdated!),
 "use client";
 
-import React from "react";
-import { StatusHeaderPanel } from "@/components/dashboard/status-header-panel";
 import { AnalyticsGridPanel } from "@/components/dashboard/analytics-grid-panel";
 import { ProjectListingViewPanel } from "@/components/dashboard/project-listing-view-panel";
 import mockData from "@/data/dashboard-mock.json";
@@ -53,11 +51,11 @@ export default function AdminDashboardPage({ user }: { user: any }) {
       };
     }
     if (card.id === "messages") {
-      const unreadMessages = 7;
       return {
         ...card,
-        value: unreadMessages,
-        changeText: unreadMessages > 2 ? "Reuires Action" : "All Caught Up",
+        value: statsData.contacts.total,
+        changeText:
+          statsData.contacts.total > 2 ? "Reuires Action" : "All Caught Up",
       };
     }
     return {
