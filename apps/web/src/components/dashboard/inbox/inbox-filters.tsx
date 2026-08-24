@@ -1,7 +1,10 @@
 "use client";
 
-import React from "react";
-import { Search, ChevronDown, X } from "lucide-react";
+import React, { type Dispatch } from "react";
+import { Search, ChevronDown, X, CheckCheck } from "lucide-react";
+import { toast } from "sonner";
+import { div } from "framer-motion/client";
+import MarkAllModal from "./ui/mark-all-modal";
 
 export type FilterStatus = "all" | "unread" | "read" | "archived";
 export type EmailNotificationFilter = "all" | "sent" | "pending" | "failed";
@@ -27,6 +30,9 @@ interface InboxFiltersProps {
   onSubjectChange: (subject: Subject) => void;
   emailStatusFilter: EmailNotificationFilter;
   onEmailStatusChange: (status: EmailNotificationFilter) => void;
+  onMarkAllRead: () => void;
+  setIsModalOpen: Dispatch<React.SetStateAction<boolean>>;
+  isModalOpen: boolean;
 }
 
 export function InboxFilters({
@@ -39,6 +45,9 @@ export function InboxFilters({
   onSubjectChange,
   emailStatusFilter,
   onEmailStatusChange,
+  setIsModalOpen,
+  isModalOpen,
+  onMarkAllRead,
 }: InboxFiltersProps) {
   const tabs: { id: FilterStatus; label: string; count: number | undefined }[] =
     [
@@ -51,27 +60,60 @@ export function InboxFilters({
   return (
     <div className="space-y-2">
       {/* Search Input */}
-      <div className="relative w-full max-w-lg pb-1">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by name, email, or content..."
-          className="w-full bg-input/30 border border-border/80 pl-9 pr-4 py-1.5 text-sm font-sans text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-primary transition-colors rounded-md"
-        />
-        {/* Clear search */}
-        {searchQuery && (
+      <div className="flex flex-col md:flex-row items-end md:items-center space-y-2 md:space-y-0 justify-between">
+        {" "}
+        <div className="relative w-full max-w-lg pb-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search by name, email, or content..."
+            className="w-full bg-input/30 border border-border/80 pl-9 pr-4 py-1.5 text-sm font-sans text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-primary transition-colors rounded-md"
+          />
+          {/* Clear search */}
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => onSearchChange("")}
+              className="absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Clear search"
+              title="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        <div className="relative ">
+          {isModalOpen && (
+            <>
+              {" "}
+              <div
+                onClick={() => setIsModalOpen(false)}
+                className="fixed inset-0 z-40"
+              />
+              {/* 
+        Mobile: Positioned above the button, aligned to right edge (top-auto bottom-full right-0)
+        Tablet/Desktop (sm+): Shifts leftwards beside the button (sm:bottom-4 sm:right-full sm:left-auto)
+      */}
+              <div className="absolute bottom-full right-0 mb-2 sm:mb-0 sm:bottom-4 sm:right-full z-50 whitespace-nowrap">
+                <MarkAllModal
+                  title="Mark all messages as Read?"
+                  onConfirm={onMarkAllRead}
+                  onCancel={() => setIsModalOpen(false)}
+                />
+              </div>
+            </>
+          )}
           <button
             type="button"
-            onClick={() => onSearchChange("")}
-            className="absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Clear search"
-            title="Clear search"
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-xs font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <X className="h-4 w-4" />
+            <CheckCheck className="w-3.5 h-3.5 opacity-80" />
+            Mark all as read
           </button>
-        )}
+        </div>
       </div>
 
       {/* Filter Bar */}

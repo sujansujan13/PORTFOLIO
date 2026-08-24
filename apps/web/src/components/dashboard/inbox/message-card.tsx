@@ -11,10 +11,11 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import type { ContactMessage } from "./inbox-client-page";
+import Link from "next/link";
 
 interface MessageCardProps {
   message: ContactMessage;
-  onToggleRead: (id: string) => void;
+  onToggleRead: (message: ContactMessage) => void;
   onArchive: (id: string) => void;
 }
 
@@ -67,7 +68,10 @@ export function MessageCard({
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {/* Left Side: Avatar & Details */}
-        <div className="flex items-start gap-3.5 min-w-0">
+        <Link
+          href={`/dashboard/inbox/${message.id}`}
+          className="flex items-start gap-3.5 min-w-0"
+        >
           {/* Avatar Circle */}
           <div className="relative shrink-0">
             <div className="w-10 h-10 rounded-full bg-input/60 border border-border flex items-center justify-center font-bold text-xs text-foreground tracking-wider">
@@ -118,13 +122,13 @@ export function MessageCard({
               {message.message}
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-1 self-end sm:self-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <button
             type="button"
-            onClick={() => onToggleRead(message.id)}
+            onClick={() => onToggleRead(message)}
             title={isUnread ? "Mark as Read" : "Mark as Unread"}
             className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors rounded-none cursor-pointer"
           >

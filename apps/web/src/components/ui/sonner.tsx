@@ -32,9 +32,20 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--border-radius": "var(--radius)",
         } as React.CSSProperties
       }
+      // toastOptions={{
+      //   classNames: {
+      //     toast: "cn-toast",
+      //     success:
+      //       "!bg-primary !text-sm !text-white !font-medium  !border-accent  ",
+      //   },
+      // }}
       toastOptions={{
         classNames: {
-          toast: "cn-toast",
+          // Shrinks overall height, removes heavy default padding, sets auto-width
+          toast:
+            "!py-3 !px-3.5 !min-h-0 !w-auto !max-w-xs !gap-2 !rounded-lg !shadow-md",
+          title: "!text-xs !font-medium !m-0 !p-0",
+          success: "!bg-primary !text-white !border-accent",
         },
       }}
       {...props}

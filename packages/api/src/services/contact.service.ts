@@ -15,6 +15,12 @@ import {
   type ContactMessageResponse,
 } from "../schemas/Contact/dashboardSchema-Response.schema";
 import type { MessageDocument } from "@my-portfolio/db/models/contact.model";
+import {
+  toggleReadSchema,
+  type ToggleRead,
+} from "../schemas/Contact/toggle-read.schema";
+import mongoose from "mongoose";
+import { TRPCError } from "@trpc/server";
 
 interface CreateContactMessageOptions {
   ipHash?: string | null;
@@ -353,5 +359,159 @@ export async function getContactMessages(input: GetContactMessagesInput) {
     console.error("Error while fetching contact messages:", error);
 
     throw error;
+  }
+}
+
+export async function updateContactMessageReadStatus(input: ToggleRead) {
+  const validatedInput = toggleReadSchema.parse(input);
+
+  const { status, id } = validatedInput;
+
+  if (!mongoose.isValidObjectId(id)) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Invalid Id",
+    });
+  }
+
+  try {
+    const updateMessage = await Contact.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          status,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!updateMessage) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Message Not Found",
+      });
+    }
+
+    return serializeContactMessage(updateMessage);
+  } catch (error) {
+    console.error("Error while toggling message status:", error);
+
+    if (error instanceof TRPCError) {
+      throw error;
+    }
+
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Internal server error while toggling message status",
+    });
+  }
+}
+
+export async function archiveContactMessage(id: string) {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Invalid Contact Id",
+    });
+  }
+
+  try {
+    const updateArchive = await Contact.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          status: "archived",
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!updateArchive) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Message Not Found",
+      });
+    }
+
+    return serializeContactMessage(updateArchive);
+  } catch (error) {
+    console.error("Error while archiving message:", error);
+
+    if (error instanceof TRPCError) {
+      throw error;
+    }
+
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Internal server error while archiving message",
+    });
+  }
+}
+
+export async function markAllRead() {
+  try {
+    const result = await Contact.updateMany(
+      {
+        status: "unread",
+      },
+      {
+        $set: {
+          status: "read",
+        },
+      },
+      {
+        runValidators: true,
+      },
+    );
+    return {
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+    };
+  } catch (error) {
+    console.error("Error making all unread messages read", error);
+    if (error instanceof TRPCError) {
+      throw error;
+    }
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Internal server error while making all unread messages read",
+    });
+  }
+}
+
+export async function getSingleContactMessage(id: string) {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Invalid Contact Id",
+    });
+  }
+
+  try {
+    const contactMessage = await Contact.findById(id);
+
+    if (!contactMessage) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: `Contact message with ID ${id} not found`,
+      });
+    }
+
+    return serializeContactMessage(contactMessage);
+  } catch (error) {
+    console.error(error);
+    if (error instanceof TRPCError) {
+      throw error;
+    }
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Internal server error occurred while fetching contact message",
+    });
   }
 }

@@ -10,7 +10,13 @@ import {
 } from "./inbox-filters";
 import { MessageCard } from "./message-card";
 import { MessagePagination } from "./message-pagination";
-import { useContactMessages } from "@/hooks/useContactMessages";
+import {
+  useArchiveMessages,
+  useContactMessages,
+  useMarkAllRead,
+  useUpdateReadStatus,
+} from "@/hooks/useContactMessages";
+import { toast } from "sonner";
 
 // Exact structure derived from your Mongoose Schema
 export interface ContactMessage {
@@ -39,8 +45,8 @@ export default function InboxClientPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<SubjectFilter>("all");
   const [activeTab, setActiveTab] = useState<FilterStatus>("all");
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [page, setPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [emailStatusFilter, setEmailStatusFilter] =
     useState<EmailNotificationFilter>("all");
@@ -53,7 +59,13 @@ export default function InboxClientPage() {
     subject: selectedSubject,
   });
 
-  const { data: contact, isPending, isError } = contactMessages;
+  const {
+    data: contact,
+    isPending,
+    isError,
+    refetch,
+    isFetching,
+  } = contactMessages;
 
   const messages = contact?.messages ?? [];
 
@@ -70,43 +82,70 @@ export default function InboxClientPage() {
     setActiveTab(status);
   };
 
-  const handleToggleRead = (id: string) => {};
-  const handleOnArchive = (id: string) => {};
+  const updateReadStatus = useUpdateReadStatus();
+  const handleToggleRead = (message: ContactMessage) => {
+    const status = message.status === "read" ? "unread" : "read";
+
+    updateReadStatus.mutate({
+      id: message.id,
+      status,
+    });
+
+    toast.success(`Message marked ${status === "read" ? "unread" : "read"}`, {
+      position: "top-center",
+    });
+  };
+
+  const archiveMessage = useArchiveMessages();
+  const handleOnArchive = (id: string) => {
+    archiveMessage.mutate({ id });
+    toast.success("Message Archived", {
+      position: "top-center",
+    });
+  };
 
   const handleEmailStatusChange = (status: EmailNotificationFilter) => {
     setEmailStatusFilter(status);
   };
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
-    }, 600);
+  const handleRefresh = async () => {
+    await refetch();
   };
 
   const handlePageChange = (page: number) => {
     setPage(page);
   };
 
+  const markAllRead = useMarkAllRead();
+
+  const handleMarkAllRead = () => {
+    markAllRead.mutate();
+    setIsModalOpen(false);
+    toast.success("Marked all messages read");
+  };
+
   const pagination = contact?.pagination;
   const totalPages = pagination?.totalPages ?? 1;
-  const hasNextPage = pagination?.hasPreviousPage ?? false;
+  const hasNextPage = pagination?.hasNextPage ?? false;
   const hasPreviousPage = pagination?.hasPreviousPage ?? false;
   const currentPage = pagination?.page ?? 1;
 
   return (
-    <main className="max-w-7xl mx-auto space-y-6 p-4 sm:p-6 lg:p-8 ">
-      <InboxHeader onRefresh={handleRefresh} isRefreshing={isRefreshing} />
+    <main className="max-w-7xl mx-auto space-y-4 p-4 sm:p-6 lg:p-8 ">
+      <InboxHeader onRefresh={handleRefresh} isRefreshing={isFetching} />
       <InboxFilters
         activeStatus={activeTab}
+        onMarkAllRead={handleMarkAllRead}
         onStatusChange={handleStatusChange}
         counts={counts}
+        setIsModalOpen={setIsModalOpen}
         onSearchChange={handleSearchChange}
         searchQuery={searchQuery}
         selectedSubject={selectedSubject}
         onSubjectChange={handleSubjectChange}
         emailStatusFilter={emailStatusFilter}
         onEmailStatusChange={handleEmailStatusChange}
+        isModalOpen={isModalOpen}
       />
       <div className="space-y-3 min-h-75">
         {isPending ? (
