@@ -25,7 +25,7 @@ export interface ContactMessage {
   email: string;
   subject: Subject;
   message: string;
-  status: "unread" | "read" | "archived";
+  status: "unread" | "read" | "archived" | "spam";
   emailNotifications?: {
     status: "pending" | "sent" | "failed";
     sentAt: string | null;
@@ -84,16 +84,31 @@ export default function InboxClientPage() {
 
   const updateReadStatus = useUpdateReadStatus();
   const handleToggleRead = (message: ContactMessage) => {
-    const status = message.status === "read" ? "unread" : "read";
+    const targetStatus = message.status === "read" ? "unread" : "read";
 
-    updateReadStatus.mutate({
-      id: message.id,
-      status,
-    });
-
-    toast.success(`Message marked ${status === "read" ? "unread" : "read"}`, {
-      position: "top-center",
-    });
+    updateReadStatus.mutate(
+      {
+        id: message.id,
+        status: targetStatus,
+      },
+      {
+        onSuccess: () => {
+          toast.success(
+            targetStatus === "read"
+              ? "Message marked as read"
+              : "Message marked as unread",
+            {
+              position: "top-center",
+            },
+          );
+        },
+        onError: () => {
+          toast.error("Failed to update message status", {
+            position: "top-center",
+          });
+        },
+      },
+    );
   };
 
   const archiveMessage = useArchiveMessages();
@@ -131,7 +146,7 @@ export default function InboxClientPage() {
   const currentPage = pagination?.page ?? 1;
 
   return (
-    <main className="max-w-7xl mx-auto space-y-4 p-4 sm:p-6 lg:p-8 ">
+    <main className="max-w-7xl mx-auto space-y-4 p-4 sm:p-6 lg:p-8  ">
       <InboxHeader onRefresh={handleRefresh} isRefreshing={isFetching} />
       <InboxFilters
         activeStatus={activeTab}
@@ -173,6 +188,10 @@ export default function InboxClientPage() {
               message={message}
               onToggleRead={handleToggleRead}
               onArchive={handleOnArchive}
+              isPending={
+                updateReadStatus.isPending &&
+                updateReadStatus.variables?.id === message.id
+              }
             />
           ))
         ) : (

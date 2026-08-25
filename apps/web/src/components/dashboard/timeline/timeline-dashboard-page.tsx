@@ -65,7 +65,7 @@ export default function TimelineDashboardPage() {
   };
 
   return (
-    <main className="w-full min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-10 max-w-6xl mx-auto">
+    <main className="w-full p-4 sm:p-6 lg:p-10 max-w-6xl mx-auto">
       {/* Page Header */}
       <TimelineHeader href="/dashboard/timeline/new" />
 

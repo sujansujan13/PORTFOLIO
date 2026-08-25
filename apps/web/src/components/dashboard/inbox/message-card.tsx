@@ -12,17 +12,20 @@ import {
 } from "lucide-react";
 import type { ContactMessage } from "./inbox-client-page";
 import Link from "next/link";
+import { Initials } from "./dynamicPage/utils/initials";
 
 interface MessageCardProps {
   message: ContactMessage;
   onToggleRead: (message: ContactMessage) => void;
   onArchive: (id: string) => void;
+  isPending?: boolean;
 }
 
 export function MessageCard({
   message,
   onToggleRead,
   onArchive,
+  isPending = false,
 }: MessageCardProps) {
   const isUnread = message.status === "unread";
 
@@ -33,15 +36,7 @@ export function MessageCard({
     general: "bg-muted text-muted-foreground border-border",
   };
 
-  // Helper for 2-letter Avatar
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  const initials = Initials(message.name);
 
   // Date Formatting
   const formattedDate = new Date(message.createdAt).toLocaleDateString(
@@ -70,12 +65,13 @@ export function MessageCard({
         {/* Left Side: Avatar & Details */}
         <Link
           href={`/dashboard/inbox/${message.id}`}
+          prefetch={false}
           className="flex items-start gap-3.5 min-w-0"
         >
           {/* Avatar Circle */}
           <div className="relative shrink-0">
             <div className="w-10 h-10 rounded-full bg-input/60 border border-border flex items-center justify-center font-bold text-xs text-foreground tracking-wider">
-              {getInitials(message.name)}
+              {initials}
             </div>
             {isUnread && (
               <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-card" />
@@ -128,6 +124,7 @@ export function MessageCard({
         <div className="flex items-center gap-1 self-end sm:self-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <button
             type="button"
+            disabled={isPending}
             onClick={() => onToggleRead(message)}
             title={isUnread ? "Mark as Read" : "Mark as Unread"}
             className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors rounded-none cursor-pointer"

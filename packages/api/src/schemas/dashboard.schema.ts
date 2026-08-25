@@ -15,7 +15,7 @@ export const dashboardStatSchema = z.object({
     totalViews: z.number(),
   }),
   contacts: z.object({
-    total: z.number().int().positive(),
+    total: z.number().int().nonnegative(),
   }),
 });
 

@@ -8,17 +8,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background text-foreground flex ">
+    <div className="h-screen overflow-hidden bg-background text-foreground flex">
       {/* Permanent Desktop Sidebar Controller */}
       <Sidebar />
 
       {/* Primary View Area - Responsive margin pads content clear of the sidebar */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-64  ">
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-64 h-full">
         {/* Sticky Global Top Bar / Mobile Nav Drawer Container */}
         <StatusHeaderPanel />
 
-        {/* Content Node Element */}
-        <main className="flex-1">{children}</main>
+        {/* Content Node Element with sleek, padded custom scrollbar */}
+        <main className="flex-1 overflow-y-auto custom-scrollbar">
+          {children}
+        </main>
       </div>
     </div>
   );

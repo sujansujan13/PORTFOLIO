@@ -10,7 +10,7 @@ export const contactMessageResponseSchema = z.object({
 
   message: z.string(),
 
-  status: z.enum(["unread", "read", "archived"]),
+  status: z.enum(["unread", "read", "archived", "spam"]),
 
   emailNotifications: z
     .object({
@@ -41,6 +41,7 @@ export const getContactMessagesResponseSchema = z.object({
     read: z.number(),
     unread: z.number(),
     archived: z.number(),
+    spam: z.number(),
     sent: z.number(),
     pending: z.number(),
     failed: z.number(),

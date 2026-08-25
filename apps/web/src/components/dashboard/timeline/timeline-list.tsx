@@ -66,7 +66,7 @@ export function TimelineList({
             return (
               <div key={item.id} className="relative group/timeline-node">
                 <div
-                  className={`hidden lg:block absolute -left-8 top-0 h-3.5 w-3.5 rounded-full border-2 border-background z-10 animate-pulse transition-transform duration-200 group-hover/timeline-node:scale-125 ${
+                  className={`hidden lg:block absolute -left-8 top-0 h-3.5 w-3.5 rounded-full border-2 border-background z-10 transition-transform duration-200 group-hover/timeline-node:scale-125 ${
                     isEducation ? "bg-amber-500" : "bg-primary"
                   }`}
                   aria-hidden="true"

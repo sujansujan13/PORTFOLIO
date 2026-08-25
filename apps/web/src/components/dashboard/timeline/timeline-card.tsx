@@ -30,7 +30,7 @@ export function TimelineCard({ item, onEdit, onDelete }: TimelineCardProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className={`group relative flex flex-col justify-between p-5 bg-card/60 backdrop-blur-sm border border-border/60 rounded-sm transition-all duration-300 hover:border-primary/50 hover:shadow-lg ${
+      className={`group relative flex flex-col justify-between p-5 bg-card border border-border/60 rounded-sm transition-all duration-300 hover:border-primary/50 hover:shadow-lg ${
         isEducation
           ? "border-t-2 border-t-amber-500/80"
           : "border-t-2 border-t-primary/80"

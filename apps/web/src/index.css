@@ -172,3 +172,29 @@ The Dark Preset (.dark): When you click the toggle, next-themes applies the .dar
   background: #0b1220;
   overflow-x: auto;
 }
+
+/* Custom Sleek & Subtle Scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.552 0.016 285.938 / 0.35) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin-block: 8px; /* Adds top/bottom breathing margin so scrollbar isn't edge-to-edge */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: oklch(0.552 0.016 285.938 / 0.35);
+  border-radius: 9999px;
+  border: 1px solid transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.59 0.2 277 / 0.8);
+}

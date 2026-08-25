@@ -1,6 +1,6 @@
 import { z } from "zod";
 export const getContactMessagesSchema = z.object({
-  status: z.enum(["all", "read", "unread", "archived"]).default("all"),
+  status: z.enum(["all", "read", "unread", "archived", "spam"]).default("all"),
   emailNotificationStatus: z
     .enum(["all", "sent", "pending", "failed"])
     .default("all"),

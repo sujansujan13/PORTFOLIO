@@ -36,7 +36,7 @@ const contactMessageSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["unread", "read", "archived"],
+      enum: ["unread", "read", "archived", "spam"],
       default: "unread",
       index: true,
     },

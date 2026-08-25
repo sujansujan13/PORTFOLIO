@@ -13,7 +13,6 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { formatDistanceToNow } from "date-fns";
 
 export default function AdminDashboardPage({ user }: { user: any }) {
-  // const { openNewProjectModal } = useDashboardStore();
   const dashboardStatQuery = useDashboardStats();
 
   const { isPending, isError } = dashboardStatQuery;

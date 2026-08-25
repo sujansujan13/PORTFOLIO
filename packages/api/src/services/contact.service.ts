@@ -21,6 +21,10 @@ import {
 } from "../schemas/Contact/toggle-read.schema";
 import mongoose from "mongoose";
 import { TRPCError } from "@trpc/server";
+import {
+  updateStatusSchema,
+  type UpdateStatus,
+} from "../schemas/Contact/update-status.schema";
 
 interface CreateContactMessageOptions {
   ipHash?: string | null;
@@ -191,6 +195,10 @@ export async function getContactMessages(input: GetContactMessagesInput) {
     case "archived":
       filter.status = "archived";
       break;
+
+    case "spam":
+      filter.status = "spam";
+      break;
   }
 
   if (subject !== "all") {
@@ -284,7 +292,7 @@ export async function getContactMessages(input: GetContactMessagesInput) {
     // These intentionally ignore search/filter/pagination.
     // --------------------------------------------------
 
-    const [total, read, unread, archived, sent, pending, failed] =
+    const [total, read, unread, archived, spam, sent, pending, failed] =
       await Promise.all([
         Contact.countDocuments(),
 
@@ -298,6 +306,10 @@ export async function getContactMessages(input: GetContactMessagesInput) {
 
         Contact.countDocuments({
           status: "archived",
+        }),
+
+        Contact.countDocuments({
+          status: "spam",
         }),
 
         Contact.countDocuments({
@@ -339,6 +351,7 @@ export async function getContactMessages(input: GetContactMessagesInput) {
         read,
         unread,
         archived,
+        spam,
         sent,
         pending,
         failed,
@@ -512,6 +525,80 @@ export async function getSingleContactMessage(id: string) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Internal server error occurred while fetching contact message",
+    });
+  }
+}
+
+export async function deleteSingleContact(id: string) {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Invalid Id",
+    });
+  }
+
+  try {
+    const deletedContact = await Contact.findByIdAndDelete(id);
+
+    if (!deletedContact) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: `Contact message with ID:${id} doesn't exist`,
+      });
+    }
+
+    return {
+      deleted: true,
+      id: deletedContact?._id.toString(),
+    };
+  } catch (error) {
+    console.error("Error deleting single contact", error);
+
+    if (error instanceof TRPCError) {
+      throw error;
+    }
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Internal server error while deleting single contact message",
+    });
+  }
+}
+
+export async function updateStatus(input: UpdateStatus) {
+  const validatedInput = updateStatusSchema.parse(input);
+
+  const { status, id } = validatedInput;
+
+  try {
+    const updateStatus = await Contact.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          status,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!updateStatus) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Message Not Found",
+      });
+    }
+
+    return serializeContactMessage(updateStatus);
+  } catch (error) {
+    console.error("Error updating the message status", error);
+    if (error instanceof TRPCError) {
+      throw error;
+    }
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Internal server error while updating the status",
     });
   }
 }

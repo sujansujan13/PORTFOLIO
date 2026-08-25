@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { div } from "framer-motion/client";
 import MarkAllModal from "./ui/mark-all-modal";
 
-export type FilterStatus = "all" | "unread" | "read" | "archived";
+export type FilterStatus = "all" | "unread" | "read" | "archived" | "spam";
 export type EmailNotificationFilter = "all" | "sent" | "pending" | "failed";
 export type Subject = "collaboration" | "internship" | "general";
 
@@ -20,6 +20,7 @@ interface InboxFiltersProps {
     unread: number;
     read: number;
     archived: number;
+    spam: number;
     sent: number;
     pending: number;
     failed: number;
@@ -55,6 +56,7 @@ export function InboxFilters({
       { id: "unread", label: "Unread", count: counts?.unread },
       { id: "read", label: "Read", count: counts?.read },
       { id: "archived", label: "Archived", count: counts?.archived },
+      { id: "spam", label: "Spam", count: counts?.spam },
     ];
 
   return (
