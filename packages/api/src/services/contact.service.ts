@@ -33,6 +33,7 @@ interface CreateContactMessageOptions {
 }
 
 export async function createContactMessage(
+  recipientUserId:string,
   input: ContactInputValues,
   options: CreateContactMessageOptions = {},
 ) {
@@ -51,6 +52,7 @@ export async function createContactMessage(
    */
   const contactMessage = await Contact.create({
     ...validatedData,
+    recipientUserId,
 
     status: "unread",
 
@@ -81,7 +83,7 @@ export async function createContactMessage(
      * 3. Mark email as successfully sent.
      */
     await Contact.updateOne(
-      { _id: contactMessage._id },
+      { _id: contactMessage._id, recipientUserId },
       {
         $set: {
           "emailNotifications.status": "sent",
@@ -106,7 +108,7 @@ export async function createContactMessage(
       error instanceof Error ? error.message : "Unknown email delivery error";
 
     await Contact.updateOne(
-      { _id: contactMessage._id },
+      { _id: contactMessage._id, recipientUserId },
       {
         $set: {
           "emailNotifications.status": "failed",
@@ -161,7 +163,7 @@ export function serializeContactMessage(
   };
 }
 
-export async function getContactMessages(input: GetContactMessagesInput) {
+export async function getContactMessages(recipientUserId:string, input: GetContactMessagesInput) {
   const validatedInput = getContactMessagesSchema.parse(input);
 
   const {
@@ -177,7 +179,7 @@ export async function getContactMessages(input: GetContactMessagesInput) {
   // 1. Build filters for the message list
   // --------------------------------------------------
 
-  const filter: Record<string, unknown> = {};
+  const filter: Record<string, unknown> = {recipientUserId};
 
   switch (status) {
     case "all":
@@ -294,33 +296,40 @@ export async function getContactMessages(input: GetContactMessagesInput) {
 
     const [total, read, unread, archived, spam, sent, pending, failed] =
       await Promise.all([
-        Contact.countDocuments(),
+        Contact.countDocuments({recipientUserId}),
 
         Contact.countDocuments({
           status: "read",
+          recipientUserId
         }),
 
         Contact.countDocuments({
+          recipientUserId,
           status: "unread",
         }),
 
         Contact.countDocuments({
+          recipientUserId,
           status: "archived",
         }),
 
         Contact.countDocuments({
+          recipientUserId,
           status: "spam",
         }),
 
         Contact.countDocuments({
+          recipientUserId,
           "emailNotifications.status": "sent",
         }),
 
         Contact.countDocuments({
+          recipientUserId,
           "emailNotifications.status": "pending",
         }),
 
         Contact.countDocuments({
+          recipientUserId,
           "emailNotifications.status": "failed",
         }),
       ]);
@@ -375,7 +384,7 @@ export async function getContactMessages(input: GetContactMessagesInput) {
   }
 }
 
-export async function updateContactMessageReadStatus(input: ToggleRead) {
+export async function updateContactMessageReadStatus(recipientUserId:string,input: ToggleRead) {
   const validatedInput = toggleReadSchema.parse(input);
 
   const { status, id } = validatedInput;
@@ -388,8 +397,8 @@ export async function updateContactMessageReadStatus(input: ToggleRead) {
   }
 
   try {
-    const updateMessage = await Contact.findByIdAndUpdate(
-      id,
+    const updateMessage = await Contact.findOneAndUpdate(
+      {_id:id, recipientUserId},
       {
         $set: {
           status,
@@ -423,7 +432,7 @@ export async function updateContactMessageReadStatus(input: ToggleRead) {
   }
 }
 
-export async function archiveContactMessage(id: string) {
+export async function archiveContactMessage(recipientUserId:string,id: string) {
   if (!mongoose.isValidObjectId(id)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
@@ -432,8 +441,8 @@ export async function archiveContactMessage(id: string) {
   }
 
   try {
-    const updateArchive = await Contact.findByIdAndUpdate(
-      id,
+    const updateArchive = await Contact.findOneAndUpdate(
+      {_id:id, recipientUserId},
       {
         $set: {
           status: "archived",
@@ -467,10 +476,11 @@ export async function archiveContactMessage(id: string) {
   }
 }
 
-export async function markAllRead() {
+export async function markAllRead(recipientUserId:string) {
   try {
     const result = await Contact.updateMany(
       {
+        recipientUserId,
         status: "unread",
       },
       {
@@ -498,16 +508,16 @@ export async function markAllRead() {
   }
 }
 
-export async function getSingleContactMessage(id: string) {
+export async function getSingleContactMessage(recipientUserId:string,id: string) {
   if (!mongoose.isValidObjectId(id)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: "Invalid Contact Id",
-    });
+    }); 
   }
 
   try {
-    const contactMessage = await Contact.findById(id);
+    const contactMessage = await Contact.findOne({_id:id, recipientUserId});
 
     if (!contactMessage) {
       throw new TRPCError({
@@ -529,7 +539,7 @@ export async function getSingleContactMessage(id: string) {
   }
 }
 
-export async function deleteSingleContact(id: string) {
+export async function deleteSingleContact(recipientUserId:string,id: string) {
   if (!mongoose.isValidObjectId(id)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
@@ -538,7 +548,7 @@ export async function deleteSingleContact(id: string) {
   }
 
   try {
-    const deletedContact = await Contact.findByIdAndDelete(id);
+    const deletedContact = await Contact.findOneAndDelete({_id:id, recipientUserId});
 
     if (!deletedContact) {
       throw new TRPCError({
@@ -564,14 +574,14 @@ export async function deleteSingleContact(id: string) {
   }
 }
 
-export async function updateStatus(input: UpdateStatus) {
+export async function updateStatus(recipientUserId:string,input: UpdateStatus) {
   const validatedInput = updateStatusSchema.parse(input);
 
   const { status, id } = validatedInput;
 
   try {
-    const updateStatus = await Contact.findByIdAndUpdate(
-      id,
+    const updateStatus = await Contact.findOneAndUpdate(
+      {_id:id, recipientUserId},
       {
         $set: {
           status,

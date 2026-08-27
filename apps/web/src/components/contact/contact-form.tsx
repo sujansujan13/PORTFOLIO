@@ -8,7 +8,11 @@ import contactData from "@/data/contact-info.json";
 import { useContactForm } from "@/hooks/useContactForm";
 import { useWatch } from "react-hook-form";
 
-export function ContactForm() {
+interface ContactFormProps {
+  recipientUserId?: string;
+}
+
+export function ContactForm({ recipientUserId }: ContactFormProps) {
   const {
     register,
     handleSubmit,
@@ -17,7 +21,7 @@ export function ContactForm() {
     isSuccess,
     resetSuccess,
     isSubmiting,
-  } = useContactForm();
+  } = useContactForm(recipientUserId);
 
   return (
     <div className="w-full rounded-lg bg-card border border-border p-6 sm:p-8 space-y-6 shadow-xs">

@@ -21,3 +21,7 @@ export { Blog } from "./models/blog.model";
 export { Timeline } from "./models/timeline.model";
 
 export { Contact } from "./models/contact.model";
+
+export { User } from "./models/auth.model";
+
+export { Profile } from "./models/profile.model";

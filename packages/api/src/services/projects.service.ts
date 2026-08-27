@@ -1,4 +1,4 @@
-import { Project } from "@my-portfolio/db";
+import { Project, User } from "@my-portfolio/db";
 
 import {
   dashboardProjectRowSchema,
@@ -18,7 +18,7 @@ type RawPublicProjectCard = Omit<PublicProjectCard, "id" | "_id"> & {
   _id: unknown;
 };
 
-type RawPublicProjectDetail = Omit<
+type RawPublicProjectDetail = Omit< 
   PublicProjectDetail,
   "id" | "_id" | "relatedProject"
 > & {
@@ -144,8 +144,9 @@ function serializeDashboardProjectEdit(project: any) {
 }
 
 // Purpose: Prevents duplicate slugs for website project pages.
-async function assertUniqueSlug(customSlug: string, ignoreId?: string) {
+async function assertUniqueSlug(userId:string,customSlug: string, ignoreId?: string) {
   const existingProject = await Project.findOne({
+    userId,
     customSlug,
     ...(ignoreId ? { _id: { $ne: ignoreId } } : {}),
   }).lean();
@@ -162,10 +163,20 @@ export async function getPublicProjects(input?: {
   category?: string;
   limit?: number;
   featured?: boolean;
+  userId?:string
 }): Promise<PublicProjectCard[]> {
   const filter: Record<string, unknown> = {
     publicAccess: true,
   };
+
+  if (input?.userId?.trim()) {
+    filter.userId = input.userId.trim();
+  } else {
+    const defaultUser = await User.findOne().sort({ createdAt: 1 }).lean();
+    if (defaultUser?._id) {
+      filter.userId = String(defaultUser._id);
+    }
+  }
 
   if (typeof input?.featured === "boolean") {
     filter.featured = input.featured;
@@ -187,17 +198,20 @@ export async function getPublicProjects(input?: {
 async function getRelatedProject(project: {
   _id: unknown;
   category: string;
+  userId?:string
 }): Promise<{
   title: string;
   category: string;
   slug: string;
   image: string;
 } | null> {
+  const userFilter = project.userId ? { userId: project.userId } : {};
   // Try to find a project in the same category
   let related = await Project.findOne({
+    userId:project.userId,
     _id: { $ne: project._id },
     category: project.category,
-    publicAccess: true,
+   ...userFilter
   }).lean();
 
   // If none found, get any other public project
@@ -205,6 +219,7 @@ async function getRelatedProject(project: {
     related = await Project.findOne({
       _id: { $ne: project._id },
       publicAccess: true,
+      ...userFilter
     }).lean();
   }
 
@@ -222,11 +237,17 @@ async function getRelatedProject(project: {
 
 export async function getProjectBySlug(
   slug: string,
+  userId?: string,
 ): Promise<PublicProjectDetail | null> {
-  const project = await Project.findOne({
+   const filter: Record<string, unknown> = {
     customSlug: slug,
     publicAccess: true,
-  }).lean<RawPublicProjectDetail | null>();
+  };
+
+  if (userId) {
+    filter.userId = userId;
+  }
+  const project = await Project.findOne(filter).lean<RawPublicProjectDetail | null>();
 
   if (!project) return null;
 
@@ -237,11 +258,14 @@ export async function getProjectBySlug(
     relatedProject: await getRelatedProject({
       _id: project._id,
       category: project.category,
+      userId: (project as any).userId, // [MULTI-TENANT CHANGE]
     }),
   };
 }
 
-export async function getDashboardProjects(input?: {
+export async function getDashboardProjects(
+  userId: string, // [MULTI-TENANT CHANGE]: Pass userId from session (e.g., ctx.session.user.id)
+input?: {
   search?: string;
   page?: number;
   limit?: number;
@@ -251,7 +275,7 @@ export async function getDashboardProjects(input?: {
   const limit = input?.limit ?? 10;
   const skip = (page - 1) * limit;
 
-  const filter: Record<string, unknown> = {};
+  const filter: Record<string, unknown> = {userId};
 
   if (input?.category && input.category !== "all") {
     filter.category = input.category;
@@ -274,7 +298,7 @@ export async function getDashboardProjects(input?: {
       .limit(limit ?? 10)
       .lean(),
 
-    Project.countDocuments(),
+    Project.countDocuments(filter), // [MULTI-TENANT CHANGE]: Count filtered documents for this user
   ]);
 
   const totalPages = Math.ceil(totalProjects / limit);
@@ -292,18 +316,21 @@ export async function getDashboardProjects(input?: {
   });
 }
 
-export async function createProject(input: projectInput) {
-  await assertUniqueSlug(input.customSlug);
+export async function createProject(userId:string,input: projectInput) {
+  await assertUniqueSlug(userId, input.customSlug);
 
-  const project = await Project.create(input);
+  const project = await Project.create({...input, userId});
 
   // Project.create(input) returns a Mongoose Document, not a plain JavaScript object which contains sevaral mongoose methods.
   return serializeDashboardProject(project.toObject());
 }
 
 // Purpose: Dashboard edit page fetch by MongoDB id.
-export async function getDashboardProjectById(id: string) {
-  const project = await Project.findById(id).lean();
+export async function getDashboardProjectById(userId:string,id: string) {
+  const project = await Project.findOne({
+    _id:id,
+    userId
+  }).lean();
 
   if (!project) {
     throw new TRPCError({
@@ -315,8 +342,8 @@ export async function getDashboardProjectById(id: string) {
   return serializeDashboardProjectEdit(project);
 }
 
-export async function updateProject(id: string, input: ProjectUpdateInput) {
-  const project = await Project.findByIdAndUpdate(id, input, {
+export async function updateProject(userId:string, id: string, input: ProjectUpdateInput) {
+  const project = await Project.findOneAndUpdate({_id:id, userId}, input, {
     new: true,
     runValidators: true,
   }).lean();
@@ -324,8 +351,8 @@ export async function updateProject(id: string, input: ProjectUpdateInput) {
   return serializeDashboardProject(project);
 }
 
-export async function deleteProject(id: string) {
-  const project = await Project.findByIdAndDelete(id);
+export async function deleteProject(userId:string, id: string) {
+  const project = await Project.findOneAndDelete({_id:id, userId});
 
   if (!project) return null;
 
@@ -335,9 +362,10 @@ export async function deleteProject(id: string) {
   };
 }
 
-export async function deleteManyProjects(ids: string[]) {
+export async function deleteManyProjects(userId:string, ids: string[]) {
   const result = await Project.deleteMany({
     // $in is a MongoDB query operator that means “match any value in this list.”
+    userId,
     _id: { $in: ids },
   });
 

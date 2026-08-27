@@ -2,10 +2,10 @@
 import { trpc } from "@/utils/trpc";
 import { useQuery } from "@tanstack/react-query";
 
-export function useBlogBySlug(slug: string) {
+export function useBlogBySlug(slug: string, userId?: string) {
   return useQuery(
     trpc.blogs.getBlogBySlug.queryOptions(
-      { slug },
+      { slug, userId: userId ?? "" },
       {
         enabled: Boolean(slug),
         staleTime: 1000 * 60 * 60, //1 hour

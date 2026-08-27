@@ -17,8 +17,9 @@ import { ModeToggle } from "../mode-toggle";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import type { Route } from "next";
+import UserMenu from "../user-menu";
 import { usePathname } from "next/navigation";
+import type { Route } from "next";
 
 export function StatusHeaderPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -121,22 +122,8 @@ export function StatusHeaderPanel() {
         </button>
         <ModeToggle />
 
-        <div className="flex items-center gap-2 pl-2 border-l border-border">
-          <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold leading-none">Admin User</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              System Controller
-            </p>
-          </div>
-          <div className="h-7 w-7 rounded-full bg-muted border border-border overflow-hidden">
-            <Image
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100"
-              alt="Admin Avatar"
-              width={28}
-              height={28}
-              className="object-cover h-full w-full"
-            />
-          </div>
+        <div className="border-l border-border pl-2">
+          <UserMenu />
         </div>
       </div>
     </div>

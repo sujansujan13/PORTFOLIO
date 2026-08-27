@@ -16,18 +16,34 @@ import {
 } from "../services/contact.service";
 import { z } from "zod";
 
+import { User } from "@my-portfolio/db";
+import { TRPCError } from "@trpc/server";
+
 export const contactRouter = router({
   submitMessage: publicProcedure
     .input(contactInputFormSchema)
-    .mutation(({ input }) => createContactMessage(input)),
+    .mutation(async ({ input }) => {
+      let { recipientUserId, ...contactData } = input;
+      if (!recipientUserId) {
+        const defaultUser = await User.findOne().sort({ createdAt: 1 }).lean();
+        recipientUserId = defaultUser?._id ? String(defaultUser._id) : "";
+      }
+      if (!recipientUserId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Recipient User ID could not be determined",
+        });
+      }
+      return createContactMessage(recipientUserId, contactData);
+    }),
 
   getContactMessages: protectedProcedure
     .input(getContactMessagesSchema)
-    .query(({ input }) => getContactMessages(input)),
+    .query(({ ctx, input }) => getContactMessages(ctx.session.user.id, input)),
 
   updateContactMessageReadStatus: protectedProcedure
     .input(toggleReadSchema)
-    .mutation(({ input }) => updateContactMessageReadStatus(input)),
+    .mutation(({ ctx, input }) => updateContactMessageReadStatus(ctx.session.user.id, input)),
 
   archiveContactMessage: protectedProcedure
     .input(
@@ -35,9 +51,9 @@ export const contactRouter = router({
         id: z.string().trim().min(1, "Id is required"),
       }),
     )
-    .mutation(({ input }) => archiveContactMessage(input.id)),
+    .mutation(({ ctx, input }) => archiveContactMessage(ctx.session.user.id, input.id)),
 
-  markAllRead: protectedProcedure.mutation(() => markAllRead()),
+  markAllRead: protectedProcedure.mutation(({ ctx }) => markAllRead(ctx.session.user.id)),
 
   getSingleContactMessage: protectedProcedure
     .input(
@@ -45,7 +61,7 @@ export const contactRouter = router({
         id: z.string().trim().min(1, "ID is required"),
       }),
     )
-    .query(({ input }) => getSingleContactMessage(input.id)),
+    .query(({ ctx, input }) => getSingleContactMessage(ctx.session.user.id, input.id)),
 
   deleteSingleContact: protectedProcedure
     .input(
@@ -53,9 +69,9 @@ export const contactRouter = router({
         id: z.string().trim().min(1, "Id is required"),
       }),
     )
-    .mutation(({ input }) => deleteSingleContact(input.id)),
+    .mutation(({ ctx, input }) => deleteSingleContact(ctx.session.user.id, input.id)),
 
   updateStatus: protectedProcedure
     .input(updateStatusSchema)
-    .mutation(({ input }) => updateStatus(input)),
+    .mutation(({ ctx, input }) => updateStatus(ctx.session.user.id, input)),
 });

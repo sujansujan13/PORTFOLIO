@@ -9,7 +9,7 @@ import {
   type TiptapJson,
   type UpdateBlog,
 } from "../schemas/Blogs/blog.schema";
-import { Blog } from "@my-portfolio/db";
+import { Blog, User } from "@my-portfolio/db";
 import type { DashboardBlogDetail } from "../schemas/Blogs/blogDashboardDetail.schema";
 
 function serializeBlogsCard(blog: any): PublicBlogCard {
@@ -95,8 +95,9 @@ function buildTocFromJson(node: TiptapJson) {
 }
 
 // Purpose: Prevents duplicate slugs for website project pages.
-async function assertUniqueSlug(slug: string, ignoreId?: string) {
+async function assertUniqueSlug(userId:string, slug: string, ignoreId?: string) {
   const existingProject = await Blog.findOne({
+    userId,
     slug,
     ...(ignoreId ? { _id: { $ne: ignoreId } } : {}),
   }).lean();
@@ -112,10 +113,20 @@ async function assertUniqueSlug(slug: string, ignoreId?: string) {
 export const getPublicBlogs = async (input?: {
   category?: string;
   limit?: number;
+  userId?:string
 }): Promise<PublicBlogCard[]> => {
   const filter: Record<string, unknown> = {
     publicAccess: true,
   };
+
+  if (input?.userId?.trim()) {
+    filter.userId = input.userId.trim();
+  } else {
+    const defaultUser = await User.findOne().sort({ createdAt: 1 }).lean();
+    if (defaultUser?._id) {
+      filter.userId = String(defaultUser._id);
+    }
+  }
 
   if (input?.category && input.category !== "all") {
     filter.category = input.category;
@@ -127,11 +138,13 @@ export const getPublicBlogs = async (input?: {
   return blogs.map(serializeBlogsCard);
 };
 
-async function getRelatedPosts(blog: { _id: unknown; category: string }) {
+async function getRelatedPosts(blog: { _id: unknown; category: string, userId?:string }) {
   const sameCategoryPosts = await Blog.find({
     _id: { $ne: blog._id },
     publicAccess: true,
     category: blog.category,
+    // why ... => takes the properties from another object and puts them into the current object.
+    ...(blog.userId?{userId:blog.userId }:{})
   })
     .sort({ createdAt: -1 })
     .limit(2)
@@ -151,6 +164,7 @@ async function getRelatedPosts(blog: { _id: unknown; category: string }) {
   const fallBackPosts = await Blog.find({
     _id: { $ne: blog._id, $nin: sameCategoryPosts.map((post) => post._id) },
     publicAccess: true,
+    ...(blog.userId? {userId:blog.userId} : {})
   })
     .sort({ createdAt: -1 })
     .limit(remainingLimit)
@@ -164,10 +178,11 @@ async function getRelatedPosts(blog: { _id: unknown; category: string }) {
   }));
 }
 
-export async function getBlogBySlug(slug: string): Promise<BlogDetail | null> {
+export async function getBlogBySlug(slug: string, userId:string): Promise<BlogDetail | null> {
   const blog = await Blog.findOne({
     slug,
     publicAccess: true,
+    ...(userId? {userId}:{})
   }).lean();
 
   if (!blog) return null;
@@ -196,11 +211,12 @@ export async function getBlogBySlug(slug: string): Promise<BlogDetail | null> {
     relatedPosts: await getRelatedPosts({
       _id: blog._id,
       category: blog.category,
+      userId:blog.userId
     }),
   };
 }
 
-export async function getDashboardBlogs(input?: {
+export async function getDashboardBlogs(userId:string,input?: {
   search?: string;
   page?: number;
   limit?: number;
@@ -210,7 +226,7 @@ export async function getDashboardBlogs(input?: {
   const limit = input?.limit ?? 10;
   const skip = (page - 1) * limit;
 
-  const filter: Record<string, unknown> = {};
+  const filter: Record<string, unknown> = {userId};
 
   if (input?.category && input.category !== "all") {
     filter.category = input.category;
@@ -249,9 +265,9 @@ export async function getDashboardBlogs(input?: {
   });
 }
 
-export async function createBlog(input: BlogInput) {
-  await assertUniqueSlug(input.slug);
-  const blog = await Blog.create(input);
+export async function createBlog(userId:string, input: BlogInput) {
+  await assertUniqueSlug(userId, input.slug);
+  const blog = await Blog.create({...input, userId});
 
   return blog;
 }
@@ -277,8 +293,8 @@ function serializeDashboardBlogDetail(blog: any): DashboardBlogDetail {
   };
 }
 
-export async function getDashboardBlogById(id: string) {
-  const blog = await Blog.findById(id).lean();
+export async function getDashboardBlogById(id: string, userId:string) {
+  const blog = await Blog.findOne({_id:id, userId}).lean();
 
   if (!blog) {
     throw new TRPCError({
@@ -290,8 +306,8 @@ export async function getDashboardBlogById(id: string) {
   return serializeDashboardBlogDetail(blog);
 }
 
-export async function updateBlog(id: string, input: UpdateBlog) {
-  const blog = await Blog.findByIdAndUpdate(id, input, {
+export async function updateBlog(userId:string, id: string, input: UpdateBlog) {
+  const blog = await Blog.findOneAndUpdate({_id:id, userId}, input, {
     new: true,
     runValidators: true,
   });
@@ -308,8 +324,8 @@ export async function updateBlog(id: string, input: UpdateBlog) {
   };
 }
 
-export async function deleteBlog(id: string) {
-  const blog = await Blog.findByIdAndDelete(id);
+export async function deleteBlog(userId:string, id: string) {
+  const blog = await Blog.findOneAndDelete({_id:id, userId});
 
   if (!blog) {
     throw new TRPCError({
@@ -324,9 +340,10 @@ export async function deleteBlog(id: string) {
   };
 }
 
-export async function deleteMultipleBlogs(ids: string[]) {
+export async function deleteMultipleBlogs(userId:string, ids: string[]) {
   const result = await Blog.deleteMany({
     _id: { $in: ids },
+    userId
   });
 
   return {

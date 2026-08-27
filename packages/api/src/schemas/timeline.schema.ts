@@ -6,6 +6,7 @@ export const getPublicTimelineSchema = z
   .object({
     type: timelineTypeSchema.optional(),
     limit: z.number().int().min(1).max(50).default(50),
+    userId: z.string().optional(),
   })
   .optional();
 

@@ -41,6 +41,12 @@ const featureSchema = new Schema(
 
 const projectSchema = new Schema(
   {
+     userId: {
+      type: String,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     title: {
       type: String,
       required: true,
@@ -55,7 +61,6 @@ const projectSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
-      unique: true,
       trim: true,
     },
     description: { type: String, required: true },
@@ -113,6 +118,8 @@ const projectSchema = new Schema(
     timestamps: true,
   },
 );
+
+projectSchema.index({ userId: 1, customSlug: 1 }, { unique: true });
 
 // This is TypeScript only.
 // It creates a type automatically from my schema, so that I don't have to write manual types

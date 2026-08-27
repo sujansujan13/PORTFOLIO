@@ -5,6 +5,12 @@ const { model, models, Schema } = mongoose;
 
 const timelineSchema = new Schema(
   {
+    userId: {
+      type: String,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     role: {
       type: String,
       required: true,
@@ -72,7 +78,7 @@ const timelineSchema = new Schema(
 );
 
 // Prevents duplicate ordering within the same timeline type.
-timelineSchema.index({ type: 1, order: 1 }, { unique: true });
+timelineSchema.index({ userId: 1, type: 1, order: 1 }, { unique: true });
 
 type TimelineDocument = InferSchemaType<typeof timelineSchema>;
 

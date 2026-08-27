@@ -6,6 +6,13 @@ const userSchema = new Schema(
   {
     _id: { type: String },
     name: { type: String, required: true },
+    username: {
+      type: String,
+      unique: true, // 👈 Unique handle for URLs
+      sparse: true, // Allows existing users without username
+      lowercase: true,
+      trim: true,
+    },
     email: { type: String, required: true, unique: true },
     emailVerified: { type: Boolean, required: true },
     image: { type: String },

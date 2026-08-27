@@ -3,7 +3,7 @@ import type {
   PublicTimelineResponse,
   TimelineType,
 } from "../schemas/timeline.schema";
-import { Timeline } from "@my-portfolio/db";
+import { Timeline, User } from "@my-portfolio/db";
 import {
   createTimelineSchema,
   type CreateTimelineInput,
@@ -56,8 +56,18 @@ function serializeDashboardTimelineItem(item: any) {
 export async function getPublicTimeline(input?: {
   type?: TimelineType;
   limit?: number;
+  userId?: string;
 }): Promise<PublicTimelineResponse> {
   const filter: Record<string, unknown> = { publicAccess: true };
+
+  if (input?.userId?.trim()) {
+    filter.userId = input.userId.trim();
+  } else {
+    const defaultUser = await User.findOne().sort({ createdAt: 1 }).lean();
+    if (defaultUser?._id) {
+      filter.userId = String(defaultUser._id);
+    }
+  }
 
   if (input?.type) {
     filter.type = input.type;
@@ -105,11 +115,11 @@ type getDashboardTimelineProps = {
   type: timelineType;
 };
 
-export async function getDashboardTimeline({
-  search = "",
-  type = "all",
-}: getDashboardTimelineProps) {
-  const filter: Record<string, unknown> = {};
+export async function getDashboardTimeline(
+  userId: string,
+  { search = "", type = "all" }: getDashboardTimelineProps,
+) {
+  const filter: Record<string, unknown> = { userId };
 
   if (type !== "all") {
     filter.type = type;
@@ -138,9 +148,9 @@ export async function getDashboardTimeline({
 
   // for counts
   const [all, education, experience] = await Promise.all([
-    Timeline.countDocuments(),
-    Timeline.countDocuments({ type: "education" }),
-    Timeline.countDocuments({ type: "experience" }),
+    Timeline.countDocuments({ userId }),
+    Timeline.countDocuments({ userId, type: "education" }),
+    Timeline.countDocuments({ userId, type: "experience" }),
   ]);
 
   return {
@@ -153,13 +163,17 @@ export async function getDashboardTimeline({
   };
 }
 
-export async function createTimeline(input: CreateTimelineInput) {
+export async function createTimeline(
+  userId: string,
+  input: CreateTimelineInput,
+) {
   const validatedData = createTimelineSchema.parse(input);
 
   // Retry up to 3 times in case another request creates
   // a timeline item with the same order at the same time.
   for (let attempt = 0; attempt < 3; attempt++) {
     const lastTimelineItem = await Timeline.findOne({
+      userId,
       type: validatedData.type,
     })
       .sort({ order: -1 })
@@ -171,6 +185,7 @@ export async function createTimeline(input: CreateTimelineInput) {
     try {
       const timeline = await Timeline.create({
         ...validatedData,
+        userId,
         order: nextOrder,
         version: 0,
       });
@@ -193,7 +208,7 @@ export async function createTimeline(input: CreateTimelineInput) {
   });
 }
 
-export async function getDashboardTimelineById(id: string) {
+export async function getDashboardTimelineById(userId: string, id: string) {
   // Validate that the provided ID is a valid MongoDB ObjectId.
   if (!mongoose.isValidObjectId(id)) {
     throw new TRPCError({
@@ -202,7 +217,7 @@ export async function getDashboardTimelineById(id: string) {
     });
   }
 
-  const timeline = await Timeline.findById(id).lean();
+  const timeline = await Timeline.findOne({ _id: id, userId }).lean();
 
   if (!timeline) {
     throw new TRPCError({
@@ -214,7 +229,11 @@ export async function getDashboardTimelineById(id: string) {
   return serializeDashboardTimelineItem(timeline);
 }
 
-export async function updateTimeline(id: string, input: UpdateTimelineInput) {
+export async function updateTimeline(
+  userId: string,
+  id: string,
+  input: UpdateTimelineInput,
+) {
   // Validate the timeline ID before querying MongoDB.
   if (!mongoose.isValidObjectId(id)) {
     throw new TRPCError({
@@ -238,6 +257,7 @@ export async function updateTimeline(id: string, input: UpdateTimelineInput) {
    */
   const timeline = await Timeline.findOneAndUpdate(
     {
+      userId,
       _id: id,
       version,
     },
@@ -264,6 +284,7 @@ export async function updateTimeline(id: string, input: UpdateTimelineInput) {
   if (!timeline) {
     const existingTimeline = await Timeline.exists({
       _id: id,
+      userId,
     });
 
     if (!existingTimeline) {
@@ -286,7 +307,7 @@ export async function updateTimeline(id: string, input: UpdateTimelineInput) {
   };
 }
 
-export async function deleteTimeline(id: string) {
+export async function deleteTimeline(userId: string, id: string) {
   // Validate the timeline ID before querying MongoDB.
   if (!mongoose.isValidObjectId(id)) {
     throw new TRPCError({
@@ -302,7 +323,7 @@ export async function deleteTimeline(id: string) {
 
     await session.withTransaction(async () => {
       // Find the item that is going to be deleted.
-      const timeline = await Timeline.findById(id)
+      const timeline = await Timeline.findOne({ _id: id, userId })
         .select("_id type order")
         .session(session)
         .lean();
@@ -319,6 +340,7 @@ export async function deleteTimeline(id: string) {
 
       // Find the current highest order.
       const lastTimelineItem = await Timeline.findOne({
+        userId,
         type: timelineType,
       })
         .sort({ order: -1 })
@@ -352,6 +374,7 @@ export async function deleteTimeline(id: string) {
 
       await Timeline.updateMany(
         {
+          userId,
           type: timelineType,
           order: { $gt: deletedOrder },
         },
@@ -366,6 +389,7 @@ export async function deleteTimeline(id: string) {
       // Delete the requested timeline item.
       await Timeline.deleteOne(
         {
+          userId,
           _id: id,
         },
         { session },
@@ -382,6 +406,7 @@ export async function deleteTimeline(id: string) {
        */
       await Timeline.updateMany(
         {
+          userId,
           type: timelineType,
           order: {
             $gt: temporaryOffset + deletedOrder,
@@ -407,7 +432,7 @@ export async function deleteTimeline(id: string) {
   }
 }
 
-export async function deleteMultipleTimeline(ids: string[]) {
+export async function deleteMultipleTimeline(userId: string, ids: string[]) {
   // 1. Validate that at least one ID was provided.
   if (ids.length === 0) {
     throw new TRPCError({
@@ -437,6 +462,7 @@ export async function deleteMultipleTimeline(ids: string[]) {
     await session.withTransaction(async () => {
       // 4. Find all requested timeline items.
       const timelines = await Timeline.find({
+        userId,
         _id: { $in: uniqueIds },
       })
         .select("_id type")
@@ -458,6 +484,7 @@ export async function deleteMultipleTimeline(ids: string[]) {
       // 6. Delete all selected timeline items.
       const deleteResult = await Timeline.deleteMany(
         {
+          userId,
           _id: { $in: uniqueIds },
         },
         { session },
@@ -481,6 +508,7 @@ export async function deleteMultipleTimeline(ids: string[]) {
        */
       for (const type of affectedTypes) {
         const remainingItems = await Timeline.find({
+          userId,
           type,
         })
           .sort({ order: 1, createdAt: 1 })
@@ -493,6 +521,7 @@ export async function deleteMultipleTimeline(ids: string[]) {
 
         await Timeline.updateMany(
           {
+            userId,
             type,
           },
           {
@@ -508,6 +537,7 @@ export async function deleteMultipleTimeline(ids: string[]) {
           updateOne: {
             filter: {
               _id: item._id,
+              userId,
             },
             update: {
               $set: {
@@ -524,6 +554,7 @@ export async function deleteMultipleTimeline(ids: string[]) {
         // 11. Remove the temporary offset.
         await Timeline.updateMany(
           {
+            userId,
             type,
             order: {
               $gte: temporaryOffset + 1,

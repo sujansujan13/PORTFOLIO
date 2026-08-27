@@ -28,7 +28,7 @@ export const blogRouter = router({
   getBlogBySlug: publicProcedure
     .input(getBlogBySlugSchema)
     .query(async ({ input }) => {
-      const blog = await getBlogBySlug(input.slug);
+      const blog = await getBlogBySlug(input.slug, input?.userId as string);
 
       if (!blog) {
         throw new TRPCError({
@@ -40,13 +40,14 @@ export const blogRouter = router({
       return blog;
     }),
 
+    // [MULTI-TENANT CHANGE]: Pass ctx.session.user.id to filter dashboard blogs by the logged-in user
   getDashboardBlogs: protectedProcedure
     .input(getDashboardBlogInput)
-    .query(async ({ input }) => getDashboardBlogs(input)),
+    .query(async ({ ctx,input }) => getDashboardBlogs(ctx.session.user.id,input)),
 
   createBlog: protectedProcedure
     .input(BlogInputSchema)
-    .mutation(({ input }) => createBlog(input)),
+    .mutation(({ ctx,input }) => createBlog(ctx.session.user.id,input)),
 
   getDashboardBlogById: protectedProcedure
     .input(
@@ -54,8 +55,8 @@ export const blogRouter = router({
         id: z.string().min(1),
       }),
     )
-    .query(async ({ input }) => {
-      return getDashboardBlogById(input.id);
+    .query(async ({ctx, input }) => {
+      return getDashboardBlogById(ctx.session.user.id,input.id);
     }),
 
   updateBlog: protectedProcedure
@@ -64,9 +65,9 @@ export const blogRouter = router({
         id: mongoIdSchema,
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ctx, input }) => {
       const { id, ...data } = input;
-      const blog = await updateBlog(id, data);
+      const blog = await updateBlog(ctx.session.user.id,id, data);
 
       if (!blog) {
         throw new TRPCError({
@@ -84,8 +85,8 @@ export const blogRouter = router({
         id: z.string().min(1),
       }),
     )
-    .mutation(async ({ input }) => {
-      const result = await deleteBlog(input.id);
+    .mutation(async ({ctx, input }) => {
+      const result = await deleteBlog(ctx.session.user.id,input.id);
 
       if (!result) {
         throw new TRPCError({
@@ -103,5 +104,5 @@ export const blogRouter = router({
         ids: z.array(z.string()),
       }),
     )
-    .mutation(({ input }) => deleteMultipleBlogs(input.ids)),
+    .mutation(({ctx, input }) => deleteMultipleBlogs(ctx.session.user.id,input.ids)),
 });

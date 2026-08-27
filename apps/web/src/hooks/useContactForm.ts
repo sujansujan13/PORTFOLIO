@@ -8,7 +8,7 @@ import {
 } from "@/schemas/contact-form.schema";
 import { useSubmitContact } from "./useSubmitContact";
 
-export function useContactForm() {
+export function useContactForm(recipientUserId?: string) {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const form = useForm<ContactInputValues>({
@@ -29,7 +29,10 @@ export function useContactForm() {
 
   const onSubmit = async (data: ContactInputValues) => {
     try {
-      await submitContact.mutateAsync(data);
+      await submitContact.mutateAsync({
+        ...data,
+        ...(recipientUserId ? { recipientUserId } : {}),
+      });
       setIsSuccess(true);
       form.reset();
     } catch (error) {

@@ -15,6 +15,12 @@ const { Schema, model, models } = mongoose;
 
 const contactMessageSchema = new Schema(
   {
+     recipientUserId: {
+      type: String,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     name: { type: String, required: true, trim: true, maxLength: 50 },
     email: {
       type: String,

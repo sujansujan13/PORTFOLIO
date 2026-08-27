@@ -23,11 +23,13 @@ export const timelineRouter = router({
 
   getDashboardTimeline: protectedProcedure
     .input(getDashboardTimelineInputSchema)
-    .query(async ({ input }) => getDashboardTimeline(input)),
+    .query(async ({ ctx, input }) =>
+      getDashboardTimeline(ctx.session.user.id, input),
+    ),
 
   createTimeline: protectedProcedure
     .input(createTimelineSchema)
-    .mutation(({ input }) => createTimeline(input)),
+    .mutation(({ ctx, input }) => createTimeline(ctx.session.user.id, input)),
 
   getDashboardTimelineById: protectedProcedure
     .input(
@@ -35,11 +37,15 @@ export const timelineRouter = router({
         id: z.string().trim().min(1, "ID is required"),
       }),
     )
-    .query(({ input }) => getDashboardTimelineById(input.id)),
+    .query(({ ctx, input }) =>
+      getDashboardTimelineById(ctx.session.user.id, input.id),
+    ),
 
   updateTimeline: protectedProcedure
     .input(updateTimelineRouterInputSchema)
-    .mutation(({ input }) => updateTimeline(input.id, input.data)),
+    .mutation(({ ctx, input }) =>
+      updateTimeline(ctx.session.user.id, input.id, input.data),
+    ),
 
   deleteTimeline: protectedProcedure
     .input(
@@ -47,5 +53,7 @@ export const timelineRouter = router({
         id: z.string().trim().min(1, "Id is required"),
       }),
     )
-    .mutation(({ input }) => deleteTimeline(input.id)),
+    .mutation(({ ctx, input }) =>
+      deleteTimeline(ctx.session.user.id, input.id),
+    ),
 });

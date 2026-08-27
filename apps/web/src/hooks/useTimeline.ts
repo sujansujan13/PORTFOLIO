@@ -1,17 +1,26 @@
 import { trpc } from "@/utils/trpc";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { authClient } from "@/lib/auth-client";
 
 interface getPublicTimelineProps {
   type?: "education" | "experience";
   limit?: number;
+  userId?: string;
+  enabled?: boolean;
 }
 export function useTimeline(options?: getPublicTimelineProps) {
-  return useQuery(
-    trpc.timeline.getPublicTimeline.queryOptions({
+  const { data: session } = authClient.useSession();
+  const userIdGiven = Boolean(options && "userId" in options);
+  const effectiveUserId = userIdGiven ? options!.userId : (session?.user?.id ?? "");
+
+  return useQuery({
+    ...trpc.timeline.getPublicTimeline.queryOptions({
       type: options?.type,
       limit: options?.limit ?? 10,
+      userId: effectiveUserId ?? "",
     }),
-  );
+    enabled: options?.enabled ?? true,
+  });
 }
 
 interface useDashboardTimelineProps {

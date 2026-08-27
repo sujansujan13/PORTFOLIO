@@ -2,21 +2,30 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { trpc } from "@/utils/trpc";
+import { authClient } from "@/lib/auth-client";
 
 interface UsePublicProjectsOptions {
   category?: string;
   limit?: number;
   featured?: boolean;
+  userId?: string;
+  enabled?: boolean;
 }
 
 export function usePublicProjects(options?: UsePublicProjectsOptions) {
-  return useQuery(
-    trpc.projects.getPublicProjects.queryOptions({
+  const { data: session } = authClient.useSession();
+  const userIdGiven = Boolean(options && "userId" in options);
+  const effectiveUserId = userIdGiven ? options!.userId : (session?.user?.id ?? "");
+
+  return useQuery({
+    ...trpc.projects.getPublicProjects.queryOptions({
       category: options?.category,
       limit: options?.limit ?? 50,
       featured: options?.featured,
+      userId: effectiveUserId ?? "",
     }),
-  );
+    enabled: options?.enabled ?? true,
+  });
 }
 
 // import type { AppRouter } from "@my-portfolio/api/routers/index";

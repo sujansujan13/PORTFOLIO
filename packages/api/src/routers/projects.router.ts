@@ -28,6 +28,7 @@ export const projectRouter = router({
           category: z.string().optional(),
           limit: z.number().int().min(1).max(50).default(10),
           featured: z.boolean().optional(),
+          userId: z.string().optional(),
         })
         .optional(),
     )
@@ -35,9 +36,9 @@ export const projectRouter = router({
       return getPublicProjects(input);
     }),
   getProjectBySlug: publicProcedure
-    .input(z.object({ slug: z.string().min(2) }))
+    .input(z.object({ slug: z.string().min(2),userId: z.string().optional() }))
     .query(async ({ input }) => {
-      const project = await getProjectBySlug(input.slug);
+      const project = await getProjectBySlug(input.slug, input.userId as string);
       if (!project) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -49,11 +50,11 @@ export const projectRouter = router({
 
   getDashboardProjects: protectedProcedure
     .input(getDashboardProjectsSchema)
-    .query(({ input }) => getDashboardProjects(input)),
+    .query(({ ctx,input }) => getDashboardProjects(ctx.session.user.id,input)),
 
   createProject: protectedProcedure
     .input(projectInputSchema)
-    .mutation(({ input }) => createProject(input)),
+    .mutation(({ctx, input }) => createProject(ctx.session.user.id,input)),
 
   updateProject: protectedProcedure
     .input(
@@ -61,9 +62,9 @@ export const projectRouter = router({
         id: deleteProjectSchema.shape.id,
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx,input }) => {
       const { id, ...data } = input;
-      const project = await updateProject(id, data);
+      const project = await updateProject(ctx.session.user.id,id, data);
 
       if (!project) {
         throw new TRPCError({
@@ -77,14 +78,14 @@ export const projectRouter = router({
   // Purpose: Protected dashboard edit page data.
   getDashboardProjectById: protectedProcedure
     .input(projectIdSchema)
-    .query(({ input }) => {
-      return getDashboardProjectById(input.id);
+    .query(({ctx, input }) => {
+      return getDashboardProjectById(ctx.session.user.id,input.id);
     }),
 
   deleteProject: protectedProcedure
     .input(deleteProjectSchema)
-    .mutation(async ({ input }) => {
-      const result = await deleteProject(input.id);
+    .mutation(async ({ctx, input }) => {
+      const result = await deleteProject(ctx.session.user.id,input.id);
 
       if (!result) {
         throw new TRPCError({
@@ -98,5 +99,5 @@ export const projectRouter = router({
 
   deleteManyProjects: protectedProcedure
     .input(deleteManyProjectsSchema)
-    .mutation(({ input }) => deleteManyProjects(input.ids)),
+    .mutation(({ ctx,input }) => deleteManyProjects(ctx.session.user.id,input.ids)),
 });

@@ -21,7 +21,7 @@
 import { Project, Blog, Timeline, Contact } from "@my-portfolio/db";
 import { dashboardStatSchema } from "../schemas/dashboard.schema";
 
-export async function getDashboardStats() {
+export async function getDashboardStats(userId:string) {
   const currentMonth = new Date();
   currentMonth.setDate(1);
   const [
@@ -32,15 +32,18 @@ export async function getDashboardStats() {
     totalBlogViews,
     totalContactMessages,
   ] = await Promise.all([
-    Project.countDocuments(),
+    Project.countDocuments({userId}),
     Project.countDocuments({
+      userId,
       createdAt: { $gte: currentMonth },
     }),
-    Timeline.findOne().sort({
+    Timeline.findOne({userId}).sort({
       updatedAt: -1,
     }),
-    Blog.countDocuments(),
-    Blog.aggregate([
+    Blog.countDocuments({userId}),
+    Blog.aggregate([{$match:{
+      userId
+    }},
       {
         $group: {
           _id: null,
@@ -49,6 +52,7 @@ export async function getDashboardStats() {
       },
     ]),
     Contact.countDocuments({
+      recipientUserId:userId,
       status: "unread",
     }),
   ]);
@@ -58,8 +62,8 @@ export async function getDashboardStats() {
       addedThisMonth: projectThisMonth,
     },
     experience: {
-      total: await Timeline.countDocuments({ type: "experience" }),
-      lastUpdated: latestTimeline?.updatedAt,
+      total: await Timeline.countDocuments({ userId, type: "experience" }),
+      lastUpdated: latestTimeline?.updatedAt ?? null,
     },
     blogs: {
       total: totalBlogs,

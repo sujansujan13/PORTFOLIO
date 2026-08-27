@@ -8,7 +8,7 @@ export const dashboardStatSchema = z.object({
   }),
   experience: z.object({
     total: z.number(),
-    lastUpdated: z.date().nullable(),
+    lastUpdated: z.union([z.date(), z.string()]).nullable().optional(),
   }),
   blogs: z.object({
     total: z.number(),

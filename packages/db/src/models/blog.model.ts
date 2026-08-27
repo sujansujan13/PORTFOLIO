@@ -15,6 +15,12 @@ const { Schema, model, models } = mongoose;
 
 const blogSchema = new Schema(
   {
+    userId: {
+      type: String,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     title: { type: String, required: true, trim: true },
     slug: {
       type: String,
@@ -48,6 +54,8 @@ const blogSchema = new Schema(
     timestamps: true,
   },
 );
+
+blogSchema.index({ userId: 1, slug: 1 }, { unique: true });
 
 type BlogDocument = InferSchemaType<typeof blogSchema>;
 

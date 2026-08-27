@@ -46,7 +46,9 @@ export default function AdminDashboardPage({ user }: { user: any }) {
       return {
         ...card,
         value: statsData.experience.total,
-        changeText: `Last Updated ${formatDistanceToNow(new Date(statsData.experience.lastUpdated!), { addSuffix: true })} `,
+        changeText: statsData.experience.lastUpdated
+          ? `Last Updated ${formatDistanceToNow(new Date(statsData.experience.lastUpdated), { addSuffix: true })}`
+          : "No entries yet",
       };
     }
     if (card.id === "messages") {

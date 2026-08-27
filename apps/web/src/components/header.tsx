@@ -155,7 +155,7 @@ export default function Header() {
         {/* Right side utilities (Theme, User, Mobile Toggle) */}
         <div className="flex items-center gap-3">
           <ModeToggle />
-          <UserMenu />
+          {/* <UserMenu /> */}
 
           {/* Mobile Menu Trigger */}
           <div className="md:hidden">
