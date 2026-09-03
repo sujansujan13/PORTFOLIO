@@ -10,6 +10,8 @@ interface HeroSectionProps {
     heading: string;
     paragraphs: string[];
     image: { src: string; alt: string };
+    resumeUrl?: string;
+    githubUrl?: string;
   };
   fadeInVariant: Variants;
   containerStagger: Variants;
@@ -41,6 +43,7 @@ export function HeroSection({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="w-full h-full object-cover transform scale-102 hover:scale-105 transition-transform duration-700 ease-out"
             priority
+            unoptimized
           />
         </figure>
       </motion.div>
@@ -58,19 +61,36 @@ export function HeroSection({
           </h1>
         </div>
 
-        <div className="space-y-4 text-start text-lg font-inter font-medium dark:text-[#d2e4fe] leading-relaxed">
+        <div className="space-y-4 text-start text-lg font-inter font-medium dark:text-[#d2e4fe] leading-relaxed whitespace-pre-line">
           {data.paragraphs.map((para, i) => (
             <p key={i}>{para}</p>
           ))}
         </div>
 
         <div className="flex flex-wrap items-center gap-4 pt-2">
-          <button className="px-6 py-3 text-base bg-[#3755C3] text-primary-foreground font-semibold rounded-sm tracking-wide shadow-md hover:bg-primary transition-all duration-300 cursor-pointer active:scale-98">
+          <a
+            href={data.resumeUrl || "/cv.pdf"}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="px-6 py-3 text-base bg-[#3755C3] text-primary-foreground font-semibold rounded-sm tracking-wide shadow-md hover:bg-primary transition-all duration-300 cursor-pointer active:scale-98 inline-block"
+          >
             Download CV
-          </button>
-          <button className="px-6 py-3 bg-transparent text-base border border-border font-semibold rounded-sm tracking-wide text-foreground/90 hover:bg-muted hover:text-foreground transition-all duration-300 cursor-pointer active:scale-98">
-            View GitHub
-          </button>
+          </a>
+          {data.githubUrl ? (
+            <a
+              href={data.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 bg-transparent text-base border border-border font-semibold rounded-sm tracking-wide text-foreground/90 hover:bg-muted hover:text-foreground transition-all duration-300 cursor-pointer active:scale-98 inline-block"
+            >
+              View GitHub
+            </a>
+          ) : (
+            <button className="px-6 py-3 bg-transparent text-base border border-border font-semibold rounded-sm tracking-wide text-foreground/90 hover:bg-muted hover:text-foreground transition-all duration-300 cursor-pointer active:scale-98">
+              View GitHub
+            </button>
+          )}
         </div>
       </motion.div>
     </motion.section>

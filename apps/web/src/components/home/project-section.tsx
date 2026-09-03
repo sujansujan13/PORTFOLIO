@@ -77,25 +77,29 @@ export default function ProjectsSection() {
 
           {!isLoading &&
             !isError &&
-            featuredProjects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                project={{
-                  id: project.id,
-                  title: project.title,
-                  customSlug: project.customSlug,
-                  description: project.description,
-                  tags: project.techStack,
-                  img:
-                    project.thumbImageUrl ||
-                    project.heroImageUrl ||
-                    "/HomeImages/homeImage1.png",
-                }}
-                isActive={activeProjectId === project.id}
-                onCardClick={(e) => handleCardClick(project.id, e)}
-                index={index}
-              />
-            ))}
+            featuredProjects.map((project, index) => {
+              const projectId = project.id || project.customSlug || `project-${index}`;
+              return (
+                <ProjectCard
+                  key={projectId}
+                  project={{
+                    id: projectId,
+                    title: project.title,
+                    customSlug: project.customSlug || projectId,
+                    description: project.description,
+                    tags: project.techStack || [],
+                    img:
+                      project.thumbImageUrl ||
+                      project.heroImageUrl ||
+                      "/HomeImages/homeImage1.png",
+                  }}
+                  isActive={activeProjectId === projectId}
+                  onCardClick={(e) => handleCardClick(projectId, e)}
+                  index={index}
+                />
+              );
+            })}
+
         </div>
       </div>
     </section>

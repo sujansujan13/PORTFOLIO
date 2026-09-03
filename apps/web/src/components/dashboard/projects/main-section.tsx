@@ -10,7 +10,8 @@ import Image from "next/image";
 import { type ProjectFormValues } from "@/schemas/project";
 import BriefDescription from "../lib/brief-description";
 import ProjectSpecificField from "../lib/project-specific-field";
-import ProjectVisibility from "./project-visibilty-card";
+import ProjectVisibility from "./project-visibility-card";
+
 import TagInputField from "../forms/tag-input-field";
 import { MetricsFieldArray } from "./metrics-field-array";
 import { FeaturesFieldArray } from "./features-field-array";

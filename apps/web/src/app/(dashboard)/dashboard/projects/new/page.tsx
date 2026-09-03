@@ -11,7 +11,8 @@ import Image from "next/image";
 import DualHeader from "@/components/dashboard/projects/edit-new-page-header";
 import BriefDescription from "@/components/dashboard/lib/brief-description";
 import ProjectSpecificField from "@/components/dashboard/lib/project-specific-field";
-import ProjectVisibility from "@/components/dashboard/projects/project-visibilty-card";
+import ProjectVisibility from "@/components/dashboard/projects/project-visibility-card";
+
 import TagInputField from "@/components/dashboard/forms/tag-input-field";
 import { MetricsFieldArray } from "@/components/dashboard/projects/metrics-field-array";
 import { FeaturesFieldArray } from "@/components/dashboard/projects/features-field-array";

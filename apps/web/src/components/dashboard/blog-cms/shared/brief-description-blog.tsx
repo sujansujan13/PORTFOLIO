@@ -62,10 +62,12 @@ export default function BlogDescription({
       {/* Blog Description */}
       <TextareaField
         label="Short Description"
+        rows={3}
         placeholder="Write a short summary for the blog card and SEO preview..."
         registration={register("description")}
         error={errors.description?.message}
       />
+
     </div>
   );
 }

@@ -1,14 +1,10 @@
-import express from "express";
-import * as uploadController from "../controllers/upload.controller";
-import { imageUpload } from "@/middlewares/upload.middleware";
+import { Router } from "express";
+import { uploadMiddleware } from "../middlewares/upload.middleware";
+import { uploadController } from "../controllers/upload.controller";
 
-const router = express.Router();
+const router = Router();
 
-router.post(
-  "/image",
-  // <input type="file" name="image" />
-  imageUpload.single("image"),
-  uploadController.uploadImageController,
-);
+// Handles POST /api/uploads and POST /api/uploads/image
+router.post(["/image", "/"], uploadMiddleware.single("file"), uploadController);
 
 export { router as uploadRouter };

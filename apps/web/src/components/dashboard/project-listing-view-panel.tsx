@@ -7,17 +7,24 @@ import { useDashboardStore } from "@/stores/use-dashboard-store";
 import { ProjectCard } from "./project-card-dashboard";
 import Link from "next/link";
 
-export function ProjectListingViewPanel({ projects }: { projects: any[] }) {
-  const { searchQuery, setSearchQuery, openNewProjectModal } =
-    useDashboardStore();
+export function ProjectListingViewPanel({ projects }: { projects?: any[] }) {
+  const { searchQuery, setSearchQuery } = useDashboardStore();
 
-  const filtered = projects.filter(
-    (p) =>
-      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.techStack.some((t: string) =>
-        t.toLowerCase().includes(searchQuery.toLowerCase()),
-      ),
-  );
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
+  const filtered = safeProjects.filter((p) => {
+    const query = searchQuery.toLowerCase();
+    const titleMatch = p.title?.toLowerCase().includes(query) ?? false;
+    const techStack = Array.isArray(p.techStack)
+      ? p.techStack
+      : Array.isArray(p.tags)
+      ? p.tags
+      : [];
+    const techMatch = techStack.some((t: string) =>
+      t.toLowerCase().includes(query),
+    );
+    return titleMatch || techMatch;
+  });
 
   return (
     <div className="space-y-5 w-full">

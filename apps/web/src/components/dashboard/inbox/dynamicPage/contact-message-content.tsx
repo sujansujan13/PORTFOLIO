@@ -4,7 +4,7 @@
 import React from "react";
 
 import type { ContactMessage } from "./../dynamicPage/contact-client-page";
-import { Initials } from "./utils/initials";
+import { Initials } from "../../../../lib/initials";
 
 interface ContactMessageContentProps {
   contact: ContactMessage;

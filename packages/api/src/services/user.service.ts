@@ -2,7 +2,7 @@ import { User } from "@my-portfolio/db";
 import {
   usernameInputSchema,
   type UsernameInput,
-} from "../schemas/User/input-username.schema";
+} from "../schemas/user/input-username.schema";
 import { TRPCError } from "@trpc/server";
 
 export async function getUserByUsername(username: UsernameInput) {

@@ -6,10 +6,11 @@ import staticOptions from "@/data/projects-option.json";
 import Image from "next/image";
 import DualHeader from "@/components/dashboard/projects/edit-new-page-header";
 import { MetaCard } from "@/components/dashboard/projects/meta-card";
-import BlogDescription from "@/components/dashboard/blogCMS/shared/brief-description-blog";
-import BlogAuthorPublishingCard from "@/components/dashboard/blogCMS/blog-author-publishing-card";
-import BlogVisibility from "@/components/dashboard/blogCMS/shared/blog-visibility";
-import { BlogImageUploader } from "@/components/dashboard/blogCMS/shared/blog-image-uploader";
+import BlogDescription from "@/components/dashboard/blog-cms/shared/brief-description-blog";
+import BlogAuthorPublishingCard from "@/components/dashboard/blog-cms/blog-author-publishing-card";
+import BlogVisibility from "@/components/dashboard/blog-cms/shared/blog-visibility";
+import { BlogImageUploader } from "@/components/dashboard/blog-cms/shared/blog-image-uploader";
+
 
 import {
   blogFormSchema,

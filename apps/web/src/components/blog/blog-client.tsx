@@ -1,6 +1,6 @@
 "use client";
 import { usePublicBlogs } from "@/hooks/usePublicBlogs";
-import type { PublicBlogCard } from "@my-portfolio/api/schemas/Blogs/blog.schema";
+import type { PublicBlogCard } from "@my-portfolio/api/schemas/blogs/blog.schema";
 import React, { useMemo, useState } from "react";
 import { BlogFeed } from "./blog-feed";
 import { div } from "framer-motion/client";
@@ -18,9 +18,10 @@ export default function Blogclient() {
   const [activeCategory, setActiveCategory] = useState("all");
   const blogsQuery = usePublicBlogs({ category: activeCategory, limit: 20 });
 
-  const blogs = useMemo<PublicBlogCard[]>(() => {
+  const blogs = useMemo(() => {
     return blogsQuery.data ?? [];
   }, [blogsQuery.data]);
+
 
   if (blogsQuery.isError) {
     return (

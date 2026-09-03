@@ -5,27 +5,48 @@
 
 import { AnalyticsGridPanel } from "@/components/dashboard/analytics-grid-panel";
 import { ProjectListingViewPanel } from "@/components/dashboard/project-listing-view-panel";
-import mockData from "@/data/dashboard-mock.json";
 import statCardConfig from "@/data/dashboard-stat-cards.json";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { formatDistanceToNow } from "date-fns";
+import { usePublicProjects } from "@/hooks/usePublicProjects";
 
 export default function AdminDashboardPage({ user }: { user: any }) {
   const dashboardStatQuery = useDashboardStats();
+  const projectsView = usePublicProjects();
 
-  const { isPending, isError } = dashboardStatQuery;
+  const {
+    isPending: isStatsPending,
+    isError: isStatsError,
+    data: statsData,
+  } = dashboardStatQuery;
 
-  if (isPending) {
-    return <p>Loading dashboard stats...</p>;
+  const {
+    data: projects,
+    isPending: isProjectsPending,
+    isError: isProjectsError,
+  } = projectsView;
+
+  if (isStatsPending || isProjectsPending) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-100">
+        <p className="text-xs font-medium text-muted-foreground animate-pulse">
+          Loading dashboard stats...
+        </p>
+      </div>
+    );
   }
 
-  if (isError) {
-    return <p>Could not load dashboard stats.</p>;
+  if (isStatsError || isProjectsError || !statsData) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-100">
+        <p className="text-xs font-medium text-destructive">
+          Could not load dashboard stats.
+        </p>
+      </div>
+    );
   }
-
-  const statsData = dashboardStatQuery.data;
 
   const overviewStats = statCardConfig.map((card) => {
     if (card.id === "projects") {
@@ -56,7 +77,7 @@ export default function AdminDashboardPage({ user }: { user: any }) {
         ...card,
         value: statsData.contacts.total,
         changeText:
-          statsData.contacts.total > 2 ? "Reuires Action" : "All Caught Up",
+          statsData.contacts.total > 2 ? "Requires Action" : "All Caught Up",
       };
     }
     return {
@@ -67,7 +88,7 @@ export default function AdminDashboardPage({ user }: { user: any }) {
   });
 
   return (
-    <div className="  flex flex-col min-w-0">
+    <div className="flex flex-col min-w-0">
       <main className="p-4 sm:p-6 lg:p-8 space-y-8 flex-1 max-w-7xl w-full mx-auto">
         {/* Welcome Action Header Block */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
@@ -85,14 +106,16 @@ export default function AdminDashboardPage({ user }: { user: any }) {
           <div className="flex items-center gap-2">
             <Link
               href={"/dashboard/projects/new"}
-              // onClick={openNewProjectModal}
               className="flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2.5 hover:bg-primary/90 transition-all shadow-sm rounded-sm cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" /> New Project
             </Link>
-            <button className="flex items-center gap-1.5 bg-amber-500 text-slate-950 text-xs font-bold px-4 py-2.5 hover:bg-amber-400 transition-all shadow-sm rounded-sm cursor-pointer">
+            <Link
+              href={"/dashboard/blogs/new"}
+              className="flex items-center gap-1.5 bg-amber-500 text-slate-950 text-xs font-bold px-4 py-2.5 hover:bg-amber-400 transition-all shadow-sm rounded-sm cursor-pointer"
+            >
               <Plus className="h-3.5 w-3.5" /> New Blog Post
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -100,7 +123,7 @@ export default function AdminDashboardPage({ user }: { user: any }) {
         <AnalyticsGridPanel statsData={overviewStats} />
 
         {/* Core Functional Project View Section */}
-        <ProjectListingViewPanel projects={mockData.mockProjects} />
+        <ProjectListingViewPanel projects={projects} />
       </main>
 
       {/* Global Footer Layer Segment */}

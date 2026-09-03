@@ -51,7 +51,10 @@ export function usePublicProfile(options?: UsePublicProfileOptions) {
  */
 export function useProfileById(options?: UseProfileByIdOptions) {
   return useQuery({
-    ...trpc.profile.getProfileByUserId.queryOptions(),
+    ...trpc.profile.getProfileByUserId.queryOptions(undefined, {
+      staleTime: 30_000,
+      retry: false,
+    }),
     enabled: options?.enabled ?? true,
   });
 }

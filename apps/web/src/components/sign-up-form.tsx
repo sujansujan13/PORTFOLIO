@@ -26,23 +26,29 @@ export default function SignUpForm({
       username: "", // 👈 1. Added username default value
     },
     onSubmit: async ({ value }) => {
-      await authClient.signUp.email(
-        {
-          email: value.email,
-          password: value.password,
-          name: value.name,
-          username: value.username.toLowerCase().trim(), // 👈 2. Pass username to better-auth
-        } as any,
-        {
-          onSuccess: () => {
-            router.push("/dashboard");
-            toast.success("Sign up successful");
+      try {
+        await authClient.signUp.email(
+          {
+            email: value.email,
+            password: value.password,
+            name: value.name,
+            username: value.username.toLowerCase().trim(), // 👈 2. Pass username to better-auth
+          } as any,
+          {
+            onSuccess: () => {
+              router.push("/dashboard");
+              toast.success("Sign up successful");
+            },
+            onError: (error) => {
+              toast.error(error.error.message || error.error.statusText);
+            },
           },
-          onError: (error) => {
-            toast.error(error.error.message || error.error.statusText);
-          },
-        },
-      );
+        );
+      } catch (error: any) {
+        toast.error(
+          error?.message || "Failed to connect to authentication server",
+        );
+      }
     },
     validators: {
       onSubmit: z.object({

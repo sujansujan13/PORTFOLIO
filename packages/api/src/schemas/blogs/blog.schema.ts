@@ -20,10 +20,11 @@ export const publicBlogCardSchema = z.object({
   title: z.string(),
   slug: z.string(),
   description: z.string(),
-  publishedAt: z.coerce.date(),
+  publishedAt: z.union([z.coerce.date(), z.string()]),
   featuredImage: z.string(),
   category: z.string(),
 });
+
 
 export const blogDetailSchema = publicBlogCardSchema.extend({
   author: z.object({

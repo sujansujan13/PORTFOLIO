@@ -64,7 +64,7 @@ export function StatusHeaderPanel() {
     },
   ];
   return (
-    <div className="w-full border-b border-border bg-card/40 backdrop-blur-sm px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+    <div className="w-full border-b border-border bg-card px-4 py-3 flex items-center justify-between sticky top-0 z-40">
       <div className="flex items-center gap-3">
         {/* Mobile Menu Trigger */}
         <div className="lg:hidden">

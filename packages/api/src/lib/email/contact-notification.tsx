@@ -11,7 +11,8 @@ import {
 } from "@react-email/components";
 import { Resend } from "resend";
 import { env } from "@my-portfolio/env/server";
-import type { ContactInputValues } from "../../schemas/Contact/contact-input.schema";
+import type { ContactInputValues } from "../../schemas/contact/contact-input.schema";
+
 
 interface ContactNotificationEmailProps {
   name: string;

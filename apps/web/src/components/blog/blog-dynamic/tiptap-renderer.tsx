@@ -1,5 +1,5 @@
 // #REVISION#
-import type { TiptapJson } from "@my-portfolio/api/schemas/Blogs/blog.schema";
+import type { TiptapJson } from "@my-portfolio/api/schemas/blogs/blog.schema";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import type React from "react";

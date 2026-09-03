@@ -1,9 +1,10 @@
-import { Profile, User } from "@my-portfolio/db";
+import { Profile } from "@my-portfolio/db";
 import { TRPCError } from "@trpc/server";
 import {
   profileInputSchema,
   type ProfileInput,
-} from "../schemas/Profile/profile-input.schema";
+} from "../schemas/profile/profile-input.schema";
+
 
 /**
  * 1. Upsert Profile (Create if not exists, Update if already exists)
@@ -39,15 +40,7 @@ export async function upsertProfile(userId: string, input: ProfileInput) {
 export async function getProfileByUserId(userId: string) {
   try {
     const profile = await Profile.findOne({ userId }).lean();
-
-    if (!profile) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Profile not found for this user",
-      });
-    }
-
-    return profile;
+    return profile || null;
   } catch (error) {
     console.error("Error fetching profile:", error);
 
@@ -68,22 +61,14 @@ export async function getProfileByUserId(userId: string) {
  */
 export async function getPublicProfile(userId?: string) {
   try {
-    let targetUserId = userId;
+    let profile;
 
-    // Fallback: If no explicit userId is provided (unauthenticated guest), find the primary user
-    if (!targetUserId) {
-      const primaryUser = await User.findOne({}).sort({ createdAt: 1 }).lean();
-      targetUserId = primaryUser?._id ?? undefined;
+    if (userId) {
+      profile = await Profile.findOne({ userId }).lean();
+    } else {
+      // Fallback for homepage guest: Fetch the primary saved profile directly
+      profile = await Profile.findOne({}).sort({ createdAt: 1 }).lean();
     }
-
-    if (!targetUserId) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "No portfolio user available",
-      });
-    }
-
-    const profile = await Profile.findOne({ userId: targetUserId }).lean();
 
     if (!profile) {
       throw new TRPCError({

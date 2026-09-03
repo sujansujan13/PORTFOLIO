@@ -1,9 +1,10 @@
 // packages/api/src/routers/contact.router.ts
 import { protectedProcedure, publicProcedure, router } from "../index";
-import { contactInputFormSchema } from "../schemas/Contact/contact-input.schema";
-import { getContactMessagesSchema } from "../schemas/Contact/getContactMessage.schema";
-import { toggleReadSchema } from "../schemas/Contact/toggle-read.schema";
-import { updateStatusSchema } from "../schemas/Contact/update-status.schema";
+import { contactInputFormSchema } from "../schemas/contact/contact-input.schema";
+import { getContactMessagesSchema } from "../schemas/contact/getContactMessage.schema";
+import { toggleReadSchema } from "../schemas/contact/toggle-read.schema";
+import { updateStatusSchema } from "../schemas/contact/update-status.schema";
+
 import {
   archiveContactMessage,
   createContactMessage,

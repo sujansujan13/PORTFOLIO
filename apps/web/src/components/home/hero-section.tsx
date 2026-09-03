@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import type { Variants as FramerVariants } from "framer-motion";
 import { MapPin, ArrowRight, Download } from "lucide-react";
 import Link from "next/link";
+import { usePublicProfile } from "@/hooks/useProfile";
 
 const ECOSYSTEM_BADGES = [
   { name: "MongoDB", icon: "🍃" },
@@ -25,9 +26,20 @@ export default function HeroSection() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const profileHub = usePublicProfile();
+  const { data: profile } = profileHub;
+
+  const roles =
+    (profile as any)?.typeWriterTitles?.length > 0
+      ? (profile as any).typeWriterTitles
+      : (profile as any)?.typewriterTitles?.length > 0
+      ? (profile as any).typewriterTitles
+      : ROLES;
+
   useEffect(() => {
+    if (!roles || roles.length === 0) return;
     let timer: NodeJS.Timeout;
-    const currentFullText = ROLES[roleIndex];
+    const currentFullText = roles[roleIndex % roles.length] || "";
 
     const handleType = () => {
       if (!isDeleting) {
@@ -42,7 +54,7 @@ export default function HeroSection() {
 
         if (displayText === "") {
           setIsDeleting(false);
-          setRoleIndex((prev) => (prev + 1) % ROLES.length);
+          setRoleIndex((prev) => (prev + 1) % roles.length);
           return;
         }
       }
@@ -53,7 +65,7 @@ export default function HeroSection() {
 
     timer = setTimeout(handleType, isDeleting ? 40 : 100);
     return () => clearTimeout(timer);
-  }, [displayText, isDeleting, roleIndex]);
+  }, [displayText, isDeleting, roleIndex, roles]);
 
   const containerVariants: FramerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -73,6 +85,47 @@ export default function HeroSection() {
     },
   };
 
+  const firstName = profile?.fullName
+    ? profile.fullName.trim().split(" ")[0]
+    : "Sujan";
+
+  const coreSkills = React.useMemo(() => {
+    if (!profile?.skills || profile.skills.length === 0) {
+      return ECOSYSTEM_BADGES;
+    }
+
+    const filtered = profile.skills.filter(
+      (s: any) => s.isCore && s.isVisible !== false,
+    );
+
+    if (filtered.length === 0) {
+      return ECOSYSTEM_BADGES;
+    }
+
+    const getIcon = (name: string) => {
+      const lower = name.toLowerCase();
+      if (lower.includes("mongo")) return "🍃";
+      if (lower.includes("express")) return "🚂";
+      if (lower.includes("react")) return "⚛️";
+      if (lower.includes("node")) return "🟢";
+      if (lower.includes("next")) return "▲";
+      if (lower.includes("typescript") || lower.includes("ts")) return "🔷";
+      if (lower.includes("javascript") || lower.includes("js")) return "🟨";
+      if (lower.includes("docker")) return "🐳";
+      if (lower.includes("postgres") || lower.includes("sql")) return "🐘";
+      if (lower.includes("rust")) return "🦀";
+      if (lower.includes("python")) return "🐍";
+      if (lower.includes("tail") || lower.includes("css")) return "🎨";
+      if (lower.includes("aws") || lower.includes("cloud")) return "☁️";
+      return "⚡";
+    };
+
+    return filtered.map((s: any) => ({
+      name: s.name,
+      icon: getIcon(s.name),
+    }));
+  }, [profile?.skills]);
+
   return (
     <section className="relative flex flex-col items-center justify-center min-h-[95vh] px-4 sm:px-6 lg:px-8 py-6 md:py-10 xl:py-20  text-center bg-background text-foreground overflow-hidden">
       {/* Visual background ambient glow spots */}
@@ -91,7 +144,7 @@ export default function HeroSection() {
         >
           <MapPin className="h-4 w-4 text-primary animate-pulse fill-white" />
           <span className="font-semibold dark:text-foreground/90">
-            Kathmandu, Nepal
+            {profile?.location || "Kathmandu, Nepal"}
           </span>
           <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" />
         </motion.div>
@@ -102,7 +155,10 @@ export default function HeroSection() {
           className="space-y-3 sm:space-y-4 w-full"
         >
           <h2 className="text-lg sm:text-xl md:text-3xl font-semibold text-foreground/80 tracking-tight">
-            Hi, I'm <span className="text-foreground font-bold">Sujan</span>
+            Hi, I'm{" "}
+            <span className="text-foreground font-bold">
+              {firstName}
+            </span>
           </h2>
 
           {/* Stable Static Flex Layout (Solves edge cutting on Fullscreen & Inspector windows) */}
@@ -126,12 +182,10 @@ export default function HeroSection() {
         {/* Supporting Paragraph Description */}
         <motion.p
           variants={itemVariants}
-          className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto text-[#454653] dark:text-[#acbcd5] leading-relaxed px-2 sm:px-0 font-semibold"
+          className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto text-[#454653] dark:text-[#acbcd5] leading-relaxed px-2 sm:px-0 font-semibold whitespace-pre-line"
         >
-          Crafting high-performance web applications with the MERN stack and
-          Next.js. I specialize in building scalable architectures and
-          delightful user experiences that bridge the gap between design and
-          technical excellence.
+          {profile?.shortBio ||
+            "Crafting high-performance web applications with the MERN stack and Next.js. I specialize in building scalable architectures and delightful user experiences that bridge the gap between design and technical excellence."}
         </motion.p>
 
         {/* Interactive Action Buttons */}
@@ -148,11 +202,13 @@ export default function HeroSection() {
           </Link>
 
           <a
-            href="/cv.pdf"
+            href={profile?.resumeUrl || "/cv.pdf"}
+            target="_blank"
+            rel="noopener noreferrer"
             download
             className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-8.5 py-6 bg-transparent border-2 border-[#855201] dark:border-[#855201] text-[#855201] dark:text-yellow-300  font-semibold rounded-md transition-all duration-300 hover:bg-orange-500/5 hover:border-[#241c10] active:scale-98 text-sm"
           >
-            <Download className="h-4 w-4 text-[#855201" />
+            <Download className="h-4 w-4 text-[#855201]" />
             Download CV
           </a>
         </motion.div>
@@ -166,7 +222,7 @@ export default function HeroSection() {
             Core Ecosystem
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 px-4">
-            {ECOSYSTEM_BADGES.map((badge) => (
+            {coreSkills.map((badge) => (
               <div
                 key={badge.name}
                 className="flex items-center gap-3 px-4 sm:px-4 py-2.5 rounded-lg border border-border bg-[#e8f0ff] dark:bg-card/40 backdrop-blur-xs text-sm sm:text-sm font-medium transition-all duration-300 hover:border-primary/50 hover:bg-card/80 hover:shadow-sm"

@@ -1,11 +1,12 @@
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "..";
 import { getPublicTimelineSchema } from "../schemas/timeline.schema";
-import { createTimelineSchema } from "../schemas/Timeline/createTimeline.schema";
+import { createTimelineSchema } from "../schemas/timeline/createTimeline.schema";
 import {
   getDashboardTimelineInputSchema,
   updateTimelineRouterInputSchema,
-} from "../schemas/Timeline/timelineRouterInput.schema";
+} from "../schemas/timeline/timelineRouterInput.schema";
+
 import {
   createTimeline,
   deleteTimeline,

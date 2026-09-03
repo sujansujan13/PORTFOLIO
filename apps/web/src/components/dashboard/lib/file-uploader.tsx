@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadCloud, FileImage, X, Eye } from "lucide-react";
-import { uploadImage } from "@/utils/image-upload";
+import { uploadImage } from "@/utils/file-upload";
 
 interface AssetState {
   filename: string | null;
@@ -59,7 +59,8 @@ export function FileUploader({
     updater({ filename: file.name, progress: 0, previewUrl: previewUrl });
 
     try {
-      const uploadedUrl = await uploadImage(file, (progress) => {
+      // Pass "projects" folder target
+      const uploadedUrl = await uploadImage(file, "projects", (progress) => {
         updater({
           filename: file.name,
           progress,

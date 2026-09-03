@@ -63,10 +63,12 @@ export default function BriefDescription({
 
       <TextareaField
         label="Short Description"
+        rows={3}
         registration={register("description")}
         placeholder="Short summary for project cards and SEO preview..."
         error={errors.description?.message}
       />
+
     </>
   );
 }

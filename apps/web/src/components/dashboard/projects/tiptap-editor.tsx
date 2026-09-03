@@ -15,7 +15,7 @@ import {
   ImageDown,
   UnderlineIcon,
 } from "lucide-react";
-import { uploadImage } from "@/utils/image-upload";
+import { uploadImage } from "@/utils/file-upload";
 import { toast } from "sonner";
 
 interface TiptapEditorProps {
@@ -153,7 +153,7 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
     setIsUploading(true);
 
     try {
-      const uploadedUrl = await uploadImage(file, () => { });
+      const uploadedUrl = await uploadImage(file, "tiptap-images");
 
       editor.chain().focus().setImage({ src: uploadedUrl }).run();
     } catch (error) {

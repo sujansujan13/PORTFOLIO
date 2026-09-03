@@ -8,6 +8,7 @@ import {
   Inbox,
   Settings,
   Plus,
+  ShieldUser,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -16,7 +17,6 @@ import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
   const pathname = usePathname();
-  console.log(pathname);
 
   const isActive = (path: string) => {
     if (path === "/dashboard") {
@@ -35,6 +35,11 @@ export default function Sidebar() {
       label: "Dashboard Home",
       icon: LayoutDashboard,
       href: "/dashboard",
+    },
+    {
+      label: "Profile & Skills Manager",
+      icon: ShieldUser,
+      href: "/dashboard/profile",
     },
     {
       label: "Project Manager",
@@ -72,7 +77,6 @@ export default function Sidebar() {
           <nav className="space-y-1">
             {sideLinks.map((link, i) => {
               const active = isActive(link.href);
-              console.log(active);
               return (
                 <Link
                   href={link.href as Route}

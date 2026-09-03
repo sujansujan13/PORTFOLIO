@@ -5,7 +5,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import type { GetContactMessagesInput } from "@my-portfolio/api/schemas/Contact/getContactMessage.schema";
+import type { GetContactMessagesInput } from "@my-portfolio/api/schemas/contact/getContactMessage.schema";
+
 
 export function useContactMessages(options: GetContactMessagesInput) {
   return useQuery(trpc.contact.getContactMessages.queryOptions(options));

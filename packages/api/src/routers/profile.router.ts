@@ -1,6 +1,7 @@
 import z from "zod";
 import { protectedProcedure, publicProcedure, router } from "..";
-import { profileInputSchema } from "../schemas/Profile/profile-input.schema";
+import { profileInputSchema } from "../schemas/profile/profile-input.schema";
+
 import { getProfileByUserId, getPublicProfile, upsertProfile } from "../services/profile.service";
 
 export const profileRouter = router({

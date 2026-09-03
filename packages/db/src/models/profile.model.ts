@@ -1,5 +1,7 @@
-import { Schema, model, models } from "mongoose";
+import mongoose from "mongoose";
 import type { InferSchemaType, Model } from "mongoose";
+
+const { Schema, model, models } = mongoose;
 
 // Sub-schema for individual technical skills
 const skillSchema = new Schema({
@@ -33,7 +35,7 @@ const profileSchema = new Schema(
     userId: { type: String, required: true, unique: true, index: true },
 
     // Hero & Basic Profile Fields
-    fullName: { type: String, required: true },
+    fullName: { type: String, required: true, trim: true },
     typeWriterTitles: {
       type: [String],
       default: ["Full-Stack Developer", "UI/UX Architect", "Problem Solver"],
@@ -62,4 +64,3 @@ export type ProfileDocument = InferSchemaType<typeof profileSchema>;
 export const Profile =
   (models.Profile as Model<ProfileDocument> | undefined) ||
   model<ProfileDocument>("Profile", profileSchema);
-

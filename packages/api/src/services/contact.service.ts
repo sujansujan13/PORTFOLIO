@@ -1,7 +1,7 @@
 import {
   contactInputFormSchema,
   type ContactInputValues,
-} from "./../schemas/Contact/contact-input.schema";
+} from "./../schemas/contact/contact-input.schema";
 
 import { Contact } from "@my-portfolio/db";
 
@@ -9,22 +9,23 @@ import { sendContactNotification } from "../lib/email/contact-notification";
 import {
   getContactMessagesSchema,
   type GetContactMessagesInput,
-} from "../schemas/Contact/getContactMessage.schema";
+} from "../schemas/contact/getContactMessage.schema";
 import {
   getContactMessagesResponseSchema,
   type ContactMessageResponse,
-} from "../schemas/Contact/dashboardSchema-Response.schema";
+} from "../schemas/contact/dashboardSchema-Response.schema";
 import type { MessageDocument } from "@my-portfolio/db/models/contact.model";
 import {
   toggleReadSchema,
   type ToggleRead,
-} from "../schemas/Contact/toggle-read.schema";
+} from "../schemas/contact/toggle-read.schema";
 import mongoose from "mongoose";
 import { TRPCError } from "@trpc/server";
 import {
   updateStatusSchema,
   type UpdateStatus,
-} from "../schemas/Contact/update-status.schema";
+} from "../schemas/contact/update-status.schema";
+
 
 interface CreateContactMessageOptions {
   ipHash?: string | null;

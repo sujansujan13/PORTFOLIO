@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import BlogForm from "@/components/dashboard/blogCMS/edit/blog-edit-form-page";
+import BlogForm from "@/components/dashboard/blog-cms/edit/blog-edit-form-page";
 import { type BlogFormInput, type BlogFormValues } from "@/schemas/blog.schema";
 import { useCreateBlog } from "@/hooks/useDashboardBlog";
+
 
 export default function BlogNewClientPage() {
   const router = useRouter();

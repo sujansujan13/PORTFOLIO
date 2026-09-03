@@ -7,7 +7,8 @@ import {
   getDashboardBlogInput,
   getPublicBlogsSchema,
   UpdateBlogSchema,
-} from "../schemas/Blogs/blog.schema";
+} from "../schemas/blogs/blog.schema";
+
 import {
   createBlog,
   deleteBlog,

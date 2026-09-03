@@ -7,13 +7,14 @@ import { Timeline, User } from "@my-portfolio/db";
 import {
   createTimelineSchema,
   type CreateTimelineInput,
-} from "../schemas/Timeline/createTimeline.schema";
+} from "../schemas/timeline/createTimeline.schema";
 import mongoose from "mongoose";
 import { TRPCError } from "@trpc/server";
 import {
   updateTimelineSchema,
   type UpdateTimelineInput,
-} from "../schemas/Timeline/updateTimeline.schema";
+} from "../schemas/timeline/updateTimeline.schema";
+
 
 function serializeTimelineItem(item: any): PublicTimelineItem {
   return {

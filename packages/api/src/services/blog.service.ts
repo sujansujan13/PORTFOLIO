@@ -8,9 +8,10 @@ import {
   type PublicBlogCard,
   type TiptapJson,
   type UpdateBlog,
-} from "../schemas/Blogs/blog.schema";
+} from "../schemas/blogs/blog.schema";
 import { Blog, User } from "@my-portfolio/db";
-import type { DashboardBlogDetail } from "../schemas/Blogs/blogDashboardDetail.schema";
+import type { DashboardBlogDetail } from "../schemas/blogs/blogDashboardDetail.schema";
+
 
 function serializeBlogsCard(blog: any): PublicBlogCard {
   return {

@@ -11,8 +11,8 @@ export function IconRenderer({ name, className }: IconRendererProps) {
   const IconComponent = (LucideIcons as any)[name];
 
   if (!IconComponent) {
-    // Structural absolute fallback tracking
-    return <LucideIcons.HelpCircle className={className} />;
+    // Clean code brackets fallback
+    return <LucideIcons.Code2 className={className} />;
   }
 
   return <IconComponent className={className} />;

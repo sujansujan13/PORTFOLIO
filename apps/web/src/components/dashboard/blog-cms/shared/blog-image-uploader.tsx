@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FileImage, UploadCloud, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { uploadImage } from "@/utils/image-upload";
+import { uploadImage } from "@/utils/file-upload";
 
 interface SingleImageUploaderProps {
   value?: string;
@@ -71,9 +71,14 @@ export function BlogImageUploader({
     setIsUploading(true);
 
     try {
-      const uploadedUrl = await uploadImage(file, (currentProgress) => {
-        setProgress(currentProgress);
-      });
+      //  Pass "blogs" folder target
+      const uploadedUrl = await uploadImage(
+        file,
+        "blogs",
+        (currentProgress) => {
+          setProgress(currentProgress);
+        },
+      );
 
       // Store the uploaded URL in React Hook Form.
       onChange(uploadedUrl);

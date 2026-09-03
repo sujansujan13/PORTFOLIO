@@ -177,6 +177,8 @@ The Dark Preset (.dark): When you click the toggle, next-themes applies the .dar
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: oklch(0.552 0.016 285.938 / 0.35) transparent;
+  will-change: scroll-position;
+  transform: translateZ(0);
 }
 
 .custom-scrollbar::-webkit-scrollbar {

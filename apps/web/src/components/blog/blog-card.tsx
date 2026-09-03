@@ -7,7 +7,7 @@ import { Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import Image from "next/image";
-import type { PublicBlogCard } from "@my-portfolio/api/schemas/Blogs/blog.schema";
+import type { PublicBlogCard } from "@my-portfolio/api/schemas/blogs/blog.schema";
 
 // Config maps category string tokens cleanly to Tailwind CSS v4 variables without database clutter
 const CATEGORY_THEMES: Record<

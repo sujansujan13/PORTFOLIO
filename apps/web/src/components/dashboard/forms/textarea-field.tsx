@@ -5,16 +5,18 @@ interface TextareaFieldProps extends InputHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   registration: UseFormRegisterReturn;
   error?: string;
-  rows: number;
+  rows?: number;
 }
 
 export default function TextareaField({
   label,
   registration,
   error,
+  rows = 3,
   className = "",
   ...props
 }: TextareaFieldProps) {
+
   return (
     <div>
       <label

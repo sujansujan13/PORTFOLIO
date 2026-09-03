@@ -19,6 +19,8 @@ import {
 } from "./Styling/personal-card-style";
 import { THEMES, type ThemeType } from "@/config/color-theme";
 
+import { usePublicProfile } from "@/hooks/useProfile";
+
 type CategoryType = "all" | "frontend" | "backend" | "cloud";
 
 interface AboutPageClientProps {
@@ -41,16 +43,84 @@ const containerStagger: Variants = {
 export default function AboutPageClient({ data }: AboutPageClientProps) {
   const [activeCategory, setActiveCategory] = useState<CategoryType>("all");
 
-  const filteredSkills = data.skills.filter(
-    (skill) => activeCategory === "all" || skill.category === activeCategory,
+  const { data: profile } = usePublicProfile();
+
+  const parseParagraphs = (text?: string): string[] => {
+    if (!text) return [];
+    return text
+      .split(/\r?\n\s*\r?\n|\r?\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+  };
+
+  const bioParagraphs = profile?.fullBio
+    ? parseParagraphs(profile.fullBio)
+    : profile?.shortBio
+    ? parseParagraphs(profile.shortBio)
+    : data.hero.paragraphs;
+
+  const heroData = {
+    badge: profile?.primaryRole || data.hero.badge,
+    heading: profile?.fullName
+      ? `Designing the digital future with code.`
+      : data.hero.heading,
+    paragraphs: bioParagraphs.length > 0 ? bioParagraphs : data.hero.paragraphs,
+    image: profile?.avatarUrl
+      ? { src: profile.avatarUrl, alt: profile.fullName || "Profile Image" }
+      : data.hero.image,
+    resumeUrl: profile?.resumeUrl || "/cv.pdf",
+    githubUrl: profile?.githubUrl,
+  };
+
+  const dynamicSkills = profile?.skills?.length
+    ? profile.skills
+        .filter((s: any) => s.isVisible !== false)
+        .map((s: any) => ({
+          id:
+            s.id ||
+            s._id?.toString() ||
+            s.name.toLowerCase().replace(/\s+/g, "-"),
+          title: s.name,
+          subtitle: s.subtitle || s.category,
+          percentage: s.proficiency ?? 80,
+          category: (s.category || "frontend").toLowerCase() as CategoryType,
+        }))
+    : data.skills;
+
+  const filteredSkills = dynamicSkills.filter(
+    (skill: any) =>
+      activeCategory === "all" || skill.category === activeCategory,
   );
+
+  const dynamicLearningItems = profile?.learningGoals?.length
+    ? profile.learningGoals.map((g: any, idx: number) => {
+        const themeKeys: (keyof typeof THEMES)[] = [
+          "blue",
+          "amber",
+          "rose",
+          "green",
+          "purple",
+        ];
+        const themeKey = themeKeys[idx % themeKeys.length];
+        return {
+          title: g.name,
+          desc:
+            g.description ||
+            `Status: ${g.status || "Learning"} (${g.progress ?? 0}%)`,
+          theme: THEMES[themeKey],
+        };
+      })
+    : data.learningItems.map((item) => ({
+        ...item,
+        theme: THEMES[item.theme as keyof typeof THEMES],
+      }));
 
   return (
     <main className="w-full min-h-screen bg-background text-foreground selection:bg-primary/20">
       <div className="max-w-8xl mx-auto px-6 py-16 sm:px-6 lg:px-16 space-y-24">
         {/* SECTION 1: HERO BIOGRAPHY CONTAINER */}
         <HeroSection
-          data={data.hero}
+          data={heroData}
           fadeInVariant={fadeInVariant}
           containerStagger={containerStagger}
         />
@@ -99,13 +169,32 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
             className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
           >
             <AnimatePresence mode="popLayout">
-              {filteredSkills.map((skill) => {
-                // Gracefully fetch client-side styles using the core domain ID
-                const uiTheme = SKILL_THEME_MAP[skill.id as SkillId] || {
-                  trackColor: "bg-primary",
-                  iconColor: "text-primary",
-                  iconName: "HelpCircle",
-                };
+              {filteredSkills.map((skill: any) => {
+                // Smart theme resolver: maps skill ID, name keywords, or category to appropriate icon & colors
+                const uiTheme = SKILL_THEME_MAP[skill.id as SkillId] || (() => {
+                  const title = (skill.title || "").toLowerCase();
+                  const cat = (skill.category || "").toLowerCase();
+
+                  if (title.includes("react") || title.includes("next") || title.includes("vue") || title.includes("ui")) {
+                    return { trackColor: "bg-blue-500", iconColor: "text-blue-500", iconName: "Code2" };
+                  }
+                  if (title.includes("node") || title.includes("express") || title.includes("api") || title.includes("nest")) {
+                    return { trackColor: "bg-amber-500", iconColor: "text-amber-500", iconName: "Terminal" };
+                  }
+                  if (title.includes("db") || title.includes("mongo") || title.includes("sql") || title.includes("postgres") || title.includes("redis")) {
+                    return { trackColor: "bg-slate-400", iconColor: "text-slate-400", iconName: "Database" };
+                  }
+                  if (title.includes("aws") || title.includes("cloud") || title.includes("docker") || title.includes("devops") || title.includes("ci/cd")) {
+                    return { trackColor: "bg-orange-500", iconColor: "text-orange-500", iconName: "Cloud" };
+                  }
+
+                  if (cat === "frontend") return { trackColor: "bg-blue-500", iconColor: "text-blue-500", iconName: "Code2" };
+                  if (cat === "backend") return { trackColor: "bg-amber-500", iconColor: "text-amber-500", iconName: "Terminal" };
+                  if (cat === "database") return { trackColor: "bg-slate-400", iconColor: "text-slate-400", iconName: "Database" };
+                  if (cat === "cloud" || cat === "tools") return { trackColor: "bg-orange-500", iconColor: "text-orange-500", iconName: "Cloud" };
+
+                  return { trackColor: "bg-primary", iconColor: "text-primary", iconName: "Code2" };
+                })();
 
                 return (
                   <SkillCard
@@ -115,7 +204,7 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
                     subtitle={skill.subtitle}
                     percentage={skill.percentage}
                     category={skill.category as CategoryType}
-                    trackColor={uiTheme.trackColor} // Injected on the fly!
+                    trackColor={uiTheme.trackColor}
                     icon={
                       <IconRenderer
                         name={uiTheme.iconName}
@@ -147,14 +236,11 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
             </div>
 
             <div className="space-y-4">
-              {data.learningItems.map((item, idx) => {
-                const themeKey = item.theme as keyof typeof THEMES;
-                const themeColor = THEMES[themeKey];
+              {dynamicLearningItems.map((item: any, idx: number) => {
                 return (
                   <LearningItem
                     key={idx}
                     {...item}
-                    theme={themeColor}
                     variants={fadeInVariant}
                   />
                 );

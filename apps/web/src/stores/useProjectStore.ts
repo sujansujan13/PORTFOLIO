@@ -45,7 +45,8 @@ export const useProjectStore = create<ProjectStoreState>((set) => ({
       );
       const currentViewIds = searchedProjects
         .slice(startIndex, endIndex)
-        .map((p) => p.id);
+        .map((p) => p.id)
+        .filter((id): id is string => Boolean(id));
 
       const areAllSelected = currentViewIds.every((id) =>
         state.selectedIds.includes(id),
@@ -65,7 +66,7 @@ export const useProjectStore = create<ProjectStoreState>((set) => ({
 
   deleteSelectedProjects: () =>
     set((state) => ({
-      projects: state.projects.filter((p) => !state.selectedIds.includes(p.id)),
+      projects: state.projects.filter((p) => Boolean(p.id) && !state.selectedIds.includes(p.id!)),
     })),
 
   setCurrentPage: (page) =>
@@ -73,6 +74,7 @@ export const useProjectStore = create<ProjectStoreState>((set) => ({
       currentPage: page,
     })),
 }));
+
 
 // setSearchQuery: (query) => set({ searchQuery: query, currentPage: 1 });
 // why currentPage: 1 is used

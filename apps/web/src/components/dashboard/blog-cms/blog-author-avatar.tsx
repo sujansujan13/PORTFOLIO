@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Camera, Loader2, Upload, X } from "lucide-react";
-import { uploadImage } from "@/utils/image-upload";
+import { uploadImage } from "@/utils/file-upload";
 
 interface BlogAuthorAvatarProps {
   value?: string;
@@ -135,9 +135,13 @@ export default function BlogAuthorAvatar({
       /*
        * Upload the image to your server/storage.
        */
-      const uploadedUrl = await uploadImage(file, (currentProgress) => {
-        setProgress(currentProgress);
-      });
+      const uploadedUrl = await uploadImage(
+        file,
+        "avatars",
+        (currentProgress) => {
+          setProgress(currentProgress);
+        },
+      );
 
       /*
        * Save the permanent URL into React Hook Form.

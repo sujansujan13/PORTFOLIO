@@ -15,20 +15,37 @@ interface Project {
   techStack: string[];
 }
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({ project }: { project: any }) {
   const { openEditProjectModal } = useDashboardStore();
+
+  const rawImage =
+    project.thumbImageUrl ||
+    project.heroImageUrl ||
+    project.imageUrl;
+
+  const imageSrc =
+    typeof rawImage === "string" && rawImage.trim() !== ""
+      ? rawImage
+      : "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=60";
+
+  const techStack: string[] = Array.isArray(project.techStack)
+    ? project.techStack
+    : Array.isArray(project.tags)
+    ? project.tags
+    : [];
 
   return (
     <div className="bg-card border border-border overflow-hidden rounded-lg flex flex-col justify-between hover:shadow-lg transition-all duration-300">
       <div className="relative aspect-video bg-muted overflow-hidden">
         <Image
-          src={project.imageUrl}
-          alt={project.title}
+          src={imageSrc}
+          alt={project.title || "Project Image"}
           fill
+          unoptimized={imageSrc.startsWith("http")}
           className="object-cover w-full h-full transform hover:scale-105 transition-transform duration-500"
         />
         <span className="absolute bottom-3 left-3 bg-primary text-white text-[10px] font-extrabold tracking-widest uppercase px-2 py-0.5 rounded-xs shadow-md">
-          {project.category}
+          {project.category || "Project"}
         </span>
       </div>
 
@@ -38,10 +55,10 @@ export function ProjectCard({ project }: { project: Project }) {
             {project.title}
           </h4>
           <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-8">
-            {project.subtitle}
+            {project.subtitle || project.description || ""}
           </p>
           <div className="flex flex-wrap gap-1.5 mt-4">
-            {project.techStack.map((tech, idx) => (
+            {techStack.map((tech, idx) => (
               <span
                 key={idx}
                 className="bg-muted text-foreground text-[10px] font-medium px-2 py-0.5 rounded-xs border border-border/60"

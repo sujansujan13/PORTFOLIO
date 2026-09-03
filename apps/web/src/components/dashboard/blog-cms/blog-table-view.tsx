@@ -4,7 +4,7 @@ import { Edit3, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 
-import type { BlogDashboard } from "@my-portfolio/api/schemas/Blogs/blog.schema";
+import type { BlogDashboard } from "@my-portfolio/api/schemas/blogs/blog.schema";
 import { useDeleteBlog } from "@/hooks/useDashboardBlog";
 
 export interface BlogTableViewProps {

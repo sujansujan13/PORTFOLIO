@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import type { ContactMessage } from "./inbox-client-page";
 import Link from "next/link";
-import { Initials } from "./dynamicPage/utils/initials";
+import { Initials } from "../../../lib/initials";
 
 interface MessageCardProps {
   message: ContactMessage;
