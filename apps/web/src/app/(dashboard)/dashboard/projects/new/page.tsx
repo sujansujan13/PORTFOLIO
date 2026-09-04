@@ -2,7 +2,9 @@
 
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link2, Rocket } from "lucide-react";
+import type { Route } from "next";
+import { Link2, Rocket, Plus } from "lucide-react";
+import Link from "next/link";
 import { projectFormSchema, type ProjectFormValues } from "@/schemas/project";
 import { TiptapEditor } from "@/components/dashboard/projects/tiptap-editor";
 import { FileUploader } from "@/components/dashboard/lib/file-uploader";
@@ -20,6 +22,7 @@ import { MetaCard } from "@/components/dashboard/projects/meta-card";
 import { useCreateProject } from "@/hooks/useDashboardProjects";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useGetCategories } from "@/hooks/useCategory";
 
 export default function CreateProjectWorkspacePage() {
   const {
@@ -41,7 +44,7 @@ export default function CreateProjectWorkspacePage() {
       },
       publicAccess: true,
       techStack: [],
-      category: "web-app",
+      category: "",
       githubUrl: "",
       liveUrl: "",
       heroImageUrl: "",
@@ -63,6 +66,11 @@ export default function CreateProjectWorkspacePage() {
   const currentSubtitle = watch("subtitle") || "Sub-platform node definition";
 
   const toolsUsed = watch("toolsUsed") || [];
+
+  const categoriesQuery = useGetCategories({ type: "project" });
+
+  const categories = categoriesQuery.data ?? [];
+  const { isPending, isError } = categoriesQuery;
 
   // REPLACE these two handlers
   const handleAddTechTag = (value: string) => {
@@ -263,11 +271,20 @@ export default function CreateProjectWorkspacePage() {
 
             {/* Category Dropdown Selection Panel */}
             <div className="bg-card border border-border p-5 rounded-md text-left space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Category
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Category
+                </h3>
+                <Link
+                  href={"/dashboard/categories" as Route}
+                  className="text-[11px] text-primary hover:underline font-semibold flex items-center gap-1"
+                >
+                  <Plus className="h-3 w-3" /> Manage
+                </Link>
+              </div>
               <select
                 {...register("category")}
+                disabled={isPending || categories.length === 0}
                 className="w-full bg-input/40 border border-border p-2.5 text-xs font-medium tracking-wider focus:outline-none focus:border-primary transition-colors rounded-sm text-foreground appearance-none cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>")`,
@@ -276,16 +293,28 @@ export default function CreateProjectWorkspacePage() {
                   backgroundRepeat: "no-repeat",
                 }}
               >
-                {staticOptions.categories.map((cat) => (
+                <option value="">
+                  {isPending
+                    ? "Loading categories..."
+                    : categories.length === 0
+                      ? "No project categories found"
+                      : "Select a Category"}
+                </option>
+                {categories.map((cat) => (
                   <option
-                    key={cat.value}
-                    value={cat.value}
+                    key={cat.id}
+                    value={cat.slug}
                     className="bg-card text-foreground font-medium"
                   >
-                    {cat.label}
+                    {cat.name}
                   </option>
                 ))}
               </select>
+              {errors.category && (
+                <span className="text-destructive text-xs mt-1 block font-medium">
+                  {errors.category.message}
+                </span>
+              )}
             </div>
 
             {/* External Action Deployment Track Links */}

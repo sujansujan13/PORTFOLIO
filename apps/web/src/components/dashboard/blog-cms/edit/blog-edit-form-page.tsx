@@ -4,6 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TiptapEditor } from "@/components/dashboard/projects/tiptap-editor";
 import staticOptions from "@/data/projects-option.json";
 import Image from "next/image";
+import Link from "next/link";
+import type { Route } from "next";
+import { Plus } from "lucide-react";
 import DualHeader from "@/components/dashboard/projects/edit-new-page-header";
 import { MetaCard } from "@/components/dashboard/projects/meta-card";
 import BlogDescription from "@/components/dashboard/blog-cms/shared/brief-description-blog";
@@ -11,12 +14,12 @@ import BlogAuthorPublishingCard from "@/components/dashboard/blog-cms/blog-autho
 import BlogVisibility from "@/components/dashboard/blog-cms/shared/blog-visibility";
 import { BlogImageUploader } from "@/components/dashboard/blog-cms/shared/blog-image-uploader";
 
-
 import {
   blogFormSchema,
   type BlogFormInput,
   type BlogFormValues,
 } from "@/schemas/blog.schema";
+import { useGetCategories } from "@/hooks/useCategory";
 
 interface BlogFormProps {
   defaultValues: BlogFormInput;
@@ -35,7 +38,7 @@ export default function BlogForm({
   onSubmit,
   onSaveDraft,
   isSubmitting = false,
-  isPending = false,
+  isPending: isMutationPending = false,
 }: BlogFormProps) {
   const {
     register,
@@ -48,6 +51,11 @@ export default function BlogForm({
     resolver: zodResolver(blogFormSchema),
     defaultValues,
   });
+
+  const categoriesQuery = useGetCategories({ type: "blog" });
+
+  const categories = categoriesQuery.data || [];
+  const isCategoriesLoading = categoriesQuery.isPending;
 
   const currentTitle = watch("title") || "Blog Post";
   const authorAvatar = watch("author.avatar");
@@ -74,7 +82,7 @@ export default function BlogForm({
       )
     : undefined;
 
-  const busy = isSubmitting || isPending;
+  const busy = isSubmitting || isMutationPending;
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
@@ -176,12 +184,21 @@ export default function BlogForm({
 
             {/* Category */}
             <div className="bg-card border border-border p-5 rounded-md text-left space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Category
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Category
+                </h3>
+                <Link
+                  href={"/dashboard/categories" as Route}
+                  className="text-[11px] text-primary hover:underline font-semibold flex items-center gap-1"
+                >
+                  <Plus className="h-3 w-3" /> Manage
+                </Link>
+              </div>
 
               <select
                 {...register("category")}
+                disabled={isCategoriesLoading || categories.length === 0}
                 className="w-full bg-input/40 border border-border p-2.5 text-xs font-medium tracking-wider focus:outline-none focus:border-primary transition-colors rounded-sm text-foreground appearance-none cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>")`,
@@ -190,13 +207,20 @@ export default function BlogForm({
                   backgroundRepeat: "no-repeat",
                 }}
               >
-                {staticOptions.categories.map((cat) => (
+                <option value="">
+                  {isCategoriesLoading
+                    ? "Loading categories..."
+                    : categories.length === 0
+                      ? "No blog categories found"
+                      : "Select a Category"}
+                </option>
+                {categories.map((cat) => (
                   <option
-                    key={cat.value}
-                    value={cat.value}
+                    key={cat.id}
+                    value={cat.slug}
                     className="bg-card text-foreground font-medium"
                   >
-                    {cat.label}
+                    {cat.name}
                   </option>
                 ))}
               </select>

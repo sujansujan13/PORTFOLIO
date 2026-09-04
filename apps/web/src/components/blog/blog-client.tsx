@@ -1,44 +1,52 @@
 "use client";
-import { usePublicBlogs } from "@/hooks/usePublicBlogs";
-import type { PublicBlogCard } from "@my-portfolio/api/schemas/blogs/blog.schema";
-import React, { useMemo, useState } from "react";
-import { BlogFeed } from "./blog-feed";
-import { div } from "framer-motion/client";
-import { NewsletterBox } from "./newsLetter-box";
 
-const FILTER_CATEGORIES = [
-  { slug: "all", label: "All" },
-  { slug: "react", label: "React" },
-  { slug: "node.js", label: "Node.js" },
-  { slug: "system-design", label: "System Design" },
-  { slug: "devops", label: "DevOps" },
-];
+import React, { useMemo, useState } from "react";
+import { usePublicBlogs } from "@/hooks/usePublicBlogs";
+import { useGetCategories } from "@/hooks/useCategory";
+import { BlogFeed } from "./blog-feed";
+import { NewsletterBox } from "./newsLetter-box";
 
 export default function Blogclient() {
   const [activeCategory, setActiveCategory] = useState("all");
+
+  const categoriesQuery = useGetCategories({ type: "blog" });
   const blogsQuery = usePublicBlogs({ category: activeCategory, limit: 20 });
+
+  // 1. Format dynamic categories ({ slug, label }) with an "All" default tab
+  const categories = useMemo(() => {
+    const rawCategories = categoriesQuery.data || [];
+    const formatted = rawCategories.map((cat) => ({
+      slug: cat.slug,
+      label: cat.name,
+    }));
+
+    return [{ slug: "all", label: "All" }, ...formatted];
+  }, [categoriesQuery.data]);
 
   const blogs = useMemo(() => {
     return blogsQuery.data ?? [];
   }, [blogsQuery.data]);
 
+  const isLoading = blogsQuery.isPending || categoriesQuery.isPending;
+  const isError = blogsQuery.isError || categoriesQuery.isError;
 
-  if (blogsQuery.isError) {
+  if (isError) {
     return (
-      <p className="text-red-400 font-serif font-semibold">
+      <p className="text-center py-12 text-sm text-red-400 font-serif font-semibold">
         Could not find blogs
       </p>
     );
   }
+
   return (
     <div className="flex flex-col gap-20">
       <section aria-label="articles feed grid">
         <BlogFeed
           posts={blogs}
-          categories={FILTER_CATEGORIES}
+          categories={categories}
           activeCategory={activeCategory}
           onCategoryChange={setActiveCategory}
-          isLoading={blogsQuery.isPending}
+          isLoading={isLoading}
         />
       </section>
 
@@ -46,3 +54,4 @@ export default function Blogclient() {
     </div>
   );
 }
+

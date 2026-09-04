@@ -7,7 +7,6 @@ import BlogForm from "@/components/dashboard/blog-cms/edit/blog-edit-form-page";
 import { type BlogFormInput, type BlogFormValues } from "@/schemas/blog.schema";
 import { useCreateBlog } from "@/hooks/useDashboardBlog";
 
-
 export default function BlogNewClientPage() {
   const router = useRouter();
   const createBlog = useCreateBlog();
@@ -21,7 +20,7 @@ export default function BlogNewClientPage() {
       content: [],
     },
     publicAccess: false,
-    category: "others",
+    category: "",
     featuredImage: "",
     publishedAt: new Date(),
     seoTitle: "",

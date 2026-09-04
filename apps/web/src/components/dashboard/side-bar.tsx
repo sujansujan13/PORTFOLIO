@@ -10,6 +10,7 @@ import {
   Plus,
   ShieldUser,
   type LucideIcon,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
@@ -43,7 +44,7 @@ export default function Sidebar() {
     },
     {
       label: "Category Manager",
-      icon: ShieldUser,
+      icon: Tag,
       href: "/dashboard/categories",
     },
     {

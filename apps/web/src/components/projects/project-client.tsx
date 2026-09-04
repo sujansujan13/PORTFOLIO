@@ -4,22 +4,33 @@ import { usePublicProjects } from "@/hooks/usePublicProjects";
 import { useMemo } from "react";
 import type { ProjectCard } from "@/schemas/project";
 import { ProjectGrid } from "./project-grid";
-
-const categories = [
-  { slug: "all", label: "All Builds" },
-  { slug: "fullstack", label: "Full-Stack" },
-  { slug: "frontend", label: "Frontend & UI" },
-  { slug: "gis", label: "Spatial & GIS" },
-];
-
-const themeByCategory: Record<string, string> = {
-  fullstack: "blue",
-  frontend: "rose",
-  gis: "amber",
-};
+import { useGetCategories } from "@/hooks/useCategory";
 
 export function ProjectsClient() {
+  const categoriesQuery = useGetCategories({ type: "project" });
   const projectsQuery = usePublicProjects({ limit: 50 });
+
+  // 1. Format categories array for ProjectGrid ({ slug, label }) with "All Builds" default tab
+  const categories = useMemo(() => {
+    const rawCategories = categoriesQuery.data || [];
+    const formatted = rawCategories.map((cat) => ({
+      slug: cat.slug,
+      label: cat.name,
+    }));
+
+    return [{ slug: "all", label: "All Builds" }, ...formatted];
+  }, [categoriesQuery.data]);
+
+  // 2. Map category slug to badge color dynamically from database
+  const categoryColorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    categoriesQuery.data?.forEach((cat) => {
+      map[cat.slug] = cat.color || "blue";
+    });
+    return map;
+  }, [categoriesQuery.data]);
+
+  // 3. Serialize public projects with dynamic category theme colors
   const projects = useMemo<ProjectCard[]>(() => {
     return (
       projectsQuery.data?.map((project) => ({
@@ -34,17 +45,25 @@ export function ProjectsClient() {
         techStack: project.techStack,
         liveUrl: project.liveUrl,
         githubUrl: project.githubUrl,
-        theme: themeByCategory[project.category] ?? "blue",
+        theme: categoryColorMap[project.category] ?? "blue",
       })) ?? []
     );
-  }, [projectsQuery.data]);
+  }, [projectsQuery.data, categoryColorMap]);
 
-  if (projectsQuery.isPending) {
-    return <p>Loading projects...</p>;
+  if (projectsQuery.isPending || categoriesQuery.isPending) {
+    return (
+      <p className="text-center py-12 text-sm text-muted-foreground">
+        Loading projects...
+      </p>
+    );
   }
 
-  if (projectsQuery.isError) {
-    return <p>Could not load projects.</p>;
+  if (projectsQuery.isError || categoriesQuery.isError) {
+    return (
+      <p className="text-center py-12 text-sm text-red-500 font-medium">
+        Could not load projects.
+      </p>
+    );
   }
 
   return <ProjectGrid projects={projects} categories={categories} />;
