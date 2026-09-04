@@ -25,3 +25,5 @@ export { Contact } from "./models/contact.model";
 export { User } from "./models/auth.model";
 
 export { Profile } from "./models/profile.model";
+
+export { Category } from "./models/category.model";

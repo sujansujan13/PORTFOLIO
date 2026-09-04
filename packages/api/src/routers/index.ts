@@ -1,5 +1,6 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
 import { blogRouter } from "./blog.router";
+import { categoryRouter } from "./category.router";
 import { contactRouter } from "./contact.router";
 import { dashboardRouter } from "./dashboard.router";
 import { profileRouter } from "./profile.router";
@@ -24,6 +25,7 @@ export const appRouter = router({
   timeline: timelineRouter,
   dashboard: dashboardRouter,
   contact: contactRouter,
-  profile: profileRouter
+  profile: profileRouter,
+  category: categoryRouter,
 });
 export type AppRouter = typeof appRouter;

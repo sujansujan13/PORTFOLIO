@@ -42,19 +42,25 @@ export default function Sidebar() {
       href: "/dashboard/profile",
     },
     {
+      label: "Category Manager",
+      icon: ShieldUser,
+      href: "/dashboard/categories",
+    },
+    {
       label: "Project Manager",
       icon: FolderKanban,
       href: "/dashboard/projects",
+    },
+
+    {
+      label: "Blog CMS",
+      icon: Library,
+      href: "/dashboard/blogs",
     },
     {
       label: "Experience Timeline",
       icon: Milestone,
       href: "/dashboard/timeline",
-    },
-    {
-      label: "Blog CMS",
-      icon: Library,
-      href: "/dashboard/blogs",
     },
     {
       label: "Contact Inbox",
