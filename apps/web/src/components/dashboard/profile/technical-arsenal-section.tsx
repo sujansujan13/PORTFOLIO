@@ -114,11 +114,13 @@ export default function TechnicalArsenalSection({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
             <div className="space-y-1.5">
-              <label className="font-semibold text-muted-foreground uppercase text-[10px]">
-                Name
-              </label>
+              <div className="flex items-center justify-between min-h-5.5">
+                <label className="font-semibold text-muted-foreground uppercase text-[10px]">
+                  Name
+                </label>
+              </div>
               <input
                 type="text"
                 {...skillForm.register("name", { required: true })}
@@ -128,15 +130,15 @@ export default function TechnicalArsenalSection({
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between min-h-[22px]">
                 <label className="font-semibold text-muted-foreground uppercase text-[10px]">
                   Category
                 </label>
                 <Link
                   href={"/dashboard/categories" as Route}
-                  className="px-2 py-0.5 flex items-center gap-1 border rounded-md bg-primary font-semibold text-white"
+                  className="px-2 py-0.5 inline-flex items-center gap-1 border border-primary/40 rounded-md bg-primary font-semibold text-primary-foreground text-[10px] hover:bg-primary/90 transition-colors"
                 >
-                  <Plus className="w-4 h-4" /> Manage
+                  <Plus className="w-3 h-3" /> Manage
                 </Link>
               </div>
               <select
