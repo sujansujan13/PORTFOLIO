@@ -141,30 +141,36 @@ export default function ProfileForm() {
           shortBio: data.shortBio || "",
           fullBio: data.fullBio || "",
           githubUrl: data.githubUrl || "",
-          skills: (data.skills || []).map((s) => ({
-            id: s.id,
-            name: s.name,
-            category: (s.category || "Frontend") as
-              | "Frontend"
-              | "Backend"
-              | "Cloud"
-              | "Database"
-              | "Tools",
-            subtitle: s.subtitle || "",
-            proficiency: s.proficiency ?? 80,
-            isCore: s.isCore ?? false,
-            isVisible: s.isVisible ?? true,
-          })),
-          learningGoals: (data.learningGoals || []).map((g) => ({
-            id: g.id,
-            name: g.title,
-            status: (g.tag || "Learning") as
-              | "Exploring"
-              | "Learning"
-              | "Deep Dive",
-            description: g.description || "",
-            progress: g.progress ?? 0,
-          })),
+          linkedinUrl: (data as any).linkedinUrl || "",
+          twitterUrl: (data as any).twitterUrl || "",
+          skills: (data.skills || [])
+            .filter((s) => s.name && s.name.trim() !== "")
+            .map((s) => ({
+              id: s.id,
+              name: s.name.trim(),
+              category: (s.category || "Frontend") as
+                | "Frontend"
+                | "Backend"
+                | "Cloud"
+                | "Database"
+                | "Tools",
+              subtitle: s.subtitle || "",
+              proficiency: s.proficiency ?? 80,
+              isCore: s.isCore ?? false,
+              isVisible: s.isVisible ?? true,
+            })),
+          learningGoals: (data.learningGoals || [])
+            .filter((g) => (g.title || (g as any).name) && (g.title || (g as any).name).trim() !== "")
+            .map((g) => ({
+              id: g.id,
+              name: (g.title || (g as any).name || "").trim(),
+              status: (g.tag || "Learning") as
+                | "Exploring"
+                | "Learning"
+                | "Deep Dive",
+              description: g.description || "",
+              progress: g.progress ?? 0,
+            })),
         },
         {
           onSuccess: () => {

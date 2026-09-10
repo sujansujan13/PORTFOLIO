@@ -16,6 +16,9 @@ import {
 } from "lucide-react";
 import type { CompleteDashboardFormData } from "./profile-form";
 import { Initials } from "../../../lib/initials";
+import { useGetCategories } from "@/hooks/useCategory";
+import Link from "next/link";
+import type { Route } from "next";
 
 export interface SkillItem {
   id?: string;
@@ -46,11 +49,19 @@ export default function TechnicalArsenalSection({
 
   const [isFormOpen, setIsFormOpen] = useState(false);
 
+  const categoriesQuery = useGetCategories({ type: "skill" });
+
+  const categories = categoriesQuery.data || [];
+
+  const isCategoriesLoading = categoriesQuery.isPending;
+
+  const isCategoriesError = categoriesQuery.isError;
+
   // Dynamic Skill Creation Local Form
   const skillForm = useForm<SkillItem>({
     defaultValues: {
       name: "",
-      category: "Frontend",
+      category: "",
       subtitle: "",
       proficiency: 80,
       isCore: true,
@@ -103,7 +114,7 @@ export default function TechnicalArsenalSection({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
             <div className="space-y-1.5">
               <label className="font-semibold text-muted-foreground uppercase text-[10px]">
                 Name
@@ -117,17 +128,38 @@ export default function TechnicalArsenalSection({
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-muted-foreground uppercase text-[10px]">
-                Category
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="font-semibold text-muted-foreground uppercase text-[10px]">
+                  Category
+                </label>
+                <Link
+                  href={"/dashboard/categories" as Route}
+                  className="px-2 py-0.5 flex items-center gap-1 border rounded-md bg-primary font-semibold text-white"
+                >
+                  <Plus className="w-4 h-4" /> Manage
+                </Link>
+              </div>
               <select
                 {...skillForm.register("category")}
+                disabled={isCategoriesLoading || categories.length === 0}
                 className="w-full bg-input/40 border border-border/80 px-3 py-2 text-foreground focus:outline-none focus:border-primary rounded-md cursor-pointer"
               >
-                <option value="Frontend">Frontend</option>
-                <option value="Backend">Backend</option>
-                <option value="Cloud">Cloud</option>
-                <option value="Database">Database</option>
+                <option value="">
+                  {isCategoriesLoading
+                    ? "Loading Categories..."
+                    : categories.length === 0
+                      ? "No active categories found"
+                      : "Select a category"}
+                </option>
+                {categories.map((cat) => (
+                  <option
+                    key={cat.id}
+                    value={cat.slug}
+                    className="bg-card text-foreground font-medium"
+                  >
+                    {cat.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

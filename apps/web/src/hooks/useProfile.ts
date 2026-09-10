@@ -2,6 +2,7 @@
 
 import { trpc } from "@/utils/trpc";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { authClient } from "@/lib/auth-client";
 
 interface UsePublicProfileOptions {
   userId?: string;
@@ -36,11 +37,18 @@ export function useUpsertProfile() {
 
 /**
  * 2. Public profile hook for guest visitors on landing (/) and /about pages.
+ *    Automatically detects logged-in session user ID for instant live preview mode.
  */
 export function usePublicProfile(options?: UsePublicProfileOptions) {
+  const { data: session } = authClient.useSession();
+  const userIdGiven = Boolean(options && "userId" in options);
+  const effectiveUserId = userIdGiven
+    ? options!.userId
+    : (session?.user?.id ?? "");
+
   return useQuery({
     ...trpc.profile.getPublicProfile.queryOptions(
-      options?.userId ? { userId: options.userId } : undefined,
+      effectiveUserId ? { userId: effectiveUserId } : undefined,
     ),
     enabled: options?.enabled ?? true,
   });

@@ -180,13 +180,20 @@ export default function HeroSection() {
         </motion.div>
 
         {/* Supporting Paragraph Description */}
-        <motion.p
-          variants={itemVariants}
-          className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto text-[#454653] dark:text-[#acbcd5] leading-relaxed px-2 sm:px-0 font-semibold whitespace-pre-line"
-        >
-          {profile?.shortBio ||
-            "Crafting high-performance web applications with the MERN stack and Next.js. I specialize in building scalable architectures and delightful user experiences that bridge the gap between design and technical excellence."}
-        </motion.p>
+        {profile?.shortBio ? (
+          <motion.div
+            variants={itemVariants}
+            className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto text-[#454653] dark:text-[#acbcd5] leading-relaxed px-2 sm:px-0 font-semibold [&_p]:my-1 [&_strong]:font-extrabold [&_strong]:text-foreground [&_em]:italic [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-xs"
+            dangerouslySetInnerHTML={{ __html: profile.shortBio }}
+          />
+        ) : (
+          <motion.p
+            variants={itemVariants}
+            className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto text-[#454653] dark:text-[#acbcd5] leading-relaxed px-2 sm:px-0 font-semibold whitespace-pre-line"
+          >
+            Crafting high-performance web applications with the MERN stack and Next.js. I specialize in building scalable architectures and delightful user experiences that bridge the gap between design and technical excellence.
+          </motion.p>
+        )}
 
         {/* Interactive Action Buttons */}
         <motion.div

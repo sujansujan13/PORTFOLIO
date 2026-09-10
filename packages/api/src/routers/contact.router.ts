@@ -27,7 +27,9 @@ export const contactRouter = router({
       let { recipientUserId, ...contactData } = input;
       if (!recipientUserId) {
         const defaultUser = await User.findOne().sort({ createdAt: 1 }).lean();
-        recipientUserId = defaultUser?._id ? String(defaultUser._id) : "";
+        recipientUserId = defaultUser
+          ? String((defaultUser as any).id || defaultUser._id)
+          : "";
       }
       if (!recipientUserId) {
         throw new TRPCError({
@@ -44,7 +46,9 @@ export const contactRouter = router({
 
   updateContactMessageReadStatus: protectedProcedure
     .input(toggleReadSchema)
-    .mutation(({ ctx, input }) => updateContactMessageReadStatus(ctx.session.user.id, input)),
+    .mutation(({ ctx, input }) =>
+      updateContactMessageReadStatus(ctx.session.user.id, input),
+    ),
 
   archiveContactMessage: protectedProcedure
     .input(
@@ -52,9 +56,13 @@ export const contactRouter = router({
         id: z.string().trim().min(1, "Id is required"),
       }),
     )
-    .mutation(({ ctx, input }) => archiveContactMessage(ctx.session.user.id, input.id)),
+    .mutation(({ ctx, input }) =>
+      archiveContactMessage(ctx.session.user.id, input.id),
+    ),
 
-  markAllRead: protectedProcedure.mutation(({ ctx }) => markAllRead(ctx.session.user.id)),
+  markAllRead: protectedProcedure.mutation(({ ctx }) =>
+    markAllRead(ctx.session.user.id),
+  ),
 
   getSingleContactMessage: protectedProcedure
     .input(
@@ -62,7 +70,9 @@ export const contactRouter = router({
         id: z.string().trim().min(1, "ID is required"),
       }),
     )
-    .query(({ ctx, input }) => getSingleContactMessage(ctx.session.user.id, input.id)),
+    .query(({ ctx, input }) =>
+      getSingleContactMessage(ctx.session.user.id, input.id),
+    ),
 
   deleteSingleContact: protectedProcedure
     .input(
@@ -70,7 +80,9 @@ export const contactRouter = router({
         id: z.string().trim().min(1, "Id is required"),
       }),
     )
-    .mutation(({ ctx, input }) => deleteSingleContact(ctx.session.user.id, input.id)),
+    .mutation(({ ctx, input }) =>
+      deleteSingleContact(ctx.session.user.id, input.id),
+    ),
 
   updateStatus: protectedProcedure
     .input(updateStatusSchema)

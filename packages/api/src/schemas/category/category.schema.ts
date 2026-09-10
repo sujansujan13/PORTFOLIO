@@ -15,7 +15,7 @@ export const createCategorySchema = z.object({
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
       "Slug must be lowercase alphanumeric with hyphens",
     ),
-  type: z.enum(["blog", "project"]),
+  type: z.enum(["blog", "project", "skill"]),
   color: z.string().default("blue"),
 });
 

@@ -8,8 +8,7 @@ const skillSchema = new Schema({
   name: { type: String, required: true }, // e.g., "React & Next.js"
   category: {
     type: String,
-    enum: ["Frontend", "Backend", "Cloud", "Database", "Tools"],
-    default: "Frontend",
+    required: true,
   }, // e.g., "Frontend"
   subtitle: { type: String, default: "" }, // e.g., "Dynamic UI & SSR"
   proficiency: { type: Number, min: 0, max: 100, default: 80 }, // e.g., 90%
@@ -37,6 +36,10 @@ const profileSchema = new Schema(
     // Hero & Basic Profile Fields
     fullName: { type: String, required: true, trim: true },
     typeWriterTitles: {
+      type: [String],
+      default: ["Full-Stack Developer", "UI/UX Architect", "Problem Solver"],
+    },
+    typewriterTitles: {
       type: [String],
       default: ["Full-Stack Developer", "UI/UX Architect", "Problem Solver"],
     },

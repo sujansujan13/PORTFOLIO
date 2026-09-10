@@ -1,7 +1,9 @@
 import { trpc } from "@/utils/trpc";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useGetCategories(options?: { type: "blog" | "project" }) {
+export function useGetCategories(options?: {
+  type: "blog" | "project" | "skill";
+}) {
   return useQuery(
     trpc.category.getCategories.queryOptions({
       type: options?.type,

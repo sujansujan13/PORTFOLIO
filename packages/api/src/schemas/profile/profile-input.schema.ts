@@ -4,9 +4,7 @@ import { z } from "zod";
 export const skillItemSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Skill name is required").max(50),
-  category: z
-    .enum(["Frontend", "Backend", "Cloud", "Database", "Tools"])
-    .default("Frontend"),
+  category: z.string().trim(),
   subtitle: z.string().max(100).optional().default(""),
   proficiency: z.number().min(0).max(100).default(80),
   isCore: z.boolean().default(false), // Featured in Core Ecosystem
@@ -40,16 +38,8 @@ export const profileInputSchema = z.object({
     .max(100)
     .default("Full-Stack Engineer"),
   location: z.string().max(100).optional().default(""),
-  avatarUrl: z
-    .url("Invalid avatar image URL")
-    .or(z.literal(""))
-    .optional()
-    .default(""),
-  resumeUrl: z
-    .url("Invalid resume PDF URL")
-    .or(z.literal(""))
-    .optional()
-    .default(""),
+  avatarUrl: z.string().optional().default(""),
+  resumeUrl: z.string().optional().default(""),
 
   // Dynamic Typewriter Roles
   typewriterTitles: z
@@ -70,21 +60,9 @@ export const profileInputSchema = z.object({
     .default(""),
 
   // Social Links
-  githubUrl: z
-    .url("Invalid GitHub URL")
-    .or(z.literal(""))
-    .optional()
-    .default(""),
-  linkedinUrl: z
-    .url("Invalid LinkedIn URL")
-    .or(z.literal(""))
-    .optional()
-    .default(""),
-  twitterUrl: z
-    .url("Invalid Twitter URL")
-    .or(z.literal(""))
-    .optional()
-    .default(""),
+  githubUrl: z.string().optional().default(""),
+  linkedinUrl: z.string().optional().default(""),
+  twitterUrl: z.string().optional().default(""),
 
   // Embedded Lists
   skills: z.array(skillItemSchema).default([]),

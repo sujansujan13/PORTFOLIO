@@ -8,7 +8,8 @@ interface HeroSectionProps {
   data: {
     badge: string;
     heading: string;
-    paragraphs: string[];
+    paragraphs?: string[];
+    bioHtml?: string;
     image: { src: string; alt: string };
     resumeUrl?: string;
     githubUrl?: string;
@@ -61,11 +62,18 @@ export function HeroSection({
           </h1>
         </div>
 
-        <div className="space-y-4 text-start text-lg font-inter font-medium dark:text-[#d2e4fe] leading-relaxed whitespace-pre-line">
-          {data.paragraphs.map((para, i) => (
-            <p key={i}>{para}</p>
-          ))}
-        </div>
+        {data.bioHtml ? (
+          <div
+            className="prose prose-lg dark:prose-invert max-w-none text-start font-inter font-medium text-foreground dark:text-[#d2e4fe] leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:font-extrabold [&_strong]:text-foreground [&_em]:italic [&_h2]:text-xl [&_h2]:font-bold [&_h3]:text-lg [&_h3]:font-semibold [&_p]:my-2 [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-xs"
+            dangerouslySetInnerHTML={{ __html: data.bioHtml }}
+          />
+        ) : (
+          <div className="space-y-4 text-start text-lg font-inter font-medium dark:text-[#d2e4fe] leading-relaxed whitespace-pre-line">
+            {data.paragraphs?.map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
+        )}
 
         <div className="flex flex-wrap items-center gap-4 pt-2">
           <a

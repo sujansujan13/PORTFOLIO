@@ -24,7 +24,7 @@ const categorySchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["blog", "project"],
+      enum: ["blog", "project", "skill"],
       required: true,
     },
     color: {

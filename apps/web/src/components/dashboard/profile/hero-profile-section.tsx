@@ -1,21 +1,17 @@
-// components/dashboard/profile/hero-profile-section.tsx
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { useWatch, type UseFormReturn } from "react-hook-form";
+import { Controller, useWatch, type UseFormReturn } from "react-hook-form";
 import {
   User,
   MapPin,
   Sparkles,
   X,
-  Bold,
-  Italic,
-  List,
-  Link as LinkIcon,
   FileText,
 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import type { CompleteDashboardFormData } from "./profile-form";
+import { TiptapEditorSmall } from "../utils/tiptap-editor-small";
 
 export interface ProfileFormValues {
   fullName: string;
@@ -210,10 +206,17 @@ export default function HeroProfileSection({ form }: HeroProfileSectionProps) {
           <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
             Short Bio (Hero Section)
           </label>
-          <textarea
-            rows={2}
-            {...register("shortBio")}
-            className="w-full bg-input/30 border border-border/80 px-3 py-2 text-foreground focus:outline-none focus:border-primary rounded-md transition-colors resize-y"
+          <Controller
+            name="shortBio"
+            control={control}
+            render={({ field }) => (
+              <TiptapEditorSmall
+                value={field.value || ""}
+                onChange={field.onChange}
+                placeholder="Write a concise hero bio for your homepage..."
+                minHeight="100px"
+              />
+            )}
           />
         </div>
 
@@ -222,39 +225,18 @@ export default function HeroProfileSection({ form }: HeroProfileSectionProps) {
           <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
             About Bio (Detailed)
           </label>
-          <div className="border border-border/80 bg-input/20 rounded-md">
-            <div className="flex items-center gap-1 p-2 border-b border-border/60 bg-card/40">
-              <button
-                type="button"
-                className="p-1 hover:bg-accent text-muted-foreground hover:text-foreground"
-              >
-                <Bold className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                className="p-1 hover:bg-accent text-muted-foreground hover:text-foreground"
-              >
-                <Italic className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                className="p-1 hover:bg-accent text-muted-foreground hover:text-foreground"
-              >
-                <List className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                className="p-1 hover:bg-accent text-muted-foreground hover:text-foreground"
-              >
-                <LinkIcon className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <textarea
-              rows={4}
-              {...register("fullBio")}
-              className="w-full bg-transparent p-3 text-foreground focus:outline-none rounded-md transition-colors resize-y"
-            />
-          </div>
+          <Controller
+            name="fullBio"
+            control={control}
+            render={({ field }) => (
+              <TiptapEditorSmall
+                value={field.value || ""}
+                onChange={field.onChange}
+                placeholder="Write a detailed bio introducing your background, architecture philosophy, and stack..."
+                minHeight="150px"
+              />
+            )}
+          />
         </div>
 
         {/* Avatar Image Input */}

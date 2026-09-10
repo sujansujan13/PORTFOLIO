@@ -52,7 +52,12 @@ export async function getDashboardStats(userId:string) {
       },
     ]),
     Contact.countDocuments({
-      recipientUserId:userId,
+      $or: [
+        { recipientUserId: userId },
+        { recipientUserId: null },
+        { recipientUserId: "" },
+        { recipientUserId: { $exists: false } },
+      ],
       status: "unread",
     }),
   ]);

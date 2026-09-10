@@ -111,40 +111,6 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
     fileInputRef.current?.click();
   };
 
-  // const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-
-  //   if (!file || !editor) return;
-
-  //   const previewUrl = URL.createObjectURL(file);
-
-  //   editor.chain().focus().setImage({ src: previewUrl }).run();
-
-  //   try {
-  //     const uploadedUrl = await uploadImage(file, () => {});
-
-  //     const doc = editor.getJSON();
-
-  //     const replaceImageUrl = (node: any) => {
-  //       if (node.type === "image" && node.attrs?.src === previewUrl) {
-  //         node.attrs.src = uploadedUrl;
-  //       }
-  //       if (node.content) {
-  //         node.content.forEach(replaceImageUrl);
-  //       }
-  //     };
-
-  //     replaceImageUrl(doc);
-
-  //     editor.commands.setContent(doc);
-  //   } catch (error) {
-  //     console.error(error);
-  //   } finally {
-  //     URL.revokeObjectURL(previewUrl);
-  //     e.target.value = "";
-  //   }
-  // };
-
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 

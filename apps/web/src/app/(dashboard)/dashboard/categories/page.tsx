@@ -18,7 +18,9 @@ const COLOR_OPTIONS = [
 ];
 
 export default function CategoryManagerPage() {
-  const [activeTab, setActiveTab] = useState<"blog" | "project">("blog");
+  const [activeTab, setActiveTab] = useState<"blog" | "project" | "skill">(
+    "blog",
+  );
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [color, setColor] = useState("blue");
@@ -76,6 +78,12 @@ export default function CategoryManagerPage() {
             className={`px-4 py-1.5 text-xs font-bold rounded-sm ${activeTab === "project" ? "bg-background shadow" : ""}`}
           >
             Project Categories
+          </button>
+          <button
+            onClick={() => setActiveTab("skill")}
+            className={`px-4 py-1.5 text-xs font-bold rounded-sm ${activeTab === "skill" ? "bg-background shadow" : ""}`}
+          >
+            Skill Categories
           </button>
         </div>
       </div>

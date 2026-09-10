@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Code2, Terminal } from "lucide-react";
 
@@ -20,8 +20,7 @@ import {
 import { THEMES, type ThemeType } from "@/config/color-theme";
 
 import { usePublicProfile } from "@/hooks/useProfile";
-
-type CategoryType = "all" | "frontend" | "backend" | "cloud";
+import { useGetCategories } from "@/hooks/useCategory";
 
 interface AboutPageClientProps {
   data: typeof import("@/data/about-data.json");
@@ -41,9 +40,20 @@ const containerStagger: Variants = {
 };
 
 export default function AboutPageClient({ data }: AboutPageClientProps) {
-  const [activeCategory, setActiveCategory] = useState<CategoryType>("all");
+  const [activeCategory, setActiveCategory] = useState("all");
 
   const { data: profile } = usePublicProfile();
+
+  const categoryQuery = useGetCategories({ type: "skill" });
+
+  const categories = useMemo(() => {
+    const rawCategories = categoryQuery.data || [];
+    const formatted = rawCategories.map((cat) => ({
+      slug: cat.slug,
+      label: cat.name,
+    }));
+    return [{ slug: "all", label: "All Skills" }, ...formatted];
+  }, [categoryQuery.data]);
 
   const parseParagraphs = (text?: string): string[] => {
     if (!text) return [];
@@ -53,9 +63,7 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
       .filter(Boolean);
   };
 
-  const bioParagraphs = profile?.fullBio
-    ? parseParagraphs(profile.fullBio)
-    : profile?.shortBio
+  const bioParagraphs = profile?.shortBio
     ? parseParagraphs(profile.shortBio)
     : data.hero.paragraphs;
 
@@ -64,6 +72,7 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
     heading: profile?.fullName
       ? `Designing the digital future with code.`
       : data.hero.heading,
+    bioHtml: profile?.fullBio || undefined,
     paragraphs: bioParagraphs.length > 0 ? bioParagraphs : data.hero.paragraphs,
     image: profile?.avatarUrl
       ? { src: profile.avatarUrl, alt: profile.fullName || "Profile Image" }
@@ -83,14 +92,15 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
           title: s.name,
           subtitle: s.subtitle || s.category,
           percentage: s.proficiency ?? 80,
-          category: (s.category || "frontend").toLowerCase() as CategoryType,
+          category: (s.category || "").toLowerCase(),
         }))
     : data.skills;
 
-  const filteredSkills = dynamicSkills.filter(
-    (skill: any) =>
-      activeCategory === "all" || skill.category === activeCategory,
-  );
+  const filteredSkills = dynamicSkills.filter((skill: any) => {
+    if (activeCategory.toLowerCase() === "all") return true;
+    const skillCat = (skill.category || "").toLowerCase();
+    return skillCat === activeCategory.toLowerCase();
+  });
 
   const dynamicLearningItems = profile?.learningGoals?.length
     ? profile.learningGoals.map((g: any, idx: number) => {
@@ -146,19 +156,19 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
               role="tablist"
               aria-label="Skill categorization filters"
             >
-              {(["all", "frontend", "backend", "cloud"] as const).map((cat) => (
+              {categories.map((cat) => (
                 <button
-                  key={cat}
+                  key={cat.slug}
                   role="tab"
-                  aria-selected={activeCategory === cat}
-                  onClick={() => setActiveCategory(cat)}
+                  aria-selected={activeCategory === cat.slug}
+                  onClick={() => setActiveCategory(cat.slug)}
                   className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-300 rounded-xl cursor-pointer border ${
-                    activeCategory === cat
+                    activeCategory === cat.slug
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-card/40 text-foreground border-border hover:border-muted-foreground/40 hover:text-foreground"
                   }`}
                 >
-                  {cat}
+                  {cat.label}
                 </button>
               ))}
             </div>
@@ -171,30 +181,94 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
             <AnimatePresence mode="popLayout">
               {filteredSkills.map((skill: any) => {
                 // Smart theme resolver: maps skill ID, name keywords, or category to appropriate icon & colors
-                const uiTheme = SKILL_THEME_MAP[skill.id as SkillId] || (() => {
-                  const title = (skill.title || "").toLowerCase();
-                  const cat = (skill.category || "").toLowerCase();
+                const uiTheme =
+                  SKILL_THEME_MAP[skill.id as SkillId] ||
+                  (() => {
+                    const title = (skill.title || "").toLowerCase();
+                    const cat = (skill.category || "").toLowerCase();
 
-                  if (title.includes("react") || title.includes("next") || title.includes("vue") || title.includes("ui")) {
-                    return { trackColor: "bg-blue-500", iconColor: "text-blue-500", iconName: "Code2" };
-                  }
-                  if (title.includes("node") || title.includes("express") || title.includes("api") || title.includes("nest")) {
-                    return { trackColor: "bg-amber-500", iconColor: "text-amber-500", iconName: "Terminal" };
-                  }
-                  if (title.includes("db") || title.includes("mongo") || title.includes("sql") || title.includes("postgres") || title.includes("redis")) {
-                    return { trackColor: "bg-slate-400", iconColor: "text-slate-400", iconName: "Database" };
-                  }
-                  if (title.includes("aws") || title.includes("cloud") || title.includes("docker") || title.includes("devops") || title.includes("ci/cd")) {
-                    return { trackColor: "bg-orange-500", iconColor: "text-orange-500", iconName: "Cloud" };
-                  }
+                    if (
+                      title.includes("react") ||
+                      title.includes("next") ||
+                      title.includes("vue") ||
+                      title.includes("ui")
+                    ) {
+                      return {
+                        trackColor: "bg-blue-500",
+                        iconColor: "text-blue-500",
+                        iconName: "Code2",
+                      };
+                    }
+                    if (
+                      title.includes("node") ||
+                      title.includes("express") ||
+                      title.includes("api") ||
+                      title.includes("nest")
+                    ) {
+                      return {
+                        trackColor: "bg-amber-500",
+                        iconColor: "text-amber-500",
+                        iconName: "Terminal",
+                      };
+                    }
+                    if (
+                      title.includes("db") ||
+                      title.includes("mongo") ||
+                      title.includes("sql") ||
+                      title.includes("postgres") ||
+                      title.includes("redis")
+                    ) {
+                      return {
+                        trackColor: "bg-slate-400",
+                        iconColor: "text-slate-400",
+                        iconName: "Database",
+                      };
+                    }
+                    if (
+                      title.includes("aws") ||
+                      title.includes("cloud") ||
+                      title.includes("docker") ||
+                      title.includes("devops") ||
+                      title.includes("ci/cd")
+                    ) {
+                      return {
+                        trackColor: "bg-orange-500",
+                        iconColor: "text-orange-500",
+                        iconName: "Cloud",
+                      };
+                    }
 
-                  if (cat === "frontend") return { trackColor: "bg-blue-500", iconColor: "text-blue-500", iconName: "Code2" };
-                  if (cat === "backend") return { trackColor: "bg-amber-500", iconColor: "text-amber-500", iconName: "Terminal" };
-                  if (cat === "database") return { trackColor: "bg-slate-400", iconColor: "text-slate-400", iconName: "Database" };
-                  if (cat === "cloud" || cat === "tools") return { trackColor: "bg-orange-500", iconColor: "text-orange-500", iconName: "Cloud" };
+                    if (cat === "frontend")
+                      return {
+                        trackColor: "bg-blue-500",
+                        iconColor: "text-blue-500",
+                        iconName: "Code2",
+                      };
+                    if (cat === "backend")
+                      return {
+                        trackColor: "bg-amber-500",
+                        iconColor: "text-amber-500",
+                        iconName: "Terminal",
+                      };
+                    if (cat === "database")
+                      return {
+                        trackColor: "bg-slate-400",
+                        iconColor: "text-slate-400",
+                        iconName: "Database",
+                      };
+                    if (cat === "cloud" || cat === "tools")
+                      return {
+                        trackColor: "bg-orange-500",
+                        iconColor: "text-orange-500",
+                        iconName: "Cloud",
+                      };
 
-                  return { trackColor: "bg-primary", iconColor: "text-primary", iconName: "Code2" };
-                })();
+                    return {
+                      trackColor: "bg-primary",
+                      iconColor: "text-primary",
+                      iconName: "Code2",
+                    };
+                  })();
 
                 return (
                   <SkillCard
@@ -203,7 +277,7 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
                     title={skill.title}
                     subtitle={skill.subtitle}
                     percentage={skill.percentage}
-                    category={skill.category as CategoryType}
+                    category={skill.category}
                     trackColor={uiTheme.trackColor}
                     icon={
                       <IconRenderer
@@ -238,11 +312,7 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
             <div className="space-y-4">
               {dynamicLearningItems.map((item: any, idx: number) => {
                 return (
-                  <LearningItem
-                    key={idx}
-                    {...item}
-                    variants={fadeInVariant}
-                  />
+                  <LearningItem key={idx} {...item} variants={fadeInVariant} />
                 );
               })}
             </div>

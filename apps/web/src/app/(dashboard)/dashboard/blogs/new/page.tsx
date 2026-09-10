@@ -60,7 +60,7 @@ export default function BlogNewClientPage() {
         },
       },
     );
-  };
+  }; 
 
   return (
     <BlogForm

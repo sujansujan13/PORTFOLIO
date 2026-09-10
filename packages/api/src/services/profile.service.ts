@@ -10,26 +10,58 @@ import {
  * 1. Upsert Profile (Create if not exists, Update if already exists)
  */
 export async function upsertProfile(userId: string, input: ProfileInput) {
-  const validatedInput = profileInputSchema.parse(input);
-
   try {
+    // Drop legacy/problematic unique index on skills.category in MongoDB if present
+    try {
+      const indexes = await Profile.collection.getIndexes();
+      for (const indexName of Object.keys(indexes)) {
+        if (indexName.includes("skills.category")) {
+          await Profile.collection.dropIndex(indexName);
+        }
+      }
+    } catch {
+      // Ignore if index doesn't exist or collection hasn't been created yet
+    }
+
+    const validatedInput = profileInputSchema.parse(input);
+
     const profile = await Profile.findOneAndUpdate(
       { userId },
-      { $set: { userId, ...validatedInput } },
+      {
+        $set: {
+          userId,
+          ...validatedInput,
+          typeWriterTitles: validatedInput.typewriterTitles,
+        },
+      },
       { upsert: true, new: true, runValidators: true },
     ).lean();
 
     return profile;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving profile:", error);
 
     if (error instanceof TRPCError) {
       throw error;
     }
 
+    if (error?.name === "ZodError") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: `Validation Error: ${error.errors?.map((e: any) => `${e.path.join(".")}: ${e.message}`).join(", ") || error.message}`,
+      });
+    }
+
+    if (error?.name === "ValidationError") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: `Database Validation Error: ${error.message}`,
+      });
+    }
+
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: "Internal Server Error Occurred While Saving Profile",
+      message: error?.message || "Internal Server Error Occurred While Saving Profile",
     });
   }
 }

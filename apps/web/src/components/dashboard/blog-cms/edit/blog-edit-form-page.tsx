@@ -206,7 +206,7 @@ export default function BlogForm({
                   backgroundSize: "16px",
                   backgroundRepeat: "no-repeat",
                 }}
-              >
+              > 
                 <option value="">
                   {isCategoriesLoading
                     ? "Loading categories..."

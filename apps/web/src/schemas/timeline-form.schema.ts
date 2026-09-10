@@ -19,7 +19,16 @@ export const timelineFormSchema = z
     bullets: z
       .preprocess((val) => {
         if (typeof val === "string") {
+          if (val.includes("<li")) {
+            const matches = val.match(/<li[^>]*>(.*?)<\/li>/gi);
+            if (matches) {
+              return matches
+                .map((m) => m.replace(/<[^>]+>/g, "").replace(/^[•\-\*]\s*/, "").trim())
+                .filter((line) => line.length > 0);
+            }
+          }
           return val
+            .replace(/<[^>]+>/g, "\n")
             .split("\n")
             .map((line) => line.replace(/^[•\-\*]\s*/, "").trim())
             .filter((line) => line.length > 0);

@@ -62,9 +62,7 @@ export default function TimelineFormClient({
         ? "present"
         : formatToMonthInput(defaultValues.endDate),
       bullets: Array.isArray(defaultValues.bullets)
-        ? defaultValues.bullets
-            .map((b) => (b.startsWith("•") ? b : `• ${b}`))
-            .join("\n")
+        ? `<ul>${defaultValues.bullets.map((b) => `<li>${b.replace(/^[•\-\*]\s*/, "")}</li>`).join("")}</ul>`
         : (defaultValues.bullets ?? ""),
     };
   }, [defaultValues]);

@@ -3,7 +3,7 @@ import {
   type ContactInputValues,
 } from "./../schemas/contact/contact-input.schema";
 
-import { Contact } from "@my-portfolio/db";
+import { Contact, User } from "@my-portfolio/db";
 
 import { sendContactNotification } from "../lib/email/contact-notification";
 import {
@@ -74,11 +74,17 @@ export async function createContactMessage(
   /**
    * 2. Try to send the notification email.
    *
-   * Email failure must NOT delete the
-   * visitor's message from MongoDB.
+   * Look up recipient user email from database.
    */
   try {
-    const emailResult = await sendContactNotification(validatedData);
+    const recipientUser = await User.findOne({
+      $or: [{ _id: recipientUserId }, { id: recipientUserId }],
+    }).lean();
+
+    const emailResult = await sendContactNotification(
+      validatedData,
+      recipientUser?.email,
+    );
 
     /**
      * 3. Mark email as successfully sent.
@@ -164,6 +170,17 @@ export function serializeContactMessage(
   };
 }
 
+function getRecipientQuery(recipientUserId: string) {
+  return {
+    $or: [
+      { recipientUserId },
+      { recipientUserId: null },
+      { recipientUserId: "" },
+      { recipientUserId: { $exists: false } },
+    ],
+  };
+}
+
 export async function getContactMessages(recipientUserId:string, input: GetContactMessagesInput) {
   const validatedInput = getContactMessagesSchema.parse(input);
 
@@ -180,7 +197,8 @@ export async function getContactMessages(recipientUserId:string, input: GetConta
   // 1. Build filters for the message list
   // --------------------------------------------------
 
-  const filter: Record<string, unknown> = {recipientUserId};
+  const recipientQuery = getRecipientQuery(recipientUserId);
+  const filter: Record<string, unknown> = { ...recipientQuery };
 
   switch (status) {
     case "all":
@@ -214,15 +232,20 @@ export async function getContactMessages(recipientUserId:string, input: GetConta
 
   if (search?.trim()) {
     const escapedSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
     const searchRegex = new RegExp(escapedSearch, "i");
 
-    filter.$or = [
-      { name: searchRegex },
-      { email: searchRegex },
-      { subject: searchRegex },
-      { message: searchRegex },
+    filter.$and = [
+      recipientQuery,
+      {
+        $or: [
+          { name: searchRegex },
+          { email: searchRegex },
+          { subject: searchRegex },
+          { message: searchRegex },
+        ],
+      },
     ];
+    delete filter.$or;
   }
 
   const skip = (page - 1) * limit;
@@ -297,40 +320,40 @@ export async function getContactMessages(recipientUserId:string, input: GetConta
 
     const [total, read, unread, archived, spam, sent, pending, failed] =
       await Promise.all([
-        Contact.countDocuments({recipientUserId}),
+        Contact.countDocuments(recipientQuery),
 
         Contact.countDocuments({
+          ...recipientQuery,
           status: "read",
-          recipientUserId
         }),
 
         Contact.countDocuments({
-          recipientUserId,
+          ...recipientQuery,
           status: "unread",
         }),
 
         Contact.countDocuments({
-          recipientUserId,
+          ...recipientQuery,
           status: "archived",
         }),
 
         Contact.countDocuments({
-          recipientUserId,
+          ...recipientQuery,
           status: "spam",
         }),
 
         Contact.countDocuments({
-          recipientUserId,
+          ...recipientQuery,
           "emailNotifications.status": "sent",
         }),
 
         Contact.countDocuments({
-          recipientUserId,
+          ...recipientQuery,
           "emailNotifications.status": "pending",
         }),
 
         Contact.countDocuments({
-          recipientUserId,
+          ...recipientQuery,
           "emailNotifications.status": "failed",
         }),
       ]);
@@ -399,7 +422,7 @@ export async function updateContactMessageReadStatus(recipientUserId:string,inpu
 
   try {
     const updateMessage = await Contact.findOneAndUpdate(
-      {_id:id, recipientUserId},
+      { _id: id, ...getRecipientQuery(recipientUserId) },
       {
         $set: {
           status,
@@ -443,7 +466,7 @@ export async function archiveContactMessage(recipientUserId:string,id: string) {
 
   try {
     const updateArchive = await Contact.findOneAndUpdate(
-      {_id:id, recipientUserId},
+      { _id: id, ...getRecipientQuery(recipientUserId) },
       {
         $set: {
           status: "archived",
@@ -481,7 +504,7 @@ export async function markAllRead(recipientUserId:string) {
   try {
     const result = await Contact.updateMany(
       {
-        recipientUserId,
+        ...getRecipientQuery(recipientUserId),
         status: "unread",
       },
       {
@@ -518,7 +541,7 @@ export async function getSingleContactMessage(recipientUserId:string,id: string)
   }
 
   try {
-    const contactMessage = await Contact.findOne({_id:id, recipientUserId});
+    const contactMessage = await Contact.findOne({ _id: id, ...getRecipientQuery(recipientUserId) });
 
     if (!contactMessage) {
       throw new TRPCError({
@@ -549,7 +572,7 @@ export async function deleteSingleContact(recipientUserId:string,id: string) {
   }
 
   try {
-    const deletedContact = await Contact.findOneAndDelete({_id:id, recipientUserId});
+    const deletedContact = await Contact.findOneAndDelete({ _id: id, ...getRecipientQuery(recipientUserId) });
 
     if (!deletedContact) {
       throw new TRPCError({
@@ -582,7 +605,7 @@ export async function updateStatus(recipientUserId:string,input: UpdateStatus) {
 
   try {
     const updateStatus = await Contact.findOneAndUpdate(
-      {_id:id, recipientUserId},
+      { _id: id, ...getRecipientQuery(recipientUserId) },
       {
         $set: {
           status,

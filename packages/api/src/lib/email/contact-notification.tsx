@@ -67,7 +67,10 @@ export function ContactNotificationEmail({
 
 export default ContactNotificationEmail;
 
-export async function sendContactNotification(data: ContactInputValues) {
+export async function sendContactNotification(
+  data: ContactInputValues,
+  recipientEmail?: string,
+) {
   const apiKey = env.RESEND_API_KEY || process.env.RESEND_API_KEY;
 
   if (!apiKey) {
@@ -79,6 +82,7 @@ export async function sendContactNotification(data: ContactInputValues) {
 
   const resend = new Resend(apiKey);
   const recipient =
+    recipientEmail ||
     process.env.CONTACT_EMAIL_TO ||
     process.env.ADMIN_EMAIL ||
     "pandeysujan923@gmail.com";
