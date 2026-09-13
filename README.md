@@ -1,74 +1,38 @@
-# my-portfolio
+# 🚀 Full-Stack Developer Portfolio Monorepo
 
-This project was created with [Better Fullstack](https://github.com/Marve10s/Better-Fullstack), a modern TypeScript stack that combines Next.js, Express, TRPC, and more.
+A modern, high-performance developer portfolio and administrative dashboard built as a clean **TypeScript monorepo**.
 
-## Features
+---
 
-- **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
-- **TailwindCSS** - CSS framework
-- **shadcn/ui** - UI components
-- **Express** - Fast, unopinionated web framework
-- **tRPC** - End-to-end type-safe APIs
-- **Node.js** - Runtime environment
-- **Mongoose** - TypeScript-first ORM
-- **MongoDB** - Database engine
-- **Authentication** - Better Auth
-- **Turborepo** - Optimized monorepo build system
-- **SWR** - React Hooks for data fetching and caching
-- **TanStack Query** - Async state management & data fetching
-- **TanStack Table** - Headless table with sorting, filtering & pagination
+## ✨ Features
 
-## Getting Started
+- 📱 **Responsive Website & Dashboard:** Dynamic timeline management, project showcase, and interactive technical arsenal.
+- 🏗️ **Monorepo Architecture:** Modular architecture managed with `pnpm` workspaces (`apps/web`, `packages/api`, `packages/db`).
+- ⚡ **Next.js App Router & Server Components:** Blazing-fast page transitions and SSR.
+- 🎨 **Modern Design System:** Built with TailwindCSS and custom UI components.
+- 🔐 **Admin Management:** Secured routes for timeline entries, project creation, and profile updates.
 
-First, install the dependencies:
+---
 
-```bash
-npm install
-```
+## 🛠️ Tech Stack
 
-## Database Setup
+- **Frontend:** Next.js, React, TailwindCSS, TypeScript
+- **State & Router:** Next.js App Router, React Hooks
+- **Backend & Database:** Node.js, TypeScript API package, MongoDB / Prisma DB schema
+- **Monorepo Tooling:** pnpm Workspaces, Turborepo
 
-This project uses MongoDB with mongoose.
+---
 
-1. Make sure you have MongoDB set up.
-2. Update your `apps/server/.env` file with your MongoDB connection URI.
-
-3. Apply the schema to your database:
+## 🚀 Getting Started Locally
 
 ```bash
-npm run db:push
-```
+# Clone the repository
+git clone https://github.com/sujansujan13/PORTFOLIO.git
 
-Then, run the development server:
+# Install dependencies
+pnpm install
 
-```bash
-npm run dev
-```
+# Run development server
+pnpm dev
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
 
-## Project Structure
-
-```
-my-portfolio/
-├── apps/
-│   ├── web/         # Frontend application (Next.js)
-│   └── server/      # Backend API (Express, TRPC)
-├── packages/
-│   ├── api/         # API layer / business logic
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `npm run dev`: Start all applications in development mode
-- `npm run build`: Build all applications
-- `npm run dev:web`: Start only the web application
-- `npm run dev:server`: Start only the server
-- `npm run check-types`: Check TypeScript types across all apps
-- `npm run db:push`: Push schema changes to database
-- `npm run db:studio`: Open database studio UI
-# PORTFOLIO
