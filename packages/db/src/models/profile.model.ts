@@ -35,6 +35,7 @@ const profileSchema = new Schema(
 
     // Hero & Basic Profile Fields
     fullName: { type: String, required: true, trim: true },
+    email: { type: String, default: "" },
     typeWriterTitles: {
       type: [String],
       default: ["Full-Stack Developer", "UI/UX Architect", "Problem Solver"],

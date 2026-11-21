@@ -30,6 +30,10 @@ export function useUpsertProfile() {
         queryClient.invalidateQueries({
           queryKey: trpc.profile.getProfileByUserId.queryKey(),
         });
+        // 💡 Add this line so Contact page metadata updates instantly on save!
+        queryClient.invalidateQueries({
+          queryKey: trpc.profile.getContactMeta.queryKey(),
+        });
       },
     }),
   );
@@ -63,6 +67,25 @@ export function useProfileById(options?: UseProfileByIdOptions) {
       staleTime: 30_000,
       retry: false,
     }),
+    enabled: options?.enabled ?? true,
+  });
+}
+
+export function useContactMeta(options?: {
+  userId?: string;
+  email?: string;
+  enabled?: boolean;
+}) {
+  const { data: session } = authClient.useSession();
+  const effectiveUserId = options?.userId ?? session?.user?.id ?? "";
+  const effectiveEmail = options?.email ?? session?.user?.email ?? "";
+
+  return useQuery({
+    ...trpc.profile.getContactMeta.queryOptions(
+      effectiveUserId || effectiveEmail
+        ? { userId: effectiveUserId, email: effectiveEmail }
+        : undefined,
+    ),
     enabled: options?.enabled ?? true,
   });
 }

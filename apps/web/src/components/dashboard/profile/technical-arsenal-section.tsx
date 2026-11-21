@@ -130,7 +130,7 @@ export default function TechnicalArsenalSection({
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between min-h-[22px]">
+              <div className="flex items-center justify-between min-h-5.5">
                 <label className="font-semibold text-muted-foreground uppercase text-[10px]">
                   Category
                 </label>

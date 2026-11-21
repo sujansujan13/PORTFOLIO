@@ -8,6 +8,8 @@ import { projectRouter } from "./projects.router";
 import { timelineRouter } from "./timeline.router";
 import { userRouter } from "./user.router";
 
+import { githubRouter } from "./github.router";
+
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
     return "OK";
@@ -27,5 +29,6 @@ export const appRouter = router({
   contact: contactRouter,
   profile: profileRouter,
   category: categoryRouter,
+  github: githubRouter,
 });
 export type AppRouter = typeof appRouter;

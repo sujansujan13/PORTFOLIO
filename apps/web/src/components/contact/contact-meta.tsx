@@ -4,6 +4,7 @@ import React from "react";
 import { Mail, MapPin } from "lucide-react";
 import contactData from "@/data/contact-info.json";
 import { FaGithub, FaLinkedin, FaXTwitter } from "react-icons/fa6"; // Fixed the syntax error here
+import { useContactMeta } from "@/hooks/useProfile";
 
 /**
  * Using React.ComponentType allows this map to accept components from ANY icon library
@@ -16,6 +17,38 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function ContactMeta() {
+  const { data: meta } = useContactMeta();
+
+  const socialLinks = [
+    {
+      platform: "Github",
+      url:
+        meta?.githubUrl ||
+        contactData.socials.find((s) => s.platform === "Github")?.url ||
+        "#",
+      icon: "Github",
+    },
+    {
+      platform: "Linkedin",
+      url:
+        meta?.linkedinUrl ||
+        contactData.socials.find((s) => s.platform === "Linkedin")?.url ||
+        "#",
+      icon: "Linkedin",
+    },
+    {
+      platform: "Twitter",
+      url:
+        meta?.twitterUrl ||
+        contactData.socials.find((s) => s.platform === "Twitter")?.url ||
+        "#",
+      icon: "Twitter",
+    },
+  ];
+
+  const displayLocation = meta?.location || contactData.location;
+  const displayEmail = meta?.email || contactData.email;
+
   return (
     <div className="space-y-6">
       {/* 1. Primary Direct Channels Box */}
@@ -30,7 +63,7 @@ export function ContactMeta() {
               Email Me
             </span>
             <p className="text-base sm:text-lg font-extrabold text-foreground tracking-tight hover:text-primary transition-colors duration-200">
-              <a href={`mailto:${contactData.email}`}>{contactData.email}</a>
+              <a href={`mailto:${displayEmail}`}>{displayEmail}</a>
             </p>
           </div>
         </div>
@@ -45,7 +78,7 @@ export function ContactMeta() {
               Location
             </span>
             <p className="text-base sm:text-lg font-extrabold text-foreground tracking-tight">
-              {contactData.location}
+              {displayLocation}
             </p>
           </div>
         </div>
@@ -71,7 +104,7 @@ export function ContactMeta() {
 
       {/* 3. Social Integration Matrix Grid */}
       <div className="grid grid-cols-3 gap-3">
-        {contactData.socials.map((social) => {
+        {socialLinks.map((social) => {
           // Fallback to FaGithub if the dynamic lookup doesn't hit a key
           const IconComp = iconMap[social.icon] || FaGithub;
           return (

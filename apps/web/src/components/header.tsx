@@ -16,6 +16,7 @@ import {
 // #NEW->useSelectedLayoutSegment
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export default function Header() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -95,9 +96,17 @@ export default function Header() {
         {/* Logo / Branding */}
         <Link
           href="/"
-          className="text-xl font-bold tracking-tight text-foreground"
+          className="flex items-center text-xl font-bold tracking-tight text-foreground"
         >
-          Portfolio<span className="text-primary">.IO</span>
+          <Image
+            src="/logo.svg"
+            alt="Portfolio Logo"
+            width={40}
+            height={40}
+            priority
+            unoptimized
+            className="h-10 w-10 rounded-full object-cover border border-border"
+          />
         </Link>
 
         {/* Desktop Navigation */}
@@ -185,7 +194,7 @@ export default function Header() {
                         className={cn(
                           "text-foreground dark:text-[#d2e4fe] hover:text-primary transition-colors py-2 border-b border-(--border)/40",
                           active &&
-                            "text-primary dark:text-primary underline underline-offset-6 ",
+                          "text-primary dark:text-primary underline underline-offset-6 ",
                         )}
                       >
                         {label}

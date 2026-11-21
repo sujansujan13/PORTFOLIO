@@ -21,6 +21,7 @@ import { THEMES, type ThemeType } from "@/config/color-theme";
 
 import { usePublicProfile } from "@/hooks/useProfile";
 import { useGetCategories } from "@/hooks/useCategory";
+import { GitHubStatsSection } from "@/components/github/github-stats-section";
 
 interface AboutPageClientProps {
   data: typeof import("@/data/about-data.json");
@@ -355,6 +356,9 @@ export default function AboutPageClient({ data }: AboutPageClientProps) {
             </div>
           </motion.section>
         </div>
+
+        {/* SECTION 4: LIVE GITHUB STATS & ACTIVITY WIDGET */}
+        <GitHubStatsSection username={profile?.githubUrl} />
       </div>
     </main>
   );

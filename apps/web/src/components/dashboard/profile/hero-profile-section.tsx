@@ -2,19 +2,15 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Controller, useWatch, type UseFormReturn } from "react-hook-form";
-import {
-  User,
-  MapPin,
-  Sparkles,
-  X,
-  FileText,
-} from "lucide-react";
+import { User, MapPin, Sparkles, X, FileText, Info } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import type { CompleteDashboardFormData } from "./profile-form";
 import { TiptapEditorSmall } from "../utils/tiptap-editor-small";
+import SocialLinks from "./socialLinks";
 
 export interface ProfileFormValues {
   fullName: string;
+  email: string;
   primaryRole: string;
   location?: string;
   shortBio?: string;
@@ -25,6 +21,8 @@ export interface ProfileFormValues {
   resumeUrl?: string;
   cvFile?: FileList;
   typewriterTitles: string[];
+  twitterUrl?: string;
+  linkedinUrl?: string;
 }
 
 interface HeroProfileSectionProps {
@@ -115,6 +113,33 @@ export default function HeroProfileSection({ form }: HeroProfileSectionProps) {
           {errors.fullName && (
             <p className="text-[10px] text-destructive">
               {errors.fullName.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-1.5">
+            <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
+              Public Contact Email
+            </label>
+            <div className="group relative flex items-center">
+              <Info className="w-3.5 h-3.5 text-amber-500 cursor-pointer" />
+              <div className="absolute left-0 bottom-full mb-1.5 hidden group-hover:block w-64 p-2 bg-popover border border-border text-[11px] text-popover-foreground rounded-md shadow-lg z-30 pointer-events-none">
+                ⚠️ This email address is shown publicly on your website so
+                guests and recruiters can email you directly.
+              </div>
+            </div>
+          </div>
+          <input
+            type="email"
+            {...register("email")}
+            placeholder="e.g. contact@yourdomain.com"
+            className="w-full bg-input/30 border border-border/80 px-3 py-2 text-foreground focus:outline-none focus:border-primary rounded-md transition-colors"
+          />
+
+          {errors.email && (
+            <p className="text-[10px] text-destructive">
+              {errors.email.message}
             </p>
           )}
         </div>
@@ -310,22 +335,7 @@ export default function HeroProfileSection({ form }: HeroProfileSectionProps) {
         </div>
 
         {/* GitHub URL */}
-        <div className="space-y-1.5">
-          <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-            GitHub URL
-          </label>
-          <div className="relative flex items-center">
-            <div className="absolute left-3 flex items-center text-muted-foreground gap-1 border-r border-border/60 pr-2">
-              <FaGithub className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-mono">git</span>
-            </div>
-            <input
-              type="url"
-              {...register("githubUrl")}
-              className="w-full bg-input/30 border border-border/80 pl-16 pr-3 py-2 text-foreground focus:outline-none focus:border-primary rounded-md transition-colors"
-            />
-          </div>
-        </div>
+        <SocialLinks register={register} />
       </div>
     </div>
   );

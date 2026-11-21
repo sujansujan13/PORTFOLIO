@@ -45,6 +45,9 @@ export default function ProfileForm() {
       typewriterTitles: [],
       skills: [],
       learningGoals: [],
+      twitterUrl: "",
+      linkedinUrl: "",
+      email: "",
     },
   });
 
@@ -53,6 +56,7 @@ export default function ProfileForm() {
       const p = existingProfile as any;
       form.reset({
         fullName: p.fullName || "",
+        email: p.email || "",
         primaryRole: p.primaryRole || "",
         location: p.location || "",
         avatarUrl: p.avatarUrl || "",
@@ -60,6 +64,8 @@ export default function ProfileForm() {
         shortBio: p.shortBio || "",
         fullBio: p.fullBio || "",
         githubUrl: p.githubUrl || "",
+        linkedinUrl: p.linkedinUrl || "",
+        twitterUrl: p.twitterUrl || "",
         typewriterTitles: p.typeWriterTitles || p.typewriterTitles || [],
         skills: (p.skills || []).map((s: any) => ({
           id: s._id?.toString() || s.id,
@@ -133,6 +139,7 @@ export default function ProfileForm() {
       upsertProfile.mutate(
         {
           fullName: data.fullName,
+          email: data.email,
           primaryRole: data.primaryRole,
           location: data.location || "",
           avatarUrl: avatarUrl,
@@ -160,7 +167,11 @@ export default function ProfileForm() {
               isVisible: s.isVisible ?? true,
             })),
           learningGoals: (data.learningGoals || [])
-            .filter((g) => (g.title || (g as any).name) && (g.title || (g as any).name).trim() !== "")
+            .filter(
+              (g) =>
+                (g.title || (g as any).name) &&
+                (g.title || (g as any).name).trim() !== "",
+            )
             .map((g) => ({
               id: g.id,
               name: (g.title || (g as any).name || "").trim(),

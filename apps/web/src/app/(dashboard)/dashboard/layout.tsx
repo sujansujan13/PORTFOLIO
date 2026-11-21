@@ -18,7 +18,7 @@ export default function DashboardLayout({
         <StatusHeaderPanel />
 
         {/* Content Node Element with sleek, padded custom scrollbar */}
-        <main className="flex-1 overflow-y-auto custom-scrollbar">
+        <main className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
           {children}
         </main>
       </div>

@@ -32,6 +32,11 @@ export const profileInputSchema = z.object({
     .trim()
     .min(2, "Full name must be at least 2 characters")
     .max(60),
+  email: z
+    .email("Invalid email address")
+    .optional()
+    .or(z.literal(""))
+    .default(""),
   primaryRole: z
     .string()
     .min(2, "Primary role is required")

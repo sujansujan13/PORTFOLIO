@@ -1,10 +1,10 @@
-import { Profile } from "@my-portfolio/db";
+import { Profile, User } from "@my-portfolio/db";
+import mongoose from "mongoose";
 import { TRPCError } from "@trpc/server";
 import {
   profileInputSchema,
   type ProfileInput,
 } from "../schemas/profile/profile-input.schema";
-
 
 /**
  * 1. Upsert Profile (Create if not exists, Update if already exists)
@@ -61,7 +61,8 @@ export async function upsertProfile(userId: string, input: ProfileInput) {
 
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: error?.message || "Internal Server Error Occurred While Saving Profile",
+      message:
+        error?.message || "Internal Server Error Occurred While Saving Profile",
     });
   }
 }
@@ -149,6 +150,79 @@ export async function deleteProfile(userId: string) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Internal Server Error Occurred While Deleting Profile",
+    });
+  }
+}
+
+export async function getContactMeta(input?: {
+  userId?: string;
+  email?: string;
+}) {
+  try {
+    const userId = input?.userId;
+    const sessionEmail = input?.email;
+
+    let profile = null;
+
+    if (userId) {
+      profile = await Profile.findOne({ userId })
+        .select(
+          "location githubUrl linkedinUrl email twitterUrl fullName userId -_id",
+        )
+        .lean();
+    } else {
+      profile = await Profile.findOne({})
+        .select(
+          "location githubUrl linkedinUrl email twitterUrl fullName userId -_id",
+        )
+        .sort({ updatedAt: -1 })
+        .lean();
+    }
+
+    let resolvedEmail = profile?.email || "";
+    const targetUserId = userId || profile?.userId;
+
+    if (!resolvedEmail) {
+      if (targetUserId) {
+        const queryConditions: any[] = [
+          { _id: targetUserId },
+          { id: targetUserId },
+        ];
+
+        if (mongoose.Types.ObjectId.isValid(targetUserId)) {
+          queryConditions.push({
+            _id: new mongoose.Types.ObjectId(targetUserId),
+          });
+        }
+
+        const ownerUser = await User.findOne({ $or: queryConditions })
+          .select("email")
+          .lean();
+
+        if (ownerUser?.email) {
+          resolvedEmail = ownerUser.email;
+        }
+      }
+
+      // If user lookup by ID didn't find an email, use session email if provided
+      if (!resolvedEmail && sessionEmail) {
+        resolvedEmail = sessionEmail;
+      }
+    }
+
+    return {
+      location: profile?.location || "",
+      githubUrl: profile?.githubUrl || "",
+      linkedinUrl: profile?.linkedinUrl || "",
+      twitterUrl: profile?.twitterUrl || "",
+      fullName: profile?.fullName || "",
+      email: resolvedEmail || "",
+    };
+  } catch (error) {
+    console.error("Error fetching contact metadata", error);
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Internal server error while fetching metadata",
     });
   }
 }

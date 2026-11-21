@@ -37,32 +37,32 @@ export function StatusHeaderPanel() {
     href: string;
     isActive?: (href: string) => boolean;
   }[] = [
-    {
-      label: "Dashboard Home",
-      icon: LayoutDashboard,
-      href: "/dashboard",
-    },
-    {
-      label: "Project Manager",
-      icon: FolderKanban,
-      href: "/dashboard/projects",
-    },
-    {
-      label: "Experience Timeline",
-      icon: Milestone,
-      href: "/dashboard/timeline",
-    },
-    {
-      label: "Blog CMS",
-      icon: Library,
-      href: "/dashboard/blog",
-    },
-    {
-      label: "Contact Inbox",
-      icon: Inbox,
-      href: "/dashboard/inbox",
-    },
-  ];
+      {
+        label: "Dashboard Home",
+        icon: LayoutDashboard,
+        href: "/dashboard",
+      },
+      {
+        label: "Project Manager",
+        icon: FolderKanban,
+        href: "/dashboard/projects",
+      },
+      {
+        label: "Experience Timeline",
+        icon: Milestone,
+        href: "/dashboard/timeline",
+      },
+      {
+        label: "Blog CMS",
+        icon: Library,
+        href: "/dashboard/blog",
+      },
+      {
+        label: "Contact Inbox",
+        icon: Inbox,
+        href: "/dashboard/inbox",
+      },
+    ];
   return (
     <div className="w-full border-b border-border bg-card px-4 py-3 flex items-center justify-between sticky top-0 z-40">
       <div className="flex items-center gap-3">
@@ -94,7 +94,7 @@ export function StatusHeaderPanel() {
                       className={cn(
                         "text-foreground hover:bg-muted/60 border-transparentdark:text-[#d2e4fe] hover:text-primary transition-colors py-2 border-b border-(--border)/40 p-2",
                         active &&
-                          "bg-primary p-2 text-white border-primary shadow-md rounded-lg",
+                        "bg-primary p-2 text-white border-primary shadow-md rounded-lg",
                       )}
                     >
                       {link.label}
@@ -105,7 +105,7 @@ export function StatusHeaderPanel() {
             </SheetContent>
           </Sheet>
         </div>
-        <span className="text-sm font-semibold hidden md:inline">Overview</span>
+
 
         <div className="flex items-center gap-2 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />

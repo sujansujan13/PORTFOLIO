@@ -2,6 +2,8 @@ import React from "react";
 import { type Metadata } from "next";
 import { ContactForm } from "@/components/contact/contact-form";
 import { ContactMeta } from "@/components/contact/contact-meta";
+import { authClient } from "@/lib/auth-client";
+import { headers } from "next/headers";
 
 // --- VALIDATED SCHEMATIC SEO ROUTING OBJECT ---
 export const metadata: Metadata = {
@@ -16,7 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
   return (
     <main className="w-full min-h-screen bg-background text-foreground selection:bg-primary/20 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-12 sm:space-y-16">

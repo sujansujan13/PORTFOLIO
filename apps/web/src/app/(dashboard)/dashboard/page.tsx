@@ -26,10 +26,6 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  return (
-    <div>
-      <AdminDashboardPage user={session.user} />
-    </div>
-  );
+  return <AdminDashboardPage user={session.user} />;
 }
 
