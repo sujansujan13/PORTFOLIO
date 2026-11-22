@@ -1,26 +1,27 @@
 import type { MetadataRoute } from "next";
 
-
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        // [PROJECT-CUSTOMIZATION]: Full application name
-        name: "Sujan Raj Pandey",
-        // [PROJECT-CUSTOMIZATION]: Short title under the home screen icon
-        short_name: "Sujan",
-        // [PROJECT-CUSTOMIZATION]: PWA description
+        name: "Sujan Raj Pandey — Full-Stack Developer & Software Engineer",
+        short_name: "Sujan Portfolio",
         description:
-            "Portfolio of Sujan Raj Pandey, Software Engineer.",
+            "Portfolio of Sujan Raj Pandey, Full-Stack Developer specializing in modern web architecture, Next.js, React, and scalable backend systems.",
         start_url: "/",
         display: "standalone",
-        // [PROJECT-CUSTOMIZATION]: Splash screen and app launch background color
-        background_color: "#09090b",
-        // [PROJECT-CUSTOMIZATION]: Mobile browser toolbar color (emerald-500)
-        theme_color: "#10b981",
+        background_color: "#0b1c30",
+        theme_color: "#0C34C5",
         icons: [
             {
-                src: "/favicon.ico",
+                src: "/icon.svg",
                 sizes: "any",
-                type: "image/x-icon",
+                type: "image/svg+xml",
+                purpose: "any",
+            },
+            {
+                src: "/logo.svg",
+                sizes: "any",
+                type: "image/svg+xml",
+                purpose: "maskable",
             },
         ],
     };
